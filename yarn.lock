@@ -4053,6 +4053,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/axios@npm:^0.9.36":
+  version: 0.9.36
+  resolution: "@types/axios@npm:0.9.36"
+  checksum: 6e0eb4103f7f6c87bae3ab9aad284c60b6375ff5e4b71bb155de326c704ddf1c1a3abe1bbfcdda676cd073f39beaa5821076920a5d8bb1d361ba1300f0609740
+  languageName: node
+  linkType: hard
+
 "@types/bn.js@npm:^4.11.3":
   version: 4.11.6
   resolution: "@types/bn.js@npm:4.11.6"
@@ -6080,7 +6087,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.6.7":
+"axios@npm:^1.10.0, axios@npm:^1.6.7":
   version: 1.10.0
   resolution: "axios@npm:1.10.0"
   dependencies:
@@ -14872,6 +14879,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "se-2@workspace:."
   dependencies:
+    "@types/axios": ^0.9.36
+    axios: ^1.10.0
     husky: ~9.1.6
     lint-staged: ~13.2.2
   languageName: unknown

@@ -1,35 +1,39 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-contract NostrLinkr {
+contract NostrLinkrAttested {
+    address public trustedSigner; // server's Ethereum address
+
     event LinkCreated(address indexed ethAddress, string nostrPubKey);
 
     mapping(address => string) public nostrLinks;
 
-    function linkNostr(string calldata nostrPubKey, bytes calldata signature) external {
-        // Costruiamo il messaggio da firmare (es. "Link Ethereum <address> with Nostr <pubKey>")
+    constructor(address _trustedSigner) {
+        trustedSigner = _trustedSigner;
+    }
+
+    function linkNostrAttested(
+        address ethAddress,
+        string calldata nostrPubKey,
+        bytes calldata serverSignature
+    ) external {
+        // Compose the expected message
         bytes32 messageHash = keccak256(
-            abi.encodePacked("Link Ethereum ", toAsciiString(msg.sender), " with Nostr ", nostrPubKey)
+            abi.encodePacked("Link attest: ethAddress=", toAsciiString(ethAddress), " nostrPubKey=", nostrPubKey)
         );
 
         bytes32 ethSignedMessageHash = getEthSignedMessageHash(messageHash);
 
-        // Recupera l'indirizzo che ha firmato la hash
-        address signer = recoverSigner(ethSignedMessageHash, signature);
+        address recovered = recoverSigner(ethSignedMessageHash, serverSignature);
 
-        // Controlla che l'indirizzo firmatario corrisponda al msg.sender
-        require(signer == msg.sender, "Invalid signature");
+        require(recovered == trustedSigner, "Invalid server signature");
 
-        nostrLinks[msg.sender] = nostrPubKey;
-        emit LinkCreated(msg.sender, nostrPubKey);
+        nostrLinks[ethAddress] = nostrPubKey;
+        emit LinkCreated(ethAddress, nostrPubKey);
     }
 
-    function getNostrLink(address user) public view returns (string memory) {
-        return nostrLinks[user];
-    }
-
+    // Standard EIP-191
     function getEthSignedMessageHash(bytes32 _messageHash) internal pure returns (bytes32) {
-        // EIP-191 signature
         return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", _messageHash));
     }
 
@@ -47,7 +51,6 @@ contract NostrLinkr {
             v := byte(0, mload(add(sig, 96)))
         }
 
-        // Ethereum v value is either 27 or 28
         if (v < 27) {
             v += 27;
         }
