@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { getEventHash } from "nostr-tools";
-import { ArrowPathIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
-import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth/notification";
 
 declare global {
@@ -18,68 +17,60 @@ declare global {
 }
 
 export const NostrLinkrButton = ({ address }: { address: string }) => {
-  const [_nostrPubKey, setNostrPubKey] = useState("");
-  const [_nostrSig, setNostrSig] = useState("");
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [response, setResponse] = useState<any>(null);
 
-  const { writeContractAsync: linkNostr } = useScaffoldWriteContract({
-    contractName: "NostrLinkr",
-  });
+  const nostr_linkr_verifier_url = "https://nostr-linkr-verifier.vercel.app";
+  // const nostr_linkr_verifier_url = "http://localhost:5000";
 
   const performLink = async () => {
-    setSuccess(false);
     setLoading(true);
+    setResponse(null);
+
     try {
       if (!window.nostr) {
-        notification.error(
-          <span>
-            Estensione Nostr non disponibile (es.{" "}
-            <a href="https://getalby.com/" target="_blank" rel="noopener noreferrer" className="underline">
-              Alby
-            </a>
-            )
-          </span>,
-        );
-        setLoading(false);
-        return;
-      }
-      if (!window.ethereum) {
-        notification.error("Ethereum provider non trovato (es. MetaMask)");
+        notification.error("Estensione Nostr non disponibile (es. Alby)");
         setLoading(false);
         return;
       }
 
-      const pubKey = await window.nostr.getPublicKey();
-      setNostrPubKey(pubKey);
+      const pubkey = await window.nostr.getPublicKey();
+      const content = address.toLowerCase(); // Ethereum address nel campo content
 
-      // 🔐 Firma dell'address Ethereum da parte di Nostr
-      const ethAddressToSign = address.toLowerCase(); // Consistenza
-
+      // Crea evento nostr
       const nostrEvent: any = {
-        kind: 27235, // Custom kind
+        kind: 27235,
         created_at: Math.floor(Date.now() / 1000),
         tags: [],
-        content: ethAddressToSign,
-        pubkey: pubKey,
+        content: content,
+        pubkey: pubkey,
+        sig: "",
       };
 
+      // Calcola ID evento (hash)
       nostrEvent.id = getEventHash(nostrEvent);
+
+      // Firma evento con nostr
       const signedEvent = await window.nostr.signEvent(nostrEvent);
 
-      setNostrSig(signedEvent.sig);
-
-      // ✅ Chiamata al contratto: linkNostr(pubkey, signature)
-      await linkNostr({
-        functionName: "linkNostr",
-        args: [pubKey, signedEvent.sig],
+      // Invio al backend
+      const res = await fetch(`${nostr_linkr_verifier_url}/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(signedEvent),
       });
 
-      setSuccess(true);
-      notification.success("Collegamento Ethereum/Nostr completato!");
+      const resJson = await res.json();
+
+      if (!res.ok) {
+        notification.error(resJson.error || "Errore nella verifica");
+      } else {
+        setResponse(resJson);
+        notification.success("Verifica completata!");
+      }
     } catch (err) {
-      console.error("Errore nel collegamento:", err);
-      notification.error("Errore nel collegamento, controlla la console.");
+      console.error(err);
+      notification.error("Errore nel collegamento");
     } finally {
       setLoading(false);
     }
@@ -87,27 +78,36 @@ export const NostrLinkrButton = ({ address }: { address: string }) => {
 
   return (
     <div className="space-y-4 p-6 border rounded-xl max-w-xl mx-auto bg-base-200 shadow-md">
-      <h2 className="text-xl font-bold flex items-center gap-2">
-        <span>🔗</span> Link Ethereum + Nostr
-      </h2>
+      <h2 className="text-xl font-bold flex items-center gap-2">🔗 Link Ethereum + Nostr</h2>
+
       <div className="flex items-center gap-2">
-        <span className="text-sm text-accent">Account Ethereum:</span>
+        <span className="text-sm text-accent">Ethereum:</span>
         <Address address={address} size="sm" />
       </div>
+
       <button
         className="btn btn-primary btn-sm px-4 rounded-full flex items-center gap-2"
         onClick={performLink}
         disabled={loading}
       >
-        {loading ? (
-          <ArrowPathIcon className="h-4 w-4 animate-spin" />
-        ) : success ? (
-          <CheckCircleIcon className="h-4 w-4 text-success" />
-        ) : (
-          <span>🔗</span>
-        )}
-        <span>{loading ? "Collegamento in corso..." : success ? "Collegato!" : "Link via Smart Contract"}</span>
+        {loading ? <ArrowPathIcon className="h-4 w-4 animate-spin" /> : <span>🔗</span>}
+        <span>{loading ? "Verifica..." : "Link via Server"}</span>
       </button>
+
+      {response && (
+        <div className="mt-4 p-3 bg-base-100 rounded-md text-sm break-all">
+          <p>
+            <strong>📜 Messaggio:</strong>
+          </p>
+          <pre className="whitespace-pre-wrap">{response.message}</pre>
+          <p>
+            <strong>✍️ Firma:</strong> {response.signature}
+          </p>
+          <p>
+            <strong>🧾 Signer:</strong> {response.signer}
+          </p>
+        </div>
+      )}
     </div>
   );
 };
