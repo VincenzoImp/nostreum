@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import { MessageHashUtils } from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
 contract NostrLinkr {
     using ECDSA for bytes32;
@@ -29,28 +30,29 @@ contract NostrLinkr {
     }
 
     function pushLinkr(string calldata message, bytes calldata signature, address signer) external {
-        // Verify that the message was signed by the signer
-        bytes32 messageHash = keccak256(abi.encodePacked(message));
-        bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
-        address recoveredSigner = ethSignedMessageHash.recover(signature);
-        require(recoveredSigner == signer, "Invalid signature");
+    // Hash the original message
+    bytes32 messageHash = keccak256(abi.encodePacked(message));
 
-        // Verify that the signer is the owner
-        require(signer == owner, "Signer is not the contract owner");
+    // Ethereum Signed Message Hash
+    bytes32 ethSignedMessageHash = MessageHashUtils.toEthSignedMessageHash(messageHash);
 
-        // Parse JSON manually (assumes trusted input)
-        (address addr, bytes32 pubkey) = _extractContentAndPubkey(message);
+    // Recover signer using ECDSA
+    address recoveredSigner = ECDSA.recover(ethSignedMessageHash, signature);
 
-        // Ensure no existing mapping exists
-        require(bytes(addressPubkey[addr]).length == 0, "Linkr already exists");
-        require(bytes(pubkeyAddress[pubkey]).length == 0, "Linkr already exists");
+    require(recoveredSigner == signer, "Invalid signature");
+    require(signer == owner, "Signer is not the contract owner");
 
-        // Store mappings
-        addressPubkey[addr] = pubkey;
-        pubkeyAddress[pubkey] = addr;
+    (address addr, bytes32 pubkey) = _extractContentAndPubkey(message);
 
-        emit LinkrPushed(message, signature, signer);
-    }
+    require(bytes(addressPubkey[addr]).length == 0, "Linkr already exists");
+    require(bytes(pubkeyAddress[pubkey]).length == 0, "Linkr already exists");
+
+    addressPubkey[addr] = pubkey;
+    pubkeyAddress[pubkey] = addr;
+
+    emit LinkrPushed(message, signature, signer);
+}
+
 
     function pullLinkr() external onlyOwner {
         bytes32 pubkey = addressPubkey[msg.sender];
