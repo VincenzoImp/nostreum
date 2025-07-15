@@ -7,41 +7,111 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     NostrLinkr: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
       abi: [
+        {
+          inputs: [],
+          stateMutability: "nonpayable",
+          type: "constructor",
+        },
+        {
+          inputs: [],
+          name: "ECDSAInvalidSignature",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "length",
+              type: "uint256",
+            },
+          ],
+          name: "ECDSAInvalidSignatureLength",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "s",
+              type: "bytes32",
+            },
+          ],
+          name: "ECDSAInvalidSignatureS",
+          type: "error",
+        },
         {
           anonymous: false,
           inputs: [
             {
               indexed: true,
               internalType: "address",
-              name: "ethAddress",
+              name: "addr",
               type: "address",
             },
             {
-              indexed: false,
-              internalType: "string",
-              name: "nostrPubKey",
-              type: "string",
+              indexed: true,
+              internalType: "bytes32",
+              name: "pubkey",
+              type: "bytes32",
             },
           ],
-          name: "LinkCreated",
+          name: "LinkrPulled",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: false,
+              internalType: "string",
+              name: "message",
+              type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "bytes",
+              name: "signature",
+              type: "bytes",
+            },
+            {
+              indexed: false,
+              internalType: "address",
+              name: "signer",
+              type: "address",
+            },
+          ],
+          name: "LinkrPushed",
           type: "event",
         },
         {
           inputs: [
             {
               internalType: "address",
-              name: "user",
+              name: "",
               type: "address",
             },
           ],
-          name: "getNostrLink",
+          name: "addressPubkey",
           outputs: [
             {
-              internalType: "string",
+              internalType: "bytes32",
               name: "",
-              type: "string",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "owner",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
             },
           ],
           stateMutability: "view",
@@ -50,8 +120,34 @@ const deployedContracts = {
         {
           inputs: [
             {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          name: "pubkeyAddress",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "pullLinkr",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
               internalType: "string",
-              name: "nostrPubKey",
+              name: "message",
               type: "string",
             },
             {
@@ -59,8 +155,13 @@ const deployedContracts = {
               name: "signature",
               type: "bytes",
             },
+            {
+              internalType: "address",
+              name: "signer",
+              type: "address",
+            },
           ],
-          name: "linkNostr",
+          name: "pushLinkr",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -69,19 +170,13 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "address",
-              name: "",
+              name: "newOwner",
               type: "address",
             },
           ],
-          name: "nostrLinks",
-          outputs: [
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-          ],
-          stateMutability: "view",
+          name: "updateOwner",
+          outputs: [],
+          stateMutability: "nonpayable",
           type: "function",
         },
       ],

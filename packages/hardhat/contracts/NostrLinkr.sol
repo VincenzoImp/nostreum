@@ -30,29 +30,33 @@ contract NostrLinkr {
     }
 
     function pushLinkr(string calldata message, bytes calldata signature, address signer) external {
-    // Hash the original message
-    bytes32 messageHash = keccak256(abi.encodePacked(message));
+        // Hash the original message
+        bytes32 messageHash = keccak256(abi.encodePacked(message));
 
-    // Ethereum Signed Message Hash
-    bytes32 ethSignedMessageHash = MessageHashUtils.toEthSignedMessageHash(messageHash);
+        // Ethereum Signed Message Hash
+        bytes32 ethSignedMessageHash = MessageHashUtils.toEthSignedMessageHash(messageHash);
 
-    // Recover signer using ECDSA
-    address recoveredSigner = ECDSA.recover(ethSignedMessageHash, signature);
+        // Recover signer using ECDSA
+        address recoveredSigner = ECDSA.recover(ethSignedMessageHash, signature);
 
-    require(recoveredSigner == signer, "Invalid signature");
-    require(signer == owner, "Signer is not the contract owner");
+        require(recoveredSigner == signer, "Invalid signature");
+        require(signer == owner, "Signer is not the contract owner");
 
-    (address addr, bytes32 pubkey) = _extractContentAndPubkey(message);
+        (string memory contentStr, string memory pubkeyStr) = _extractContentAndPubkey(message);
+        
+        // Convert string representations to proper types
+        address addr = _parseAddress(contentStr);
+        bytes32 pubkey = _parseBytes32(pubkeyStr);
 
-    require(bytes(addressPubkey[addr]).length == 0, "Linkr already exists");
-    require(bytes(pubkeyAddress[pubkey]).length == 0, "Linkr already exists");
+        // Check if linkr already exists
+        require(addressPubkey[addr] == bytes32(0), "Linkr already exists");
+        require(pubkeyAddress[pubkey] == address(0), "Linkr already exists");
 
-    addressPubkey[addr] = pubkey;
-    pubkeyAddress[pubkey] = addr;
+        addressPubkey[addr] = pubkey;
+        pubkeyAddress[pubkey] = addr;
 
-    emit LinkrPushed(message, signature, signer);
-}
-
+        emit LinkrPushed(message, signature, signer);
+    }
 
     function pullLinkr() external onlyOwner {
         bytes32 pubkey = addressPubkey[msg.sender];
@@ -76,6 +80,57 @@ contract NostrLinkr {
         uint pubkeyStart = _indexOf(b, pubkeyKey) + pubkeyKey.length;
         uint pubkeyEnd = _indexOfFrom(b, bytes('"'), pubkeyStart);
         pubkey = string(_slice(b, pubkeyStart, pubkeyEnd));
+    }
+
+    // Helper function to parse address from string
+    function _parseAddress(string memory addrStr) internal pure returns (address) {
+        bytes memory addrBytes = bytes(addrStr);
+        require(addrBytes.length == 42, "Invalid address length"); // 0x + 40 hex chars
+        require(addrBytes[0] == '0' && addrBytes[1] == 'x', "Address must start with 0x");
+        
+        uint160 result = 0;
+        for (uint i = 2; i < 42; i++) {
+            result *= 16;
+            uint8 digit = uint8(addrBytes[i]);
+            if (digit >= 48 && digit <= 57) {
+                result += digit - 48; // 0-9
+            } else if (digit >= 65 && digit <= 70) {
+                result += digit - 55; // A-F
+            } else if (digit >= 97 && digit <= 102) {
+                result += digit - 87; // a-f
+            } else {
+                revert("Invalid hex character in address");
+            }
+        }
+        return address(result);
+    }
+
+    // Helper function to parse bytes32 from string
+    function _parseBytes32(string memory hexStr) internal pure returns (bytes32) {
+        bytes memory hexBytes = bytes(hexStr);
+        require(hexBytes.length == 64, "Invalid bytes32 hex length"); // 64 hex chars for 32 bytes
+        
+        bytes32 result;
+        for (uint i = 0; i < 64; i++) {
+            uint8 digit = uint8(hexBytes[i]);
+            uint8 value;
+            if (digit >= 48 && digit <= 57) {
+                value = digit - 48; // 0-9
+            } else if (digit >= 65 && digit <= 70) {
+                value = digit - 55; // A-F
+            } else if (digit >= 97 && digit <= 102) {
+                value = digit - 87; // a-f
+            } else {
+                revert("Invalid hex character in pubkey");
+            }
+            
+            if (i % 2 == 0) {
+                result |= bytes32(uint256(value) << (4 * (63 - i)));
+            } else {
+                result |= bytes32(uint256(value) << (4 * (63 - i)));
+            }
+        }
+        return result;
     }
 
     function _indexOf(bytes memory haystack, bytes memory needle) internal pure returns (uint) {
