@@ -1,76 +1,105 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.20;
 
-contract NostrLinkrAttested {
-    address public trustedSigner; // server's Ethereum address
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
-    event LinkCreated(address indexed ethAddress, string nostrPubKey);
+contract NostrLinkr {
+    using ECDSA for bytes32;
 
-    mapping(address => string) public nostrLinks;
+    address public owner;
 
-    constructor(address _trustedSigner) {
-        trustedSigner = _trustedSigner;
+    mapping(address => bytes32) public addressPubkey;
+    mapping(bytes32 => address) public pubkeyAddress;
+
+    event LinkrPushed(string message, bytes signature, address signer);
+    event LinkrPulled(address indexed addr, bytes32 indexed pubkey);
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Not the contract owner");
+        _;
     }
 
-    function linkNostrAttested(
-        address ethAddress,
-        string calldata nostrPubKey,
-        bytes calldata serverSignature
-    ) external {
-        // Compose the expected message
-        bytes32 messageHash = keccak256(
-            abi.encodePacked("Link attest: ethAddress=", toAsciiString(ethAddress), " nostrPubKey=", nostrPubKey)
-        );
-
-        bytes32 ethSignedMessageHash = getEthSignedMessageHash(messageHash);
-
-        address recovered = recoverSigner(ethSignedMessageHash, serverSignature);
-
-        require(recovered == trustedSigner, "Invalid server signature");
-
-        nostrLinks[ethAddress] = nostrPubKey;
-        emit LinkCreated(ethAddress, nostrPubKey);
+    constructor() {
+        owner = msg.sender;
     }
 
-    // Standard EIP-191
-    function getEthSignedMessageHash(bytes32 _messageHash) internal pure returns (bytes32) {
-        return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", _messageHash));
+    function updateOwner(address newOwner) external onlyOwner {
+        require(newOwner != address(0), "Zero address not allowed");
+        owner = newOwner;
     }
 
-    function recoverSigner(bytes32 _ethSignedMessageHash, bytes memory _signature) internal pure returns (address) {
-        (bytes32 r, bytes32 s, uint8 v) = splitSignature(_signature);
-        return ecrecover(_ethSignedMessageHash, v, r, s);
+    function pushLinkr(string calldata message, bytes calldata signature, address signer) external {
+        // Verify that the message was signed by the signer
+        bytes32 messageHash = keccak256(abi.encodePacked(message));
+        bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
+        address recoveredSigner = ethSignedMessageHash.recover(signature);
+        require(recoveredSigner == signer, "Invalid signature");
+
+        // Verify that the signer is the owner
+        require(signer == owner, "Signer is not the contract owner");
+
+        // Parse JSON manually (assumes trusted input)
+        (address addr, bytes32 pubkey) = _extractContentAndPubkey(message);
+
+        // Ensure no existing mapping exists
+        require(bytes(addressPubkey[addr]).length == 0, "Linkr already exists");
+        require(bytes(pubkeyAddress[pubkey]).length == 0, "Linkr already exists");
+
+        // Store mappings
+        addressPubkey[addr] = pubkey;
+        pubkeyAddress[pubkey] = addr;
+
+        emit LinkrPushed(message, signature, signer);
     }
 
-    function splitSignature(bytes memory sig) internal pure returns (bytes32 r, bytes32 s, uint8 v) {
-        require(sig.length == 65, "Invalid signature length");
+    function pullLinkr() external onlyOwner {
+        bytes32 pubkey = addressPubkey[msg.sender];
+        delete addressPubkey[msg.sender];
+        delete pubkeyAddress[pubkey];
+        emit LinkrPulled(msg.sender, pubkey);
+    }
 
-        assembly {
-            r := mload(add(sig, 32))
-            s := mload(add(sig, 64))
-            v := byte(0, mload(add(sig, 96)))
+    // Internal helper to extract "content" and "pubkey" from a JSON string
+    function _extractContentAndPubkey(string memory json) internal pure returns (string memory content, string memory pubkey) {
+        bytes memory b = bytes(json);
+        require(b.length > 0, "Empty JSON input");
+
+        bytes memory contentKey = bytes('"content":"');
+        bytes memory pubkeyKey = bytes('"pubkey":"');
+
+        uint contentStart = _indexOf(b, contentKey) + contentKey.length;
+        uint contentEnd = _indexOfFrom(b, bytes('"'), contentStart);
+        content = string(_slice(b, contentStart, contentEnd));
+
+        uint pubkeyStart = _indexOf(b, pubkeyKey) + pubkeyKey.length;
+        uint pubkeyEnd = _indexOfFrom(b, bytes('"'), pubkeyStart);
+        pubkey = string(_slice(b, pubkeyStart, pubkeyEnd));
+    }
+
+    function _indexOf(bytes memory haystack, bytes memory needle) internal pure returns (uint) {
+        return _indexOfFrom(haystack, needle, 0);
+    }
+
+    function _indexOfFrom(bytes memory haystack, bytes memory needle, uint start) internal pure returns (uint) {
+        for (uint i = start; i <= haystack.length - needle.length; i++) {
+            bool matchFound = true;
+            for (uint j = 0; j < needle.length; j++) {
+                if (haystack[i + j] != needle[j]) {
+                    matchFound = false;
+                    break;
+                }
+            }
+            if (matchFound) return i;
         }
-
-        if (v < 27) {
-            v += 27;
-        }
+        revert("Key not found");
     }
 
-    // Helper: convert address to string
-    function toAsciiString(address x) internal pure returns (string memory) {
-        bytes memory s = new bytes(40);
-        for (uint i = 0; i < 20; i++) {
-            bytes1 b = bytes1(uint8(uint(uint160(x)) / (2 ** (8 * (19 - i)))));
-            bytes1 hi = bytes1(uint8(b) / 16);
-            bytes1 lo = bytes1(uint8(b) - 16 * uint8(hi));
-            s[2 * i] = char(hi);
-            s[2 * i + 1] = char(lo);
+    function _slice(bytes memory data, uint start, uint end) internal pure returns (bytes memory) {
+        require(end >= start && end <= data.length, "Invalid slice range");
+        bytes memory result = new bytes(end - start);
+        for (uint i = 0; i < result.length; i++) {
+            result[i] = data[start + i];
         }
-        return string(s);
-    }
-
-    function char(bytes1 b) internal pure returns (bytes1 c) {
-        if (uint8(b) < 10) return bytes1(uint8(b) + 0x30);
-        else return bytes1(uint8(b) + 0x57);
+        return result;
     }
 }
