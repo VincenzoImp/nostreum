@@ -12,7 +12,7 @@ contract NostrLinkr {
     mapping(address => bytes32) public addressPubkey;
     mapping(bytes32 => address) public pubkeyAddress;
 
-    event LinkrPushed(string message, bytes signature, address signer);
+    event LinkrPushed(string message, bytes signature);
     event LinkrPulled(address indexed addr, bytes32 indexed pubkey);
 
     modifier onlyOwner() {
@@ -29,34 +29,37 @@ contract NostrLinkr {
         owner = newOwner;
     }
 
-    function pushLinkr(string calldata message, bytes calldata signature, address signer) external {
-        // Hash the original message
+    function pushLinkr(string calldata message, bytes32 r, bytes32 vs) external {
+        // Hash del messaggio originale
         bytes32 messageHash = keccak256(abi.encodePacked(message));
 
-        // Ethereum Signed Message Hash
+        // Hash Ethereum Signed Message
         bytes32 ethSignedMessageHash = MessageHashUtils.toEthSignedMessageHash(messageHash);
 
-        // Recover signer using ECDSA
-        address recoveredSigner = ECDSA.recover(ethSignedMessageHash, signature);
+        // Recupera il firmatario
+        address recoveredSigner = ECDSA.recover(ethSignedMessageHash, r, vs);
 
-        require(recoveredSigner == signer, "Invalid signature");
-        require(signer == owner, "Signer is not the contract owner");
+        // chacksumed address 
+        require(recoveredSigner == owner, "Il firmatario non e' il proprietario del contratto");
 
+        // Estrae l'indirizzo e la chiave pubblica dal messaggio
         (string memory contentStr, string memory pubkeyStr) = _extractContentAndPubkey(message);
-        
-        // Convert string representations to proper types
+
+        // Conversioni
         address addr = _parseAddress(contentStr);
         bytes32 pubkey = _parseBytes32(pubkeyStr);
 
-        // Check if linkr already exists
-        require(addressPubkey[addr] == bytes32(0), "Linkr already exists");
-        require(pubkeyAddress[pubkey] == address(0), "Linkr already exists");
+        // Verifica che non esista già
+        require(addressPubkey[addr] == bytes32(0), "Linkr gia' esistente");
+        require(pubkeyAddress[pubkey] == address(0), "Linkr gia' esistente");
 
+        // Salva
         addressPubkey[addr] = pubkey;
         pubkeyAddress[pubkey] = addr;
 
-        emit LinkrPushed(message, signature, signer);
+        emit LinkrPushed(message, abi.encodePacked(r, vs));
     }
+
 
     function pullLinkr() external onlyOwner {
         bytes32 pubkey = addressPubkey[msg.sender];

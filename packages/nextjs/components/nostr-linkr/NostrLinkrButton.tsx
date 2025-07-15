@@ -92,11 +92,10 @@ export const NostrLinkrButton = ({ address }: { address: string }) => {
         setResponse(resJson);
         notification.success("Verifica completata!");
 
-        // Se la verifica è andata a buon fine, chiama pushLinkr
         try {
           await pushLinkr({
             functionName: "pushLinkr",
-            args: [resJson.message, resJson.signature, resJson.signer],
+            args: [resJson.message, resJson.signature.slice(0, 32), resJson.signature.slice(32, 64), resJson.signer],
           });
           notification.success("Linkr creato con successo!");
         } catch (error) {
