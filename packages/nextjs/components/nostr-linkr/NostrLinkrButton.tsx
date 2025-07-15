@@ -97,11 +97,11 @@ export const NostrLinkrButton = ({ address }: { address: string }) => {
       {response && (
         <div className="mt-4 p-3 bg-base-100 rounded-md text-sm break-all">
           <p>
-            <strong>📜 Messaggio:</strong>
+            <strong>📜 Message:</strong>
           </p>
-          <pre className="whitespace-pre-wrap">{response.message}</pre>
+          <pre className="whitespace-pre-wrap">{JSON.stringify(JSON.parse(response.message), null, 2)}</pre>
           <p>
-            <strong>✍️ Firma:</strong> {response.signature}
+            <strong>✍️ Sign:</strong> {response.signature}
           </p>
           <p>
             <strong>🧾 Signer:</strong> {response.signer}
