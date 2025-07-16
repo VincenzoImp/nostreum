@@ -7,13 +7,8 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     NostrLinkr: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      address: "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
       abi: [
-        {
-          inputs: [],
-          stateMutability: "nonpayable",
-          type: "constructor",
-        },
         {
           anonymous: false,
           inputs: [
@@ -37,27 +32,15 @@ const deployedContracts = {
           anonymous: false,
           inputs: [
             {
-              indexed: false,
-              internalType: "string",
-              name: "message",
-              type: "string",
+              indexed: true,
+              internalType: "address",
+              name: "addr",
+              type: "address",
             },
             {
-              indexed: false,
-              internalType: "uint8",
-              name: "v",
-              type: "uint8",
-            },
-            {
-              indexed: false,
+              indexed: true,
               internalType: "bytes32",
-              name: "r",
-              type: "bytes32",
-            },
-            {
-              indexed: false,
-              internalType: "bytes32",
-              name: "s",
+              name: "pubkey",
               type: "bytes32",
             },
           ],
@@ -84,16 +67,42 @@ const deployedContracts = {
           type: "function",
         },
         {
-          inputs: [],
-          name: "owner",
-          outputs: [
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "pubkey",
+              type: "bytes32",
+            },
+            {
+              internalType: "uint256",
+              name: "createdAt",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "kind",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "tags",
+              type: "string",
+            },
             {
               internalType: "address",
-              name: "",
+              name: "content",
               type: "address",
             },
           ],
-          stateMutability: "view",
+          name: "getEventHash",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "pure",
           type: "function",
         },
         {
@@ -125,29 +134,39 @@ const deployedContracts = {
         {
           inputs: [
             {
+              internalType: "bytes32",
+              name: "id",
+              type: "bytes32",
+            },
+            {
+              internalType: "bytes32",
+              name: "pubkey",
+              type: "bytes32",
+            },
+            {
+              internalType: "uint256",
+              name: "createdAt",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "kind",
+              type: "uint256",
+            },
+            {
               internalType: "string",
-              name: "message",
+              name: "tags",
               type: "string",
             },
             {
-              internalType: "bytes32",
-              name: "r",
-              type: "bytes32",
-            },
-            {
-              internalType: "bytes32",
-              name: "s",
-              type: "bytes32",
-            },
-            {
-              internalType: "uint8",
-              name: "v",
-              type: "uint8",
-            },
-            {
               internalType: "address",
-              name: "signer",
+              name: "content",
               type: "address",
+            },
+            {
+              internalType: "bytes",
+              name: "sig",
+              type: "bytes",
             },
           ],
           name: "pushLinkr",
@@ -158,14 +177,50 @@ const deployedContracts = {
         {
           inputs: [
             {
+              internalType: "bytes32",
+              name: "eventId",
+              type: "bytes32",
+            },
+            {
+              internalType: "bytes32",
+              name: "pubkey",
+              type: "bytes32",
+            },
+            {
+              internalType: "uint256",
+              name: "createdAt",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "kind",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "tags",
+              type: "string",
+            },
+            {
               internalType: "address",
-              name: "newOwner",
+              name: "content",
               type: "address",
             },
+            {
+              internalType: "bytes",
+              name: "signature",
+              type: "bytes",
+            },
           ],
-          name: "updateOwner",
-          outputs: [],
-          stateMutability: "nonpayable",
+          name: "verifyNostrEvent",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "pure",
           type: "function",
         },
       ],

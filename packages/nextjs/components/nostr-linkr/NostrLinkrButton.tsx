@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getEventHash } from "nostr-tools";
+import { hexToBytes, toHex } from "viem";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
@@ -21,9 +22,6 @@ export const NostrLinkrButton = ({ address }: { address: string }) => {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<any>(null);
   const [hasLinkr, setHasLinkr] = useState(false);
-
-  const nostr_linkr_verifier_url = "https://nostr-linkr-verifier.vercel.app";
-  // const nostr_linkr_verifier_url = "http://localhost:5000";
 
   // Leggi il pubkey associato all'address
   const { data: linkedPubkey } = useScaffoldReadContract({
@@ -59,59 +57,81 @@ export const NostrLinkrButton = ({ address }: { address: string }) => {
       }
 
       const pubkey = await window.nostr.getPublicKey();
-      const content = address.toLowerCase(); // Ethereum address nel campo content
+      const createdAt = Math.floor(Date.now() / 1000);
+      const kind = 27235;
+      const tags: any[] = [];
+      const content = address.toLowerCase();
 
-      // Crea evento nostr
-      const nostrEvent: any = {
-        kind: 27235,
-        created_at: Math.floor(Date.now() / 1000),
-        tags: [],
+      // Crea evento nostr secondo NIP-01
+      const nostrEvent = {
+        kind: kind,
+        created_at: createdAt,
+        tags: tags,
         content: content,
         pubkey: pubkey,
-        sig: "",
       };
 
-      // Calcola ID evento (hash)
-      nostrEvent.id = getEventHash(nostrEvent);
+      // Calcola ID evento (hash) - nostr-tools fa questo automaticamente
+      const eventWithId = {
+        ...nostrEvent,
+        id: getEventHash(nostrEvent),
+      };
+
+      console.log("Event before signing:", eventWithId);
 
       // Firma evento con nostr
-      const signedEvent = await window.nostr.signEvent(nostrEvent);
+      const signedEvent = await window.nostr.signEvent(eventWithId);
 
-      // Invio al backend
-      const res = await fetch(`${nostr_linkr_verifier_url}/verify`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(signedEvent),
+      console.log("Signed event:", signedEvent);
+
+      // Verifica che l'evento sia stato firmato correttamente
+      if (!signedEvent.sig || signedEvent.sig.length !== 128) {
+        throw new Error("Invalid signature from Nostr extension");
+      }
+
+      // Convert hex strings to proper format using viem utilities
+      const eventIdBytes32 = toHex(hexToBytes(`0x${signedEvent.id}`), { size: 32 });
+      const pubkeyBytes32 = toHex(hexToBytes(`0x${signedEvent.pubkey}`), { size: 32 });
+      const signatureBytes = toHex(hexToBytes(`0x${signedEvent.sig}`));
+
+      console.log("Contract args:", {
+        id: eventIdBytes32,
+        pubkey: pubkeyBytes32,
+        createdAt: signedEvent.created_at,
+        kind: signedEvent.kind,
+        tags: JSON.stringify(signedEvent.tags),
+        content: signedEvent.content as `0x${string}`,
+        sig: signatureBytes,
       });
 
-      const resJson = await res.json();
+      // Scrivi su smart contract
+      await pushLinkr({
+        functionName: "pushLinkr",
+        args: [
+          eventIdBytes32,
+          pubkeyBytes32,
+          BigInt(signedEvent.created_at),
+          BigInt(signedEvent.kind),
+          JSON.stringify(signedEvent.tags),
+          signedEvent.content as `0x${string}`,
+          signatureBytes,
+        ],
+      });
 
-      if (!res.ok) {
-        notification.error(resJson.error || "Errore nella verifica");
+      notification.success("Linkr creato con successo!");
+      setResponse({
+        message: "Evento firmato e salvato su smart contract.",
+        eventId: signedEvent.id,
+        pubkey: signedEvent.pubkey,
+        signature: signedEvent.sig,
+      });
+    } catch (error) {
+      console.error("Errore durante la creazione del linkr:", error);
+      if (error instanceof Error) {
+        notification.error(`Errore durante la creazione del linkr: ${error.message}`);
       } else {
-        setResponse(resJson);
-        notification.success("Verifica completata!");
-
-        try {
-          await pushLinkr({
-            functionName: "pushLinkr",
-            args: [
-              resJson.message,
-              `0x${resJson.signature.r}`,
-              `0x${resJson.signature.s}`,
-              resJson.signature.v,
-              resJson.signer,
-            ],
-          });
-          notification.success("Linkr creato con successo!");
-        } catch (error) {
-          console.error("Errore nella creazione del linkr:", error);
-          notification.error("Errore nella creazione del linkr");
-        }
+        notification.error(`Errore durante la creazione del linkr: ${String(error)}`);
       }
-    } catch (err) {
-      console.error(err);
-      notification.error("Errore nel collegamento");
     } finally {
       setLoading(false);
     }
@@ -174,15 +194,20 @@ export const NostrLinkrButton = ({ address }: { address: string }) => {
 
       {response && (
         <div className="mt-4 p-3 bg-base-100 rounded-md text-sm break-all">
-          <p>
-            <strong>📜 Message:</strong>
+          <p className="mb-2">
+            <strong>📜 Status:</strong> {response.message}
           </p>
-          <pre className="whitespace-pre-wrap">{response.message}</pre>
-          <p>
-            <strong>✍️ Sign:</strong> {response.signature.r} {response.signature.s} {response.signature.v}
+          <p className="mb-2">
+            <strong>🆔 Event ID:</strong>
+            <span className="font-mono text-xs block mt-1">{response.eventId}</span>
+          </p>
+          <p className="mb-2">
+            <strong>🔑 Pubkey:</strong>
+            <span className="font-mono text-xs block mt-1">{response.pubkey}</span>
           </p>
           <p>
-            <strong>🧾 Signer:</strong> {response.signer}
+            <strong>✍️ Signature:</strong>
+            <span className="font-mono text-xs block mt-1">{response.signature}</span>
           </p>
         </div>
       )}
