@@ -30,14 +30,13 @@ export default function Feed() {
         relay,
         subscriptionActive,
         setSubscriptionActive,
-        connectToRelay,
         handleRelayMessage,
         MAX_RECONNECT_ATTEMPTS,
     } = useNostrConnection();
 
     const [newNote, setNewNote] = useState("");
     const [showPostForm, setShowPostForm] = useState(false);
-    const [followedPubkeys, setFollowedPubkeys] = useState<Set<string>>(new Set());
+    const [, setFollowedPubkeys] = useState<Set<string>>(new Set());
 
     /**
      * Load following list from localStorage

@@ -73,7 +73,7 @@ export default function FollowingFeed() {
      */
     const followingFeedMessageHandler = useCallback(
         (message: any[]) => {
-            const [type, subscriptionId, event] = message;
+            const [type, _subscriptionId, event] = message;
 
             if (type === "EVENT" && event.kind === 1) {
                 // Only add text notes from followed users
