@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -12,6 +12,7 @@ import {
   LinkIcon,
   UserMinusIcon,
   UserPlusIcon,
+  ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 import { EventCard } from "~~/components/nostreum/EventCard";
 import { Address } from "~~/components/scaffold-eth";
@@ -28,6 +29,7 @@ import { notification } from "~~/utils/scaffold-eth/notification";
  * - Ethereum address verification
  * - User's posts
  * - Follow/unfollow functionality
+ * - Handles fallback cases for missing profiles
  */
 export default function ProfileDetail() {
   const params = useParams();
@@ -41,32 +43,75 @@ export default function ProfileDetail() {
   const [followedPubkeys, setFollowedPubkeys] = useState<Set<string>>(new Set());
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [postsLoaded, setPostsLoaded] = useState(false);
+  const [profileExists, setProfileExists] = useState<boolean | null>(null);
+  const [loadAttempts, setLoadAttempts] = useState(0);
+  const [hasRedirected, setHasRedirected] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Get Ethereum address for this pubkey
+  // Use refs to track timeouts and prevent memory leaks
+  const profileTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const redirectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isMountedRef = useRef(true);
+
+  // Get Ethereum address for this pubkey - only if valid pubkey
+  const validPubkeyForContract = pubkey && isValidPubkey(pubkey) ? `0x${pubkey}` as `0x${string}` : undefined;
   const { data: ethereumAddress } = useScaffoldReadContract({
     contractName: "NostrLinkr",
     functionName: "pubkeyAddress",
-    args: [pubkey ? `0x${pubkey}` : undefined],
+    args: [validPubkeyForContract],
   });
 
   /**
    * Validate pubkey format
    */
-  const isValidPubkey = (key: string): boolean => {
+  function isValidPubkey(key: string): boolean {
     if (!key) return false;
     const cleanKey = key.trim();
     return /^[a-fA-F0-9]{64}$/.test(cleanKey);
-  };
+  }
+
+  /**
+   * Check if this is the fallback pubkey (all zeros)
+   */
+  function isFallbackPubkey(key: string): boolean {
+    return key === "0000000000000000000000000000000000000000000000000000000000000000";
+  }
+
+  /**
+   * Safe redirect function to prevent multiple redirects and loops
+   */
+  const safeRedirect = useCallback((url: string, delay: number = 0) => {
+    if (hasRedirected || !isMountedRef.current) return;
+
+    console.log(`Redirecting to: ${url} after ${delay}ms`);
+    setHasRedirected(true);
+
+    const redirect = () => {
+      if (isMountedRef.current) {
+        router.push(url);
+      }
+    };
+
+    if (delay > 0) {
+      redirectTimeoutRef.current = setTimeout(redirect, delay);
+    } else {
+      redirect();
+    }
+  }, [hasRedirected, router]);
 
   /**
    * Load following list from localStorage
    */
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     try {
       const savedFollowing = localStorage.getItem("nostr-following");
       if (savedFollowing) {
         const followingArray = JSON.parse(savedFollowing);
-        setFollowedPubkeys(new Set(followingArray));
+        if (Array.isArray(followingArray)) {
+          setFollowedPubkeys(new Set(followingArray));
+        }
       }
     } catch (error) {
       console.error("Error loading following list:", error);
@@ -78,61 +123,78 @@ export default function ProfileDetail() {
    */
   const profileMessageHandler = useCallback(
     (message: any[]) => {
-      const [type, subscriptionId, event] = message;
+      if (!isMountedRef.current) return;
 
-      if (type === "EVENT") {
-        if (event.kind === 0 && event.pubkey === pubkey) {
-          // Profile metadata for this specific user
-          try {
-            const profileData = JSON.parse(event.content);
-            const newProfile: AuthorProfile = {
-              pubkey: event.pubkey,
-              name: profileData.name || profileData.display_name,
-              about: profileData.about,
-              picture: profileData.picture,
-              isFollowed: followedPubkeys.has(event.pubkey),
-            };
-            setProfile(newProfile);
-            setProfileLoaded(true);
-          } catch (error) {
-            console.error("Error parsing profile metadata:", error);
+      try {
+        const [type, subscriptionId, event] = message;
+
+        if (type === "EVENT" && event) {
+          if (event.kind === 0 && event.pubkey === pubkey) {
+            // Profile metadata for this specific user
+            try {
+              const profileData = JSON.parse(event.content || "{}");
+              const newProfile: AuthorProfile = {
+                pubkey: event.pubkey,
+                name: profileData.name || profileData.display_name || undefined,
+                about: profileData.about || undefined,
+                picture: profileData.picture || undefined,
+                isFollowed: followedPubkeys.has(event.pubkey),
+              };
+              setProfile(newProfile);
+              setProfileExists(true);
+
+              // Clear any pending timeout since we found a profile
+              if (profileTimeoutRef.current) {
+                clearTimeout(profileTimeoutRef.current);
+                profileTimeoutRef.current = null;
+              }
+            } catch (error) {
+              console.error("Error parsing profile metadata:", error);
+            }
+          } else if (event.kind === 1 && event.pubkey === pubkey) {
+            // Posts from this specific user
+            setUserPosts(prev => {
+              const exists = prev.some(e => e.id === event.id);
+              if (exists) return prev;
+              const newPosts = [...prev, event].sort((a, b) => b.created_at - a.created_at);
+              return newPosts;
+            });
           }
-        } else if (event.kind === 1 && event.pubkey === pubkey) {
-          // Posts from this specific user
-          setUserPosts(prev => {
-            const exists = prev.some(e => e.id === event.id);
-            if (exists) return prev;
-            const newPosts = [...prev, event].sort((a, b) => b.created_at - a.created_at);
-            return newPosts;
-          });
+        } else if (type === "EOSE") {
+          if (subscriptionId === "user-profile") {
+            setProfileLoaded(true);
+          } else if (subscriptionId === "user-posts") {
+            setPostsLoaded(true);
+          }
+          setLoading(false);
         }
-      } else if (type === "EOSE") {
-        if (subscriptionId === "user-profile") {
-          setProfileLoaded(true);
-        } else if (subscriptionId === "user-posts") {
-          setPostsLoaded(true);
-        }
-        setLoading(false);
+      } catch (error) {
+        console.error("Error in profileMessageHandler:", error);
       }
     },
-    [pubkey, followedPubkeys],
+    [pubkey, followedPubkeys, setLoading],
   );
 
   /**
    * Load profile data and posts
    */
   const loadProfile = useCallback(() => {
-    if (!relay.connected || !relay.ws || !pubkey) {
-      setTimeout(() => {
-        notification.error("Not connected to relay or invalid pubkey");
-      }, 0);
+    if (!relay.connected || !relay.ws || !pubkey || hasRedirected) {
+      if (!relay.connected) {
+        notification.error("Not connected to relay");
+      }
       return;
     }
 
     if (!isValidPubkey(pubkey)) {
-      setTimeout(() => {
-        notification.error("Invalid pubkey format");
-      }, 0);
+      notification.error("Invalid pubkey format");
+      safeRedirect(`/profile/fallback?reason=invalid_pubkey&input=${encodeURIComponent(pubkey)}`);
+      return;
+    }
+
+    // Check if this is the fallback pubkey (all zeros)
+    if (isFallbackPubkey(pubkey)) {
+      safeRedirect("/profile/fallback?reason=no_link");
       return;
     }
 
@@ -141,55 +203,62 @@ export default function ProfileDetail() {
     setProfile(null);
     setProfileLoaded(false);
     setPostsLoaded(false);
+    setProfileExists(null);
+    setLoadAttempts(prev => prev + 1);
 
     try {
       // Close existing subscriptions
-      relay.ws.send(JSON.stringify(["CLOSE", "user-profile"]));
-      relay.ws.send(JSON.stringify(["CLOSE", "user-posts"]));
+      if (relay.ws.readyState === WebSocket.OPEN) {
+        relay.ws.send(JSON.stringify(["CLOSE", "user-profile"]));
+        relay.ws.send(JSON.stringify(["CLOSE", "user-posts"]));
 
-      // Get profile metadata
-      const profileSubscription = JSON.stringify([
-        "REQ",
-        "user-profile",
-        {
-          kinds: [0],
-          authors: [pubkey],
-          limit: 1,
-        },
-      ]);
+        // Get profile metadata
+        const profileSubscription = JSON.stringify([
+          "REQ",
+          "user-profile",
+          {
+            kinds: [0],
+            authors: [pubkey],
+            limit: 1,
+          },
+        ]);
 
-      relay.ws.send(profileSubscription);
+        relay.ws.send(profileSubscription);
 
-      // Get user's posts
-      const postsSubscription = JSON.stringify([
-        "REQ",
-        "user-posts",
-        {
-          kinds: [1],
-          authors: [pubkey],
-          limit: 50,
-        },
-      ]);
+        // Get user's posts
+        const postsSubscription = JSON.stringify([
+          "REQ",
+          "user-posts",
+          {
+            kinds: [1],
+            authors: [pubkey],
+            limit: 50,
+          },
+        ]);
 
-      relay.ws.send(postsSubscription);
+        relay.ws.send(postsSubscription);
 
-      setTimeout(() => {
         notification.success("Loading profile...");
-      }, 0);
+
+        // Set a timeout to check if profile was found
+        profileTimeoutRef.current = setTimeout(() => {
+          if (!profile && profileLoaded && !hasRedirected && isMountedRef.current) {
+            setProfileExists(false);
+          }
+        }, 10000); // Wait 10 seconds before considering profile not found
+      }
     } catch (error) {
       console.error("Error loading profile:", error);
-      setTimeout(() => {
-        notification.error("Failed to load profile");
-      }, 0);
+      notification.error("Failed to load profile");
       setLoading(false);
     }
-  }, [relay.connected, relay.ws, pubkey, setLoading]);
+  }, [relay.connected, relay.ws, pubkey, setLoading, safeRedirect, profile, profileLoaded, hasRedirected]);
 
   /**
    * Toggle follow status
    */
   const toggleFollow = useCallback(() => {
-    if (!pubkey) return;
+    if (!pubkey || typeof window === 'undefined') return;
 
     const isCurrentlyFollowed = followedPubkeys.has(pubkey);
 
@@ -214,32 +283,31 @@ export default function ProfileDetail() {
 
     // Update profile follow status
     if (profile) {
-      setProfile((prev: any) =>
+      setProfile(prev =>
         prev
           ? {
-              ...prev,
-              isFollowed: !isCurrentlyFollowed,
-            }
+            ...prev,
+            isFollowed: !isCurrentlyFollowed,
+          }
           : null,
       );
     }
 
-    // Show notification after state update
-    setTimeout(() => {
-      if (isCurrentlyFollowed) {
-        notification.success("Unfollowed user");
-      } else {
-        notification.success("Following user");
-      }
-    }, 0);
+    // Show notification
+    if (isCurrentlyFollowed) {
+      notification.success("Unfollowed user");
+    } else {
+      notification.success("Following user");
+    }
   }, [pubkey, profile, followedPubkeys]);
 
   /**
    * Override connection to use custom message handler
    */
   useEffect(() => {
-    if (relay.connected && relay.ws) {
+    if (relay.connected && relay.ws && !hasRedirected) {
       const originalOnMessage = relay.ws.onmessage;
+
       relay.ws.onmessage = event => {
         try {
           const message = JSON.parse(event.data);
@@ -250,35 +318,120 @@ export default function ProfileDetail() {
       };
 
       return () => {
-        if (relay.ws) {
+        if (relay.ws && relay.ws.onmessage) {
           relay.ws.onmessage = originalOnMessage;
         }
       };
     }
-  }, [relay.connected, relay.ws, profileMessageHandler]);
+  }, [relay.connected, relay.ws, profileMessageHandler, hasRedirected]);
 
   /**
-   * Load profile when component mounts or pubkey changes
+   * Initial setup and validation
    */
   useEffect(() => {
-    if (pubkey && relay.connected) {
+    isMountedRef.current = true;
+
+    if (pubkey && !isInitialized) {
+      // Reset states for new pubkey
+      setHasRedirected(false);
+      setIsInitialized(true);
+
+      // Early validation
+      if (!isValidPubkey(pubkey)) {
+        console.log("Invalid pubkey detected:", pubkey);
+        safeRedirect(`/profile/fallback?reason=invalid_pubkey&input=${encodeURIComponent(pubkey)}`);
+        return;
+      }
+
+      if (isFallbackPubkey(pubkey)) {
+        console.log("Fallback pubkey detected");
+        safeRedirect("/profile/fallback?reason=no_link");
+        return;
+      }
+    }
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, [pubkey, isInitialized, safeRedirect]);
+
+  /**
+   * Load profile when ready
+   */
+  useEffect(() => {
+    if (pubkey && relay.connected && isInitialized && !hasRedirected && isValidPubkey(pubkey) && !isFallbackPubkey(pubkey)) {
       loadProfile();
     }
-  }, [pubkey, relay.connected, loadProfile]);
+  }, [pubkey, relay.connected, isInitialized, hasRedirected, loadProfile]);
 
   /**
-   * Redirect if invalid pubkey
+   * Handle profile not found case
    */
   useEffect(() => {
-    if (pubkey && !isValidPubkey(pubkey)) {
-      setTimeout(() => {
-        notification.error("Invalid pubkey format. Redirecting to search...");
-        router.push("/profile");
-      }, 0);
+    if (profileExists === false && profileLoaded && loadAttempts > 0 && !hasRedirected && isInitialized) {
+      console.log("Profile not found, redirecting to fallback");
+      notification.info("Profile not found. Redirecting to fallback page...");
+      safeRedirect(`/profile/fallback?reason=not_found&input=${encodeURIComponent(pubkey)}`, 1000);
     }
-  }, [pubkey, router]);
+  }, [profileExists, profileLoaded, loadAttempts, pubkey, safeRedirect, hasRedirected, isInitialized]);
 
-  if (!pubkey || !isValidPubkey(pubkey)) {
+  /**
+   * Cleanup timeouts on unmount
+   */
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+      if (profileTimeoutRef.current) {
+        clearTimeout(profileTimeoutRef.current);
+      }
+      if (redirectTimeoutRef.current) {
+        clearTimeout(redirectTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  /**
+   * Reset state when pubkey changes
+   */
+  useEffect(() => {
+    if (pubkey) {
+      setHasRedirected(false);
+      setIsInitialized(false);
+      setProfileExists(null);
+      setProfile(null);
+      setUserPosts([]);
+      setProfileLoaded(false);
+      setPostsLoaded(false);
+      setLoadAttempts(0);
+
+      // Clear timeouts
+      if (profileTimeoutRef.current) {
+        clearTimeout(profileTimeoutRef.current);
+        profileTimeoutRef.current = null;
+      }
+      if (redirectTimeoutRef.current) {
+        clearTimeout(redirectTimeoutRef.current);
+        redirectTimeoutRef.current = null;
+      }
+    }
+  }, [pubkey]);
+
+  // Loading states and early returns
+  if (!pubkey) {
+    return (
+      <div className="max-w-2xl mx-auto p-4">
+        <div className="text-center py-8">
+          <p className="text-error mb-4">No pubkey provided</p>
+          <Link href="/profile" className="btn btn-primary">
+            <ArrowLeftIcon className="w-4 h-4" />
+            Back to Search
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isValidPubkey(pubkey)) {
     return (
       <div className="max-w-2xl mx-auto p-4">
         <div className="text-center py-8">
@@ -292,8 +445,23 @@ export default function ProfileDetail() {
     );
   }
 
+  // Show loading state for fallback pubkey while redirecting
+  if (isFallbackPubkey(pubkey)) {
+    return (
+      <div className="max-w-2xl mx-auto p-4">
+        <div className="text-center py-8">
+          <ArrowPathIcon className="w-8 h-8 animate-spin mx-auto mb-2" />
+          <p>Redirecting to fallback page...</p>
+        </div>
+      </div>
+    );
+  }
+
   const displayName = profile?.name || `${pubkey.slice(0, 8)}...${pubkey.slice(-4)}`;
   const isFollowed = followedPubkeys.has(pubkey);
+
+  // Show warning if profile might not exist
+  const showProfileWarning = profileLoaded && !profile && !loading && !hasRedirected;
 
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-6">
@@ -314,20 +482,44 @@ export default function ProfileDetail() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div
-                className={`w-3 h-3 rounded-full ${
-                  relay.connected ? "bg-success" : relay.connecting ? "bg-warning animate-pulse" : "bg-error"
-                }`}
+                className={`w-3 h-3 rounded-full ${relay.connected ? "bg-success" : relay.connecting ? "bg-warning animate-pulse" : "bg-error"
+                  }`}
               ></div>
               <span className="text-sm">
                 {relay.connected ? `Connected to ${relay.url}` : relay.connecting ? "Connecting..." : "Disconnected"}
               </span>
             </div>
-            <button className="btn btn-sm btn-primary" onClick={loadProfile} disabled={loading || !relay.connected}>
+            <button
+              className="btn btn-sm btn-primary"
+              onClick={() => {
+                if (!hasRedirected) {
+                  loadProfile();
+                }
+              }}
+              disabled={loading || !relay.connected || hasRedirected}
+            >
               {loading ? <ArrowPathIcon className="w-4 h-4 animate-spin" /> : "Refresh"}
             </button>
           </div>
         </div>
       </div>
+
+      {/* Profile Warning */}
+      {showProfileWarning && (
+        <div className="alert alert-warning">
+          <ExclamationTriangleIcon className="w-6 h-6" />
+          <div>
+            <h3 className="font-bold">Profile Not Found</h3>
+            <div className="text-xs">
+              No profile metadata found for this pubkey. The user may not have published profile information yet,
+              or they might not exist on the connected relays.
+            </div>
+          </div>
+          <Link href={`/profile/fallback?reason=not_found&input=${encodeURIComponent(pubkey)}`} className="btn btn-sm">
+            More Info
+          </Link>
+        </div>
+      )}
 
       {/* Profile Information */}
       <div className="card bg-base-100 shadow-md">
@@ -371,9 +563,20 @@ export default function ProfileDetail() {
                         <span>ETH Verified</span>
                       </div>
                     )}
+
+                    {!profile && profileLoaded && (
+                      <div className="flex items-center gap-1 text-xs bg-warning text-warning-content px-2 py-1 rounded-full">
+                        <ExclamationTriangleIcon className="w-3 h-3" />
+                        <span>No Profile Data</span>
+                      </div>
+                    )}
                   </div>
 
-                  <button className={`btn btn-sm ${isFollowed ? "btn-error" : "btn-primary"}`} onClick={toggleFollow}>
+                  <button
+                    className={`btn btn-sm ${isFollowed ? "btn-error" : "btn-primary"}`}
+                    onClick={toggleFollow}
+                    disabled={hasRedirected}
+                  >
                     {isFollowed ? (
                       <>
                         <UserMinusIcon className="w-4 h-4" />
@@ -450,6 +653,11 @@ export default function ProfileDetail() {
         ) : userPosts.length === 0 ? (
           <div className="text-center py-8 bg-base-200 rounded-xl">
             <p className="text-base-content/70">No posts found for this user.</p>
+            {!profile && profileLoaded && (
+              <p className="text-sm text-base-content/50 mt-2">
+                This might indicate that the profile doesn't exist or hasn't been active.
+              </p>
+            )}
           </div>
         ) : (
           userPosts.map(event => (
