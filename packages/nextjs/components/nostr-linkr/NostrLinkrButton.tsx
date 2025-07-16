@@ -95,7 +95,13 @@ export const NostrLinkrButton = ({ address }: { address: string }) => {
         try {
           await pushLinkr({
             functionName: "pushLinkr",
-            args: [resJson.message, resJson.signature.r, resJson.signature.s, resJson.signature.v, resJson.signer],
+            args: [
+              resJson.message,
+              `0x${resJson.signature.r}`,
+              `0x${resJson.signature.s}`,
+              resJson.signature.v,
+              resJson.signer,
+            ],
           });
           notification.success("Linkr creato con successo!");
         } catch (error) {
@@ -173,7 +179,7 @@ export const NostrLinkrButton = ({ address }: { address: string }) => {
           </p>
           <pre className="whitespace-pre-wrap">{response.message}</pre>
           <p>
-            <strong>✍️ Sign:</strong> {response.signature}
+            <strong>✍️ Sign:</strong> {response.signature.r} {response.signature.s} {response.signature.v}
           </p>
           <p>
             <strong>🧾 Signer:</strong> {response.signer}
