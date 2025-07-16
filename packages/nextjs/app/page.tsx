@@ -4,8 +4,8 @@ import Link from "next/link";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { NostrFeedReader } from "~~/components/nostr-linkr/NostrFeedReader";
 import { NostrLinkrButton } from "~~/components/nostr-linkr/NostrLinkrButton";
+import { NostrFeedReader } from "~~/components/nostreum/NostrFeedReader";
 
 /**
  * Home Page Component

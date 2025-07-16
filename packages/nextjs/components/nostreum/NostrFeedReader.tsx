@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getEventHash } from "nostr-tools";
@@ -53,6 +53,9 @@ interface RelayConnection {
   ws: WebSocket | null;
   url: string;
   connected: boolean;
+  connecting: boolean;
+  lastConnectAttempt: number;
+  reconnectAttempts: number;
 }
 
 /**
@@ -65,19 +68,33 @@ interface RelayConnection {
  * - Profile viewing with links
  * - Following/unfollowing users
  * - Posting new notes
+ * - Safe relay connection handling
  */
 export const NostrFeedReader = () => {
   // State for managing events and UI
   const [events, setEvents] = useState<NostrEvent[]>([]);
   const [authors, setAuthors] = useState<Map<string, AuthorProfile>>(new Map());
   const [loading, setLoading] = useState(false);
-  const [relay, setRelay] = useState<RelayConnection>({ ws: null, url: "wss://relay.damus.io", connected: false });
+  const [relay, setRelay] = useState<RelayConnection>({
+    ws: null,
+    url: "wss://relay.damus.io",
+    connected: false,
+    connecting: false,
+    lastConnectAttempt: 0,
+    reconnectAttempts: 0,
+  });
   const [newNote, setNewNote] = useState("");
   const [showPostForm, setShowPostForm] = useState(false);
   const [followedPubkeys, setFollowedPubkeys] = useState<Set<string>>(new Set());
   const [subscriptionActive, setSubscriptionActive] = useState(false);
 
-  // Default relay URLs for connecting to Nostr network
+  // Refs to prevent stale closures and manage cleanup
+  const relayRef = useRef<RelayConnection>(relay);
+  const mountedRef = useRef(true);
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const connectPromiseRef = useRef<Promise<void> | null>(null);
+
+  // Constants for connection management
   const DEFAULT_RELAYS = [
     "wss://relay.damus.io",
     "wss://nos.lol",
@@ -85,9 +102,18 @@ export const NostrFeedReader = () => {
     "wss://nostr-pub.wellorder.net",
   ];
 
+  const CONNECTION_TIMEOUT = 10000; // 10 seconds
+  const RECONNECT_DELAY = 2000; // 2 seconds
+  const MAX_RECONNECT_ATTEMPTS = 5;
+  const MIN_RECONNECT_INTERVAL = 1000; // Prevent rapid reconnections
+
+  // Update ref when relay state changes
+  useEffect(() => {
+    relayRef.current = relay;
+  }, [relay]);
+
   /**
    * Hook to read Ethereum address for a given Nostr pubkey
-   * This will be called dynamically for each author
    */
   const useEthereumAddress = (pubkey: string) => {
     const { data: ethereumAddress } = useScaffoldReadContract({
@@ -99,16 +125,44 @@ export const NostrFeedReader = () => {
   };
 
   /**
+   * Clean up existing WebSocket connection
+   */
+  const cleanupConnection = useCallback(() => {
+    if (relayRef.current.ws) {
+      const ws = relayRef.current.ws;
+
+      // Remove event listeners to prevent callbacks
+      ws.onopen = null;
+      ws.onmessage = null;
+      ws.onerror = null;
+      ws.onclose = null;
+
+      // Close connection if not already closed
+      if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+        ws.close();
+      }
+    }
+
+    // Clear reconnect timeout
+    if (reconnectTimeoutRef.current) {
+      clearTimeout(reconnectTimeoutRef.current);
+      reconnectTimeoutRef.current = null;
+    }
+
+    // Clear connect promise
+    connectPromiseRef.current = null;
+  }, []);
+
+  /**
    * Handle text note events (kind 1)
-   * Adds new notes to the feed and sorts by timestamp
    */
   const handleTextNote = useCallback((event: NostrEvent) => {
+    if (!mountedRef.current) return;
+
     setEvents(prev => {
-      // Check if event already exists
       const exists = prev.some(e => e.id === event.id);
       if (exists) return prev;
 
-      // Add new event and sort by timestamp (newest first)
       const newEvents = [...prev, event].sort((a, b) => b.created_at - a.created_at);
       return newEvents;
     });
@@ -116,122 +170,262 @@ export const NostrFeedReader = () => {
 
   /**
    * Handle profile metadata events (kind 0)
-   * Updates author information with profile data
    */
-  const handleProfileMetadata = useCallback(
-    (event: NostrEvent) => {
-      try {
-        const profileData = JSON.parse(event.content);
+  const handleProfileMetadata = useCallback((event: NostrEvent) => {
+    if (!mountedRef.current) return;
 
-        setAuthors(prev => {
-          const newAuthors = new Map(prev);
-          const existingAuthor = newAuthors.get(event.pubkey) || {
-            pubkey: event.pubkey,
-            isFollowed: followedPubkeys.has(event.pubkey),
-          };
+    try {
+      const profileData = JSON.parse(event.content);
 
-          newAuthors.set(event.pubkey, {
-            ...existingAuthor,
-            name: profileData.name || profileData.display_name,
-            about: profileData.about,
-            picture: profileData.picture,
-          });
+      setAuthors(prev => {
+        const newAuthors = new Map(prev);
+        const existingAuthor = newAuthors.get(event.pubkey) || {
+          pubkey: event.pubkey,
+          isFollowed: false,
+        };
 
-          return newAuthors;
+        newAuthors.set(event.pubkey, {
+          ...existingAuthor,
+          name: profileData.name || profileData.display_name,
+          about: profileData.about,
+          picture: profileData.picture,
         });
-      } catch (error) {
-        console.error("Error parsing profile metadata:", error);
-      }
-    },
-    [followedPubkeys],
-  );
+
+        return newAuthors;
+      });
+    } catch (error) {
+      console.error("Error parsing profile metadata:", error);
+    }
+  }, []);
 
   /**
    * Handle incoming messages from Nostr relay
-   * Processes different types of events and updates state accordingly
    */
   const handleRelayMessage = useCallback(
     (message: any[]) => {
+      if (!mountedRef.current) return;
+
       const [type, subscriptionId, event] = message;
 
       if (type === "EVENT") {
         if (event.kind === 1) {
-          // Text note event - only add if from followed user
-          if (followedPubkeys.has(event.pubkey)) {
-            handleTextNote(event);
-          }
+          // Only add text notes from followed users
+          setFollowedPubkeys(current => {
+            if (current.has(event.pubkey)) {
+              handleTextNote(event);
+            }
+            return current;
+          });
         } else if (event.kind === 0) {
-          // Profile metadata event
           handleProfileMetadata(event);
         }
       } else if (type === "EOSE") {
-        // End of stored events
         console.log(`End of stored events for subscription: ${subscriptionId}`);
         if (subscriptionId === "following-feed" || subscriptionId === "following-profiles") {
           setLoading(false);
         }
       }
     },
-    [followedPubkeys, handleTextNote, handleProfileMetadata],
+    [handleTextNote, handleProfileMetadata],
   );
 
   /**
-   * Connect to a Nostr relay (without auto-subscribing)
-   * Only establishes connection, subscription happens on manual refresh
+   * Connect to a Nostr relay with proper error handling and cleanup
    */
   const connectToRelay = useCallback(
-    async (relayUrl: string) => {
-      try {
-        setLoading(true);
+    async (relayUrl: string, isReconnect: boolean = false) => {
+      // Check if component is still mounted
+      if (!mountedRef.current) {
+        console.log("Component unmounted, skipping connection");
+        return;
+      }
 
-        // Close existing connection if any
-        if (relay.ws && relay.ws.readyState === WebSocket.OPEN) {
-          relay.ws.close();
+      // Prevent multiple simultaneous connections
+      if (connectPromiseRef.current) {
+        return connectPromiseRef.current;
+      }
+
+      // Prevent rapid reconnection attempts
+      const now = Date.now();
+      if (now - relayRef.current.lastConnectAttempt < MIN_RECONNECT_INTERVAL) {
+        return;
+      }
+
+      // Check if already connected to this relay
+      if (relayRef.current.connected && relayRef.current.url === relayUrl) {
+        return;
+      }
+
+      const connectPromise = new Promise<void>((resolve, reject) => {
+        // Double-check component is still mounted
+        if (!mountedRef.current) {
+          reject(new Error("Component unmounted"));
+          return;
         }
 
-        const ws = new WebSocket(relayUrl);
+        // Clean up existing connection
+        cleanupConnection();
 
-        ws.onopen = () => {
-          console.log(`Connected to relay: ${relayUrl}`);
-          setRelay({ ws, url: relayUrl, connected: true });
-          notification.success(`Connected to ${relayUrl}`);
-        };
+        setRelay(prev => ({
+          ...prev,
+          connecting: true,
+          lastConnectAttempt: now,
+          reconnectAttempts: isReconnect ? prev.reconnectAttempts + 1 : 0,
+        }));
 
-        ws.onmessage = event => {
-          try {
-            const message = JSON.parse(event.data);
-            handleRelayMessage(message);
-          } catch (error) {
-            console.error("Error parsing relay message:", error);
+        if (!isReconnect) {
+          setLoading(true);
+        }
+
+        try {
+          const ws = new WebSocket(relayUrl);
+
+          // Set connection timeout
+          const connectionTimeout = setTimeout(() => {
+            if (!mountedRef.current) return;
+
+            if (ws.readyState === WebSocket.CONNECTING) {
+              ws.close();
+              reject(new Error("Connection timeout"));
+            }
+          }, CONNECTION_TIMEOUT);
+
+          ws.onopen = () => {
+            if (!mountedRef.current) {
+              ws.close();
+              reject(new Error("Component unmounted during connection"));
+              return;
+            }
+
+            clearTimeout(connectionTimeout);
+            console.log(`Connected to relay: ${relayUrl}`);
+
+            setRelay(prev => ({
+              ...prev,
+              ws,
+              url: relayUrl,
+              connected: true,
+              connecting: false,
+              reconnectAttempts: 0,
+            }));
+
+            if (!isReconnect) {
+              notification.success(`Connected to ${relayUrl}`);
+            }
+
+            resolve();
+          };
+
+          ws.onmessage = event => {
+            if (!mountedRef.current) return;
+
+            try {
+              const message = JSON.parse(event.data);
+              handleRelayMessage(message);
+            } catch (error) {
+              console.error("Error parsing relay message:", error);
+            }
+          };
+
+          ws.onerror = error => {
+            clearTimeout(connectionTimeout);
+            console.error("WebSocket error:", error);
+
+            if (!mountedRef.current) {
+              reject(new Error("Component unmounted"));
+              return;
+            }
+
+            if (!isReconnect) {
+              notification.error(`Failed to connect to relay: ${relayUrl}`);
+            }
+
+            reject(error);
+          };
+
+          ws.onclose = event => {
+            clearTimeout(connectionTimeout);
+            console.log(`Disconnected from relay: ${relayUrl}`, event.code, event.reason);
+
+            if (!mountedRef.current) {
+              reject(new Error("Component unmounted"));
+              return;
+            }
+
+            setRelay(prev => ({
+              ...prev,
+              ws: null,
+              connected: false,
+              connecting: false,
+            }));
+
+            setSubscriptionActive(false);
+
+            // Attempt reconnection if it was an unexpected disconnection and component is still mounted
+            if (event.code !== 1000 && event.code !== 1001 && mountedRef.current) {
+              const currentRelay = relayRef.current;
+              if (currentRelay.reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                console.log(`Attempting reconnection in ${RECONNECT_DELAY}ms...`);
+
+                reconnectTimeoutRef.current = setTimeout(() => {
+                  // Double-check component is still mounted before reconnecting
+                  if (mountedRef.current) {
+                    connectToRelay(relayUrl, true).catch(err => {
+                      console.error("Reconnection failed:", err);
+                    });
+                  }
+                }, RECONNECT_DELAY);
+              } else {
+                console.log("Max reconnection attempts reached");
+                if (mountedRef.current) {
+                  notification.error("Connection lost. Please try connecting manually.");
+                }
+              }
+            }
+
+            if (!isReconnect) {
+              reject(new Error("Connection closed"));
+            }
+          };
+        } catch (error) {
+          console.error("Error creating WebSocket:", error);
+
+          if (mountedRef.current) {
+            setRelay(prev => ({
+              ...prev,
+              connecting: false,
+            }));
           }
-        };
 
-        ws.onerror = error => {
-          console.error("WebSocket error:", error);
-          notification.error(`Failed to connect to relay: ${relayUrl}`);
-        };
+          reject(error);
+        } finally {
+          if (!isReconnect && mountedRef.current) {
+            setLoading(false);
+          }
+        }
+      });
 
-        ws.onclose = () => {
-          console.log(`Disconnected from relay: ${relayUrl}`);
-          setRelay(prev => ({ ...prev, connected: false }));
-          setSubscriptionActive(false);
-        };
+      connectPromiseRef.current = connectPromise;
+
+      try {
+        await connectPromise;
       } catch (error) {
-        console.error("Error connecting to relay:", error);
-        notification.error("Failed to connect to Nostr relay");
+        // Only log if component is still mounted
+        if (mountedRef.current) {
+          console.error("Connection failed:", error);
+        }
       } finally {
-        setLoading(false);
+        connectPromiseRef.current = null;
       }
     },
-    [relay.ws, handleRelayMessage],
+    [cleanupConnection, handleRelayMessage],
   );
 
   /**
    * Manual refresh function - fetches posts from followed users only
-   * This is the only way to update the feed
    */
   const refreshFeed = useCallback(() => {
-    if (!relay.ws || !relay.connected) {
+    if (!relay.connected || !relay.ws) {
       notification.error("Not connected to relay. Please connect first.");
       return;
     }
@@ -242,33 +436,36 @@ export const NostrFeedReader = () => {
     }
 
     setLoading(true);
-    setEvents([]); // Clear existing events
+    setEvents([]);
     setSubscriptionActive(true);
 
     try {
-      // Convert followed pubkeys to array for the filter
       const followedArray = Array.from(followedPubkeys);
 
-      // Subscribe to recent text notes from followed users only
+      // Close existing subscriptions
+      relay.ws.send(JSON.stringify(["CLOSE", "following-feed"]));
+      relay.ws.send(JSON.stringify(["CLOSE", "following-profiles"]));
+
+      // Subscribe to recent text notes from followed users
       const subscriptionMessage = JSON.stringify([
         "REQ",
         "following-feed",
         {
-          kinds: [1], // Text notes only
-          authors: followedArray, // Only from followed users
-          limit: 100, // Limit to 100 recent notes
-          since: Math.floor(Date.now() / 1000) - 7 * 24 * 60 * 60, // Last 7 days
+          kinds: [1],
+          authors: followedArray,
+          limit: 100,
+          since: Math.floor(Date.now() / 1000) - 7 * 24 * 60 * 60,
         },
       ]);
 
       relay.ws.send(subscriptionMessage);
 
-      // Also get profile metadata for followed users
+      // Get profile metadata for followed users
       const profileSubscription = JSON.stringify([
         "REQ",
         "following-profiles",
         {
-          kinds: [0], // Profile metadata
+          kinds: [0],
           authors: followedArray,
         },
       ]);
@@ -281,11 +478,10 @@ export const NostrFeedReader = () => {
       notification.error("Failed to refresh feed");
       setLoading(false);
     }
-  }, [relay.ws, relay.connected, followedPubkeys]);
+  }, [relay.connected, relay.ws, followedPubkeys]);
 
   /**
    * Post a new note to the Nostr network
-   * Creates, signs, and publishes a new text note event
    */
   const postNote = async () => {
     if (!newNote.trim() || !window.nostr) {
@@ -293,13 +489,16 @@ export const NostrFeedReader = () => {
       return;
     }
 
+    if (!relay.connected || !relay.ws) {
+      notification.error("Not connected to relay. Please connect first.");
+      return;
+    }
+
     try {
       setLoading(true);
 
-      // Get user's public key
       const pubkey = await window.nostr.getPublicKey();
 
-      // Create new note event
       const noteEvent = {
         kind: 1,
         created_at: Math.floor(Date.now() / 1000),
@@ -308,30 +507,23 @@ export const NostrFeedReader = () => {
         pubkey: pubkey,
       };
 
-      // Calculate event ID
       const eventWithId = {
         ...noteEvent,
         id: getEventHash(noteEvent),
       };
 
-      // Sign the event
       const signedEvent = await window.nostr.signEvent(eventWithId);
 
-      // Publish to connected relay
-      if (relay.ws && relay.connected) {
-        const publishMessage = JSON.stringify(["EVENT", signedEvent]);
-        relay.ws.send(publishMessage);
+      const publishMessage = JSON.stringify(["EVENT", signedEvent]);
+      relay.ws.send(publishMessage);
 
-        notification.success("Note published successfully!");
-        setNewNote("");
-        setShowPostForm(false);
+      notification.success("Note published successfully!");
+      setNewNote("");
+      setShowPostForm(false);
 
-        // Add to local feed if user follows themselves or if it's their own post
-        if (followedPubkeys.has(pubkey)) {
-          handleTextNote(signedEvent);
-        }
-      } else {
-        notification.error("Not connected to any relay");
+      // Add to local feed if user follows themselves
+      if (followedPubkeys.has(pubkey)) {
+        handleTextNote(signedEvent);
       }
     } catch (error) {
       console.error("Error posting note:", error);
@@ -343,7 +535,6 @@ export const NostrFeedReader = () => {
 
   /**
    * Toggle follow status for a user
-   * Manages local follow list (in production, this would sync with Nostr contact lists)
    */
   const toggleFollow = useCallback((pubkey: string) => {
     setFollowedPubkeys(prev => {
@@ -357,7 +548,12 @@ export const NostrFeedReader = () => {
       }
 
       // Save to localStorage for persistence
-      localStorage.setItem("nostr-following", JSON.stringify(Array.from(newSet)));
+      try {
+        localStorage.setItem("nostr-following", JSON.stringify(Array.from(newSet)));
+      } catch (error) {
+        console.error("Error saving following list:", error);
+      }
+
       return newSet;
     });
 
@@ -373,21 +569,6 @@ export const NostrFeedReader = () => {
       }
       return newAuthors;
     });
-  }, []);
-
-  /**
-   * Load following list from localStorage on component mount
-   */
-  useEffect(() => {
-    const savedFollowing = localStorage.getItem("nostr-following");
-    if (savedFollowing) {
-      try {
-        const followingArray = JSON.parse(savedFollowing);
-        setFollowedPubkeys(new Set(followingArray));
-      } catch (error) {
-        console.error("Error loading following list:", error);
-      }
-    }
   }, []);
 
   /**
@@ -419,7 +600,6 @@ export const NostrFeedReader = () => {
 
     return (
       <div className="flex items-center gap-3 mb-2">
-        {/* Author avatar */}
         <div className="avatar">
           <div className="w-10 h-10 rounded-full">
             {author?.picture ? (
@@ -432,12 +612,10 @@ export const NostrFeedReader = () => {
           </div>
         </div>
 
-        {/* Author details */}
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <span className="font-semibold">{author?.name || `${pubkey.slice(0, 8)}...${pubkey.slice(-4)}`}</span>
 
-            {/* Ethereum address link indicator */}
             {ethereumAddress && ethereumAddress !== "0x0000000000000000000000000000000000000000" && (
               <div className="flex items-center gap-1 text-xs bg-primary text-primary-content px-2 py-1 rounded-full">
                 <LinkIcon className="w-3 h-3" />
@@ -447,13 +625,11 @@ export const NostrFeedReader = () => {
           </div>
         </div>
 
-        {/* View Profile Link */}
         <Link href={`/profile/${pubkey}`} className="btn btn-ghost btn-xs">
           <EyeIcon className="w-3 h-3" />
           View
         </Link>
 
-        {/* Follow/Unfollow button */}
         <button
           className={`btn btn-xs ${author?.isFollowed ? "btn-error" : "btn-primary"}`}
           onClick={() => toggleFollow(pubkey)}
@@ -483,15 +659,12 @@ export const NostrFeedReader = () => {
     return (
       <div className="card bg-base-100 shadow-md mb-4">
         <div className="card-body p-4">
-          {/* Author information */}
           <AuthorInfo pubkey={event.pubkey} />
 
-          {/* Note content */}
           <div className="text-sm mb-3">
             <p className="whitespace-pre-wrap break-words">{event.content}</p>
           </div>
 
-          {/* Event metadata */}
           <div className="text-xs text-base-content/50 space-y-1">
             <p>
               <strong>Created:</strong> {formatTimestamp(event.created_at)}
@@ -506,7 +679,6 @@ export const NostrFeedReader = () => {
             )}
           </div>
 
-          {/* Action buttons */}
           <div className="flex items-center gap-4 mt-3 pt-3 border-t border-base-300">
             <button className="btn btn-ghost btn-xs flex items-center gap-1">
               <HeartIcon className="w-4 h-4" />
@@ -522,17 +694,34 @@ export const NostrFeedReader = () => {
     );
   };
 
-  // Connect to default relay on component mount (but don't subscribe)
+  // Load following list from localStorage on component mount
   useEffect(() => {
+    try {
+      const savedFollowing = localStorage.getItem("nostr-following");
+      if (savedFollowing) {
+        const followingArray = JSON.parse(savedFollowing);
+        setFollowedPubkeys(new Set(followingArray));
+      }
+    } catch (error) {
+      console.error("Error loading following list:", error);
+    }
+  }, []);
+
+  // Connect to default relay on component mount
+  useEffect(() => {
+    // Set mounted flag
+    mountedRef.current = true;
+
+    // Connect to relay
     connectToRelay(DEFAULT_RELAYS[0]);
 
     // Cleanup on unmount
     return () => {
-      if (relay.ws) {
-        relay.ws.close();
-      }
+      mountedRef.current = false;
+      cleanupConnection();
     };
-  }, [connectToRelay, DEFAULT_RELAYS]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Intentionally empty to prevent reconnection loops
 
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-6">
@@ -547,8 +736,19 @@ export const NostrFeedReader = () => {
         <div className="card-body p-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <div className={`w-3 h-3 rounded-full ${relay.connected ? "bg-success" : "bg-error"}`}></div>
-              <span className="text-sm">{relay.connected ? `Connected to ${relay.url}` : "Disconnected"}</span>
+              <div
+                className={`w-3 h-3 rounded-full ${
+                  relay.connected ? "bg-success" : relay.connecting ? "bg-warning animate-pulse" : "bg-error"
+                }`}
+              ></div>
+              <span className="text-sm">
+                {relay.connected ? `Connected to ${relay.url}` : relay.connecting ? "Connecting..." : "Disconnected"}
+              </span>
+              {relay.reconnectAttempts > 0 && (
+                <span className="text-xs text-warning">
+                  (Attempt {relay.reconnectAttempts}/{MAX_RECONNECT_ATTEMPTS})
+                </span>
+              )}
             </div>
 
             <div className="flex items-center gap-2">
@@ -556,7 +756,11 @@ export const NostrFeedReader = () => {
                 {loading ? <ArrowPathIcon className="w-4 h-4 animate-spin" /> : "Refresh Feed"}
               </button>
 
-              <button className="btn btn-sm btn-secondary" onClick={() => setShowPostForm(!showPostForm)}>
+              <button
+                className="btn btn-sm btn-secondary"
+                onClick={() => setShowPostForm(!showPostForm)}
+                disabled={!relay.connected}
+              >
                 <PlusIcon className="w-4 h-4" />
                 Post
               </button>
@@ -577,7 +781,11 @@ export const NostrFeedReader = () => {
                 <button className="btn btn-sm btn-ghost" onClick={() => setShowPostForm(false)}>
                   Cancel
                 </button>
-                <button className="btn btn-sm btn-primary" onClick={postNote} disabled={loading || !newNote.trim()}>
+                <button
+                  className="btn btn-sm btn-primary"
+                  onClick={postNote}
+                  disabled={loading || !newNote.trim() || !relay.connected}
+                >
                   {loading ? <ArrowPathIcon className="w-4 h-4 animate-spin" /> : "Post Note"}
                 </button>
               </div>
