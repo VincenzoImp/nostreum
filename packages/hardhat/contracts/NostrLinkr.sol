@@ -192,3 +192,4 @@ contract NostrLinkr {
         return sha256(bytes(serializedEvent));
     }
 }
+// test commit
