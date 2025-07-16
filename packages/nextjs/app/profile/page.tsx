@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { bech32 } from "@scure/base";
 import { ArrowRightIcon, MagnifyingGlassIcon, UserIcon } from "@heroicons/react/24/outline";
-import { bech32 } from '@scure/base';
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth/notification";
 
@@ -75,13 +75,13 @@ export default function ProfileSearch() {
   const npubToHex = (npub: string): string => {
     try {
       // Validate npub format
-      if (!npub.startsWith('npub') || npub.length !== 63) {
+      if (!npub.startsWith("npub") || npub.length !== 63) {
         throw new Error('Invalid npub format - must start with "npub" and be 63 characters long');
       }
 
       // Ensure npub is in bech32 format: `${string}1${string}`
       // npub should start with 'npub1', so we check and fix if needed
-      let bech32Input = npub;
+      const bech32Input = npub;
       if (!npub.startsWith("npub1")) {
         throw new Error('Invalid npub format - must start with "npub1"');
       }
@@ -95,13 +95,14 @@ export default function ProfileSearch() {
 
       // Convert bytes to hex string
       return Array.from(bytes)
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join('');
+        .map(b => b.toString(16).padStart(2, "0"))
+        .join("");
     } catch (error) {
       console.error("Error converting npub to hex:", error);
-      const errorMessage = typeof error === "object" && error !== null && "message" in error
-        ? (error as { message: string }).message
-        : String(error);
+      const errorMessage =
+        typeof error === "object" && error !== null && "message" in error
+          ? (error as { message: string }).message
+          : String(error);
       throw new Error(`Invalid npub format: ${errorMessage}`);
     }
   };
@@ -148,7 +149,9 @@ export default function ProfileSearch() {
     const inputType = detectInputType(searchInput);
 
     if (inputType === "unknown") {
-      notification.error("Invalid format. Please enter a valid hex pubkey (64 chars), npub address, or Ethereum address");
+      notification.error(
+        "Invalid format. Please enter a valid hex pubkey (64 chars), npub address, or Ethereum address",
+      );
       return;
     }
 
@@ -179,9 +182,10 @@ export default function ProfileSearch() {
       }
     } catch (error) {
       console.error("Error processing search input:", error);
-      const errorMessage = typeof error === "object" && error !== null && "message" in error
-        ? (error as { message: string }).message
-        : String(error);
+      const errorMessage =
+        typeof error === "object" && error !== null && "message" in error
+          ? (error as { message: string }).message
+          : String(error);
       notification.error(`Error processing search input: ${errorMessage}`);
 
       // Redirect to fallback with error info
@@ -220,9 +224,13 @@ export default function ProfileSearch() {
           <span className="text-success">
             ✓ Valid Ethereum address
             {contractLoading && " (checking linkage...)"}
-            {linkedPubkey && linkedPubkey !== "0x0000000000000000000000000000000000000000000000000000000000000000" && !contractLoading &&
+            {linkedPubkey &&
+              linkedPubkey !== "0x0000000000000000000000000000000000000000000000000000000000000000" &&
+              !contractLoading &&
               " (linked to Nostr)"}
-            {linkedPubkey && linkedPubkey === "0x0000000000000000000000000000000000000000000000000000000000000000" && !contractLoading &&
+            {linkedPubkey &&
+              linkedPubkey === "0x0000000000000000000000000000000000000000000000000000000000000000" &&
+              !contractLoading &&
               " (no Nostr link found)"}
           </span>
         );
@@ -298,11 +306,7 @@ export default function ProfileSearch() {
                   onChange={handleInputChange}
                   disabled={isValidating}
                 />
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  disabled={!isSearchReady()}
-                >
+                <button type="submit" className="btn btn-primary" disabled={!isSearchReady()}>
                   {isValidating || (searchType === "ethereum" && contractLoading) ? (
                     <span className="loading loading-spinner loading-sm"></span>
                   ) : (
@@ -314,9 +318,7 @@ export default function ProfileSearch() {
                 </button>
               </div>
               <div className="label">
-                <span className="label-text-alt text-info">
-                  {getValidationMessage()}
-                </span>
+                <span className="label-text-alt text-info">{getValidationMessage()}</span>
               </div>
             </div>
           </form>
@@ -383,8 +385,7 @@ export default function ProfileSearch() {
                   <code className="text-xs text-base-content/60">
                     {example.value.length > 42
                       ? `${example.value.slice(0, 16)}...${example.value.slice(-8)}`
-                      : example.value
-                    }
+                      : example.value}
                   </code>
                 </div>
                 <button
