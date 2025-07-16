@@ -3,9 +3,7 @@
 import Link from "next/link";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
-import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { NostrLinkrButton } from "~~/components/nostr-linkr/NostrLinkrButton";
-import { NostrFeedReader } from "~~/components/nostreum/NostrFeedReader";
 
 /**
  * Home Page Component
@@ -14,8 +12,8 @@ import { NostrFeedReader } from "~~/components/nostreum/NostrFeedReader";
  * Features:
  * - Wallet connection status
  * - NostrLinkr button for linking Ethereum address with Nostr pubkey
- * - Full Nostr feed reader with social features
- * - Seamless integration between Ethereum and Nostr ecosystems
+ * - Information about Nostr integration
+ * - Navigation to feed and other features
  */
 const Home: NextPage = () => {
   // Get connected Ethereum address from wagmi
@@ -51,7 +49,7 @@ const Home: NextPage = () => {
               <h3 className="text-lg font-semibold mb-2">✅ Wallet Connected</h3>
               <p className="text-sm opacity-80">
                 Great! You can now link your Ethereum address with your Nostr identity and explore the decentralized
-                social feed below.
+                social feed.
               </p>
             </div>
           )}
@@ -75,75 +73,99 @@ const Home: NextPage = () => {
           </div>
         )}
 
-        {/* Separator */}
-        {connectedAddress && (
-          <div className="w-full max-w-4xl px-5 mt-12 mb-8 text-center">
-            <hr className="border-t border-base-300 mb-6" />
-            <p className="text-base-content/50">Explore the Nostr social feed below</p>
-            <hr className="border-t border-base-300 mt-6" />
+        {/* Feature Overview Section */}
+        <div className="w-full max-w-4xl px-5 mt-16 mb-12">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-4">🌟 Features</h2>
+            <p className="text-lg text-base-content/70 max-w-2xl mx-auto">
+              Explore the features that bridge Ethereum and Nostr ecosystems
+            </p>
           </div>
-        )}
 
-        {/* Nostr Feed Reader Section */}
-        {connectedAddress ? (
-          <div className="w-full max-w-4xl px-5 mb-20">
-            {/* Feed Reader Component */}
-            <NostrFeedReader />
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Feed Features */}
+            <Link href="/feed" className="card bg-base-200 hover:bg-base-300 transition-colors p-6">
+              <h4 className="font-bold text-lg mb-3">🦜 Social Feed</h4>
+              <p className="text-sm text-base-content/70 mb-4">
+                Browse real-time posts from the Nostr network with Ethereum address verification checks
+              </p>
+              <div className="text-sm font-medium">Explore Feed →</div>
+            </Link>
+
+            {/* Following Feed */}
+            <Link href="/following-feed" className="card bg-base-200 hover:bg-base-300 transition-colors p-6">
+              <h4 className="font-bold text-lg mb-3">👥 Following Feed</h4>
+              <p className="text-sm text-base-content/70 mb-4">
+                Curated feed showing only posts from users you follow
+              </p>
+              <div className="text-sm font-medium">View Following →</div>
+            </Link>
+
+            {/* Identity Linking */}
+            <div className="card bg-base-200 p-6">
+              <h4 className="font-bold text-lg mb-3">🔗 Identity Linking</h4>
+              <p className="text-sm text-base-content/70 mb-4">
+                Verifiable connections between Ethereum addresses and Nostr pubkeys
+              </p>
+              <div className="text-sm">Available above</div>
+            </div>
+
+            {/* Cross-platform Verification */}
+            <div className="card bg-base-200 p-6">
+              <h4 className="font-bold text-lg mb-3">✅ Verification</h4>
+              <p className="text-sm text-base-content/70 mb-4">
+                See verified Ethereum links in social profiles and posts
+              </p>
+              <div className="text-sm">In feeds</div>
+            </div>
+
+            {/* Decentralized Posts */}
+            <div className="card bg-base-200 p-6">
+              <h4 className="font-bold text-lg mb-3">📝 Decentralized Posts</h4>
+              <p className="text-sm text-base-content/70 mb-4">
+                Publish uncensorable content to the Nostr network
+              </p>
+              <div className="text-sm">In feeds</div>
+            </div>
+
+            {/* Profile Discovery */}
+            <div className="card bg-base-200 p-6">
+              <h4 className="font-bold text-lg mb-3">🔍 Profile Discovery</h4>
+              <p className="text-sm text-base-content/70 mb-4">
+                Find and follow interesting people across both networks
+              </p>
+              <div className="text-sm">Coming soon</div>
+            </div>
           </div>
-        ) : (
-          /* Alternative content when wallet is not connected */
+        </div>
+
+        {/* CTA Section for Non-Connected Users */}
+        {!connectedAddress && (
           <div className="w-full max-w-4xl px-5 mb-20">
             <div className="text-center mt-12 p-8 bg-base-200 rounded-xl">
-              <h2 className="text-2xl font-bold mb-4 opacity-50">🦜 Decentralized Social Feed</h2>
-              <p className="text-base-content/50 max-w-2xl mx-auto mb-6">
-                Connect your Ethereum wallet to access the Nostr social feed and see how blockchain and decentralized
-                social networks work together.
+              <h2 className="text-2xl font-bold mb-4">🌉 Bridge Two Worlds</h2>
+              <p className="text-base-content/70 max-w-2xl mx-auto mb-6">
+                Experience the future of decentralized social networking where Ethereum and Nostr work together seamlessly.
+                Connect your wallet to get started with verified cross-platform identity.
               </p>
 
-              {/* Feature preview cards */}
               <div className="grid md:grid-cols-3 gap-4 mt-8">
                 <div className="card bg-base-300/50 p-4">
-                  <h4 className="font-semibold mb-2">📖 Read Notes</h4>
-                  <p className="text-sm opacity-70">Browse real-time posts from the Nostr network</p>
+                  <h4 className="font-semibold mb-2">🔐 Secure Identity</h4>
+                  <p className="text-sm opacity-70">Cryptographically link your Ethereum and Nostr identities</p>
                 </div>
                 <div className="card bg-base-300/50 p-4">
-                  <h4 className="font-semibold mb-2">🔗 ETH Links</h4>
-                  <p className="text-sm opacity-70">See which authors have linked Ethereum addresses</p>
+                  <h4 className="font-semibold mb-2">🌐 Decentralized</h4>
+                  <p className="text-sm opacity-70">No central authority controls your data or connections</p>
                 </div>
                 <div className="card bg-base-300/50 p-4">
-                  <h4 className="font-semibold mb-2">✍️ Post & Follow</h4>
-                  <p className="text-sm opacity-70">Share your thoughts and follow interesting people</p>
+                  <h4 className="font-semibold mb-2">🚀 Future-Ready</h4>
+                  <p className="text-sm opacity-70">Built for the next generation of internet infrastructure</p>
                 </div>
               </div>
             </div>
           </div>
         )}
-
-        {/* Footer Links */}
-        <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
-          <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <BugAntIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Tinker with your smart contract using the{" "}
-                <Link href="/debug" passHref className="link">
-                  Debug Contracts
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <MagnifyingGlassIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Explore your local transactions with the{" "}
-                <Link href="/blockexplorer" passHref className="link">
-                  Block Explorer
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
     </>
   );
