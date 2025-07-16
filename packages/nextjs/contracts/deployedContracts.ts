@@ -5,9 +5,9 @@
 import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
 const deployedContracts = {
-  31337: {
+  84532: {
     NostrLinkr: {
-      address: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
+      address: "0xe0483bA94CacCBdB8431390fB9fbc0505a37699b",
       abi: [
         {
           anonymous: false,
