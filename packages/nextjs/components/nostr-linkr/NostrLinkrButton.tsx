@@ -60,7 +60,8 @@ export const NostrLinkrButton = ({ address }: { address: string }) => {
       const createdAt = Math.floor(Date.now() / 1000);
       const kind = 27235;
       const tags: any[] = [];
-      const content = address.toLowerCase();
+      // Use the exact address format - lowercase without 0x prefix
+      const content = address.toLowerCase().replace('0x', '');
 
       // Crea evento nostr secondo NIP-01
       const nostrEvent = {
@@ -89,32 +90,37 @@ export const NostrLinkrButton = ({ address }: { address: string }) => {
         throw new Error("Invalid signature from Nostr extension");
       }
 
-      // Convert hex strings to proper format using viem utilities
-      const eventIdBytes32 = toHex(hexToBytes(`0x${signedEvent.id}`), { size: 32 });
-      const pubkeyBytes32 = toHex(hexToBytes(`0x${signedEvent.pubkey}`), { size: 32 });
-      const signatureBytes = toHex(hexToBytes(`0x${signedEvent.sig}`));
+      // Convert hex strings to proper bytes32 format
+      const idBytes32 = `0x${signedEvent.id}` as `0x${string}`;
+      const pubkeyBytes32 = `0x${signedEvent.pubkey}` as `0x${string}`;
+      const sigBytes = `0x${signedEvent.sig}` as `0x${string}`;
 
       console.log("Contract args:", {
-        id: eventIdBytes32,
+        id: idBytes32,
         pubkey: pubkeyBytes32,
         createdAt: signedEvent.created_at,
         kind: signedEvent.kind,
         tags: JSON.stringify(signedEvent.tags),
-        content: signedEvent.content as `0x${string}`,
-        sig: signatureBytes,
+        content: signedEvent.content,
+        sig: sigBytes,
       });
+
+      // Debug: Let's also verify what the contract expects
+      console.log("Address for content:", address);
+      console.log("Content being sent:", signedEvent.content);
+      console.log("Expected content format:", address.toLowerCase());
 
       // Scrivi su smart contract
       await pushLinkr({
         functionName: "pushLinkr",
         args: [
-          eventIdBytes32,
+          idBytes32,
           pubkeyBytes32,
           BigInt(signedEvent.created_at),
           BigInt(signedEvent.kind),
           JSON.stringify(signedEvent.tags),
-          signedEvent.content as `0x${string}`,
-          signatureBytes,
+          signedEvent.content,
+          sigBytes,
         ],
       });
 

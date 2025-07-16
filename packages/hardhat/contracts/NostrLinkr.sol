@@ -16,14 +16,18 @@ contract NostrLinkr {
         uint256 createdAt, 
         uint256 kind,
         string memory tags,
-        address content,
+        string memory content,
         bytes calldata sig
     ) external {
         require(sig.length == 64, "Invalid signature length");
-        require(address(content) == msg.sender, "Content address must match sender");
+        // require(keccak256(bytes(content)) == keccak256(bytes(addressToString(msg.sender))), "Content must be sender's address in hex format");
         require(kind == 27235, "Invalid kind for Nostr Linkr");
-        require(createdAt <= block.timestamp+100, "CreatedAt must be in the past");
+        require(createdAt <= block.timestamp+10000, "CreatedAt must be in the past");
         require(keccak256(bytes(tags)) == keccak256(bytes("[]")), "Tags must be empty for Nostr Linkr");
+        require(
+            keccak256(bytes(content)) == keccak256(bytes(addressToStringNoPrefix(msg.sender))), 
+            "Content must be sender's address without 0x prefix"
+        );
         
         // Verify the Nostr event signature
         require(verifyNostrEvent(id, pubkey, createdAt, kind, tags, content, sig), "Invalid Nostr signature");
@@ -61,7 +65,7 @@ contract NostrLinkr {
         uint256 createdAt,
         uint256 kind,
         string memory tags,
-        address content,
+        string memory content,
         bytes calldata signature
     ) public pure returns (bool) {
         require(signature.length == 64, "Signature must be 64 bytes");
@@ -70,7 +74,7 @@ contract NostrLinkr {
         // Event serialization: [0, pubkey, created_at, kind, tags, content]
         string memory serializedEvent = string(abi.encodePacked(
             '[0,"',
-            bytesToHex(abi.encodePacked(pubkey)),
+            bytesToHexNoPrefix(abi.encodePacked(pubkey)),
             '",',
             uint2str(createdAt),
             ',',
@@ -78,7 +82,7 @@ contract NostrLinkr {
             ',',
             tags,
             ',"',
-            addressToString(content),
+            content,
             '"]'
         ));
         
@@ -191,5 +195,28 @@ contract NostrLinkr {
         ));
         return sha256(bytes(serializedEvent));
     }
+
+    function bytesToHexNoPrefix(bytes memory data) internal pure returns (string memory) {
+        bytes memory alphabet = "0123456789abcdef";
+        bytes memory str = new bytes(data.length * 2);
+        for (uint256 i = 0; i < data.length; i++) {
+            str[i * 2] = alphabet[uint256(uint8(data[i] >> 4))];
+            str[1 + i * 2] = alphabet[uint256(uint8(data[i] & 0x0f))];
+        }
+        return string(str);
+    }
+
+    
+
+    // And add this helper function:
+    function addressToStringNoPrefix(address _addr) internal pure returns (string memory) {
+        bytes32 value = bytes32(uint256(uint160(_addr)));
+        bytes memory alphabet = "0123456789abcdef";
+        bytes memory str = new bytes(40); // No 0x prefix, just 40 chars
+        for (uint256 i = 0; i < 20; i++) {
+            str[i * 2] = alphabet[uint256(uint8(value[i + 12] >> 4))];
+            str[1 + i * 2] = alphabet[uint256(uint8(value[i + 12] & 0x0f))];
+        }
+        return string(str);
+    }
 }
-// test commit
