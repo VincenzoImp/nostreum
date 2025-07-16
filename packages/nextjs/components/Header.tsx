@@ -29,14 +29,19 @@ export const menuLinks: HeaderMenuLink[] = [
     icon: <HomeIcon className="h-4 w-4" />,
   },
   {
-    label: "Feed",
+    label: "Social Feed",
     href: "/feed",
     icon: <RssIcon className="h-4 w-4" />,
   },
   {
-    label: "Following",
+    label: "Following Feed",
     href: "/following-feed",
     icon: <UserGroupIcon className="h-4 w-4" />,
+  },
+  {
+    label: "Profile Search",
+    href: "/profile",
+    icon: <LinkIcon className="h-4 w-4" />,
   },
   {
     label: "Block Explorer",
