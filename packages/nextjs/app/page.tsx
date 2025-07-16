@@ -266,7 +266,7 @@ const Home: NextPage = () => {
           <div className="py-20 px-5 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5">
             <div className="max-w-5xl mx-auto">
               <div className="text-center bg-gradient-to-br from-base-100/80 to-base-200/80 backdrop-blur-xl border border-base-300/50 rounded-3xl p-12 shadow-2xl">
-                <h2 className="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                <h2 className="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text">
                   🌉 Bridge Two Worlds
                 </h2>
                 <p className="text-lg text-base-content/80 max-w-3xl mx-auto mb-10 leading-relaxed">
@@ -276,9 +276,9 @@ const Home: NextPage = () => {
                 </p>
 
                 <div className="grid md:grid-cols-3 gap-8 mt-12">
-                  <div className="bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 rounded-2xl p-6 hover:scale-105 transition-transform duration-300">
-                    <div className="p-4 bg-primary/20 rounded-xl w-fit mx-auto mb-4">
-                      <ShieldCheckIcon className="w-8 h-8 text-primary" />
+                  <div className="bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 rounded-2xl p-6 hover:scale-105 transition-transform duration-300">
+                    <div className="p-4 bg-accent/20 rounded-xl w-fit mx-auto mb-4">
+                      <ShieldCheckIcon className="w-8 h-8 text-accent" />
                     </div>
                     <h4 className="text-lg font-bold mb-3">🔐 Secure Identity</h4>
                     <p className="text-sm text-base-content/70 leading-relaxed">
@@ -286,9 +286,9 @@ const Home: NextPage = () => {
                     </p>
                   </div>
 
-                  <div className="bg-gradient-to-br from-secondary/10 to-secondary/5 border border-secondary/20 rounded-2xl p-6 hover:scale-105 transition-transform duration-300">
-                    <div className="p-4 bg-secondary/20 rounded-xl w-fit mx-auto mb-4">
-                      <GlobeAltIcon className="w-8 h-8 text-secondary" />
+                  <div className="bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 rounded-2xl p-6 hover:scale-105 transition-transform duration-300">
+                    <div className="p-4 bg-accent/20 rounded-xl w-fit mx-auto mb-4">
+                      <GlobeAltIcon className="w-8 h-8 text-accent" />
                     </div>
                     <h4 className="text-lg font-bold mb-3">🌐 Decentralized</h4>
                     <p className="text-sm text-base-content/70 leading-relaxed">
