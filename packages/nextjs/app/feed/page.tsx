@@ -4,8 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { getEventHash } from "nostr-tools";
 import { ArrowPathIcon, PlusIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import { EventCard, NostrEvent } from "~~/components/nostreum/EventCard";
-import { AuthorProfile } from "~~/components/nostreum/AuthorInfo";
+import { EventCard } from "~~/components/nostreum/EventCard";
 import { useNostrConnection } from "~~/hooks/nostreum/useNostrConnection";
 import { notification } from "~~/utils/scaffold-eth/notification";
 

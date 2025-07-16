@@ -1,12 +1,9 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { EyeIcon, LinkIcon, UserMinusIcon, UserPlusIcon } from "@heroicons/react/24/outline";
-import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
-import { notification } from "~~/utils/scaffold-eth/notification";
 import { AuthorProfile } from "~~/types/nostreum";
 
 interface AuthorInfoProps {
