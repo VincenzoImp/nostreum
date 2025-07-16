@@ -7,39 +7,12 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     NostrLinkr: {
-      address: "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
+      address: "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
       abi: [
         {
           inputs: [],
           stateMutability: "nonpayable",
           type: "constructor",
-        },
-        {
-          inputs: [],
-          name: "ECDSAInvalidSignature",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "length",
-              type: "uint256",
-            },
-          ],
-          name: "ECDSAInvalidSignatureLength",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "bytes32",
-              name: "s",
-              type: "bytes32",
-            },
-          ],
-          name: "ECDSAInvalidSignatureS",
-          type: "error",
         },
         {
           anonymous: false,
@@ -71,15 +44,21 @@ const deployedContracts = {
             },
             {
               indexed: false,
-              internalType: "bytes",
-              name: "signature",
-              type: "bytes",
+              internalType: "uint8",
+              name: "v",
+              type: "uint8",
             },
             {
               indexed: false,
-              internalType: "address",
-              name: "signer",
-              type: "address",
+              internalType: "bytes32",
+              name: "r",
+              type: "bytes32",
+            },
+            {
+              indexed: false,
+              internalType: "bytes32",
+              name: "s",
+              type: "bytes32",
             },
           ],
           name: "LinkrPushed",
@@ -157,8 +136,13 @@ const deployedContracts = {
             },
             {
               internalType: "bytes32",
-              name: "vs",
+              name: "s",
               type: "bytes32",
+            },
+            {
+              internalType: "uint8",
+              name: "v",
+              type: "uint8",
             },
             {
               internalType: "address",

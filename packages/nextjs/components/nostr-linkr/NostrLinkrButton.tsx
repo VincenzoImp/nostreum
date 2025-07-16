@@ -95,7 +95,7 @@ export const NostrLinkrButton = ({ address }: { address: string }) => {
         try {
           await pushLinkr({
             functionName: "pushLinkr",
-            args: [resJson.message, resJson.signature.slice(0, 32), resJson.signature.slice(32, 64), resJson.signer],
+            args: [resJson.message, resJson.signature.r, resJson.signature.s, resJson.signature.v, resJson.signer],
           });
           notification.success("Linkr creato con successo!");
         } catch (error) {

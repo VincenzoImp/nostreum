@@ -12,7 +12,9 @@ contract NostrLinkr {
     mapping(address => bytes32) public addressPubkey;
     mapping(bytes32 => address) public pubkeyAddress;
 
-    event LinkrPushed(string message, bytes signature);
+    address lastSigner;
+
+    event LinkrPushed(string message, uint8 v, bytes32 r, bytes32 s);
     event LinkrPulled(address indexed addr, bytes32 indexed pubkey);
 
     modifier onlyOwner() {
@@ -29,18 +31,16 @@ contract NostrLinkr {
         owner = newOwner;
     }
 
-    function pushLinkr(string calldata message, bytes32 r, bytes32 vs) external {
-        // Hash del messaggio originale
+    function verifySignature(bytes32 messageHash, uint8 v, bytes32 r, bytes32 s, address expectedAddress) private pure returns (bool) {
+        address signer = ecrecover(messageHash, v, r, s);
+        return signer == expectedAddress;
+    }
+
+    function pushLinkr(string calldata message, bytes32 r, bytes32 s, uint8 v, address signer) external {
+        
         bytes32 messageHash = keccak256(abi.encodePacked(message));
-
-        // Hash Ethereum Signed Message
-        bytes32 ethSignedMessageHash = MessageHashUtils.toEthSignedMessageHash(messageHash);
-
-        // Recupera il firmatario
-        address recoveredSigner = ECDSA.recover(ethSignedMessageHash, r, vs);
-
-        // chacksumed address 
-        require(recoveredSigner == owner, "Il firmatario non e' il proprietario del contratto");
+        require(verifySignature(messageHash, v, r, s, signer), "Firma non valida");
+        require(signer == owner, "only accept owner signature"); 
 
         // Estrae l'indirizzo e la chiave pubblica dal messaggio
         (string memory contentStr, string memory pubkeyStr) = _extractContentAndPubkey(message);
@@ -57,7 +57,7 @@ contract NostrLinkr {
         addressPubkey[addr] = pubkey;
         pubkeyAddress[pubkey] = addr;
 
-        emit LinkrPushed(message, abi.encodePacked(r, vs));
+        emit LinkrPushed(message, v, r, s);
     }
 
 
