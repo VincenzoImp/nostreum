@@ -1,80 +1,149 @@
-# 🏗 Scaffold-ETH 2
+# 🌉 Nostreum
 
-<h4 align="center">
-  <a href="https://docs.scaffoldeth.io">Documentation</a> |
-  <a href="https://scaffoldeth.io">Website</a>
-</h4>
+> **Bridging Ethereum & Nostr Through Cryptographic Identity Linking**
 
-🧪 An open-source, up-to-date toolkit for building decentralized applications (dapps) on the Ethereum blockchain. It's designed to make it easier for developers to create and deploy smart contracts and build user interfaces that interact with those contracts.
+The first on-chain verification system linking different cryptographic protocols - connecting ECDSA (Ethereum) and Schnorr (Nostr) keys through smart contract verification.
 
-⚙️ Built using NextJS, RainbowKit, Hardhat, Wagmi, Viem, and Typescript.
+## 🔑 Core Innovation
 
-- ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
-- 🪝 **[Custom hooks](https://docs.scaffoldeth.io/hooks/)**: Collection of React hooks wrapper around [wagmi](https://wagmi.sh/) to simplify interactions with smart contracts with typescript autocompletion.
-- 🧱 [**Components**](https://docs.scaffoldeth.io/components/): Collection of common web3 components to quickly build your frontend.
-- 🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
-- 🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
+### On-Chain Cryptographic Key Linking
 
-![Debug Contracts tab](https://github.com/scaffold-eth/scaffold-eth-2/assets/55535804/b237af0c-5027-4849-a5c1-2e31495cccb1)
+Nostreum introduces a groundbreaking **Scaffold-ETH extension** that enables **on-chain verification** of the link between an **Ethereum private key (ECDSA)** and a **Nostr private key (Schnorr)**.
 
-## Requirements
-
-Before you begin, you need to install the following tools:
-
-- [Node (>= v20.18.3)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
-
-## Quickstart
-
-To get started with Scaffold-ETH 2, follow the steps below:
-
-1. Install dependencies if it was skipped in CLI:
+This creates a **cryptographically provable bridge** between two completely different ecosystems:
+- **Financial Ecosystem:** Ethereum (DeFi, NFTs, DAOs)
+- **Social Ecosystem:** Nostr (decentralized social network)
 
 ```
-cd my-dapp-example
+Ethereum (ECDSA) ⟷ Smart Contract Verification ⟷ Nostr (Schnorr)
+```
+
+## 🦜 Enhanced Nostr Client
+
+Nostreum is a full-featured social network client built on the Nostr protocol, enhanced with unique cross-platform capabilities enabled by cryptographic identity linking.
+
+### Core Social Features
+- **Social Feed:** Browse real-time posts from the Nostr network
+- **Following Feed:** Curated personal feed from followed users
+- **Profile Discovery:** Advanced user search and profile exploration
+- **Decentralized Publishing:** Post uncensorable, cryptographically signed content
+
+### Enhanced Cross-Platform Features
+
+#### 🏷️ ETH Verification Badges
+- Display verified Ethereum addresses on Nostr profiles
+- Cryptographic proof of identity ownership
+- Foundation for showcasing on-chain achievements socially
+
+#### 🔍 Cross-Platform User Search
+- Find Nostr users by their linked Ethereum address
+- Give financial accounts social identities
+- Bridge the gap between DeFi and social networking
+
+## 🚀 Unlocked Possibilities
+
+The cryptographic key bridge enables powerful new use cases that leverage both ecosystems:
+
+### Social → Financial
+- **Social Influence to Financial Access:** Leverage social reputation from Nostr to access financial opportunities on Ethereum
+- **Community-Driven Funding:** Social credibility can unlock DeFi positions, DAO participation, and investment opportunities
+- **Reputation-Based Finance:** Social standing translates to financial trust and opportunities
+
+### Financial → Social  
+- **On-Chain Achievements:** Display NFTs, DeFi success, and blockchain achievements in social profiles
+- **Financial Status as Social Proof:** On-chain wealth and activity become social credibility indicators
+- **Cross-Platform Reputation:** Ethereum success builds Nostr social standing
+
+### Real-World Impact
+- **Activists & Creators:** Receive financial support via Ethereum while maintaining censorship-resistant communication on Nostr
+- **Political Refugees:** Access funding through crypto while communicating safely on decentralized networks
+- **Content Creators:** Monetize through Ethereum ecosystem while building audience on Nostr
+
+## 🛠️ Technical Architecture
+
+### Built With
+- **Scaffold-ETH:** Extended framework for Ethereum development
+- **Nostr Protocol:** Decentralized social networking protocol
+- **Smart Contracts:** On-chain verification and identity linking
+- **ECDSA Signatures:** Ethereum cryptographic standard
+- **Schnorr Signatures:** Nostr/Bitcoin cryptographic standard
+
+### How It Works
+1. **Identity Creation:** User connects Ethereum wallet to the application
+2. **Key Linking:** Custom extension generates cryptographic proof linking Ethereum and Nostr keys
+3. **On-Chain Verification:** Smart contract validates and stores the identity link
+4. **Cross-Platform Features:** Enhanced social features become available based on verified links
+
+## 🎯 Live Demo Features
+
+Experience Nostreum's capabilities:
+
+- ✅ **Connect Ethereum wallet** and link to Nostr identity
+- ✅ **Browse social feed** with ETH verification badges  
+- ✅ **Search users** by Ethereum address or Nostr pubkey
+- ✅ **View cryptographic proof** of identity linking
+- ✅ **Post and interact** on decentralized social network
+
+## 🌍 Future Vision
+
+### Immediate Roadmap
+- **NFT Gallery Integration:** Display owned NFTs directly in Nostr profiles
+- **DeFi Activity Badges:** Show lending, staking, and trading achievements
+- **Enhanced Verification:** Multi-signature and advanced cryptographic proofs
+
+### Long-Term Goals
+- **Multi-Chain Support:** Extend linking to other blockchain ecosystems
+- **Advanced Social Finance:** Reputation-based lending and investment
+- **Cross-Platform DAOs:** Governance that spans social and financial networks
+
+### Bitcoin Connection
+*Note: Schnorr signatures also function as Bitcoin addresses, making this potentially a **three-way bridge: Bitcoin ↔ Nostr ↔ Ethereum***
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+
+- Ethereum wallet (MetaMask recommended)
+- Git
+
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/VincenzoImp/nostreum.git
+
+# Navigate to project directory
+cd nostreum
+
+# Install dependencies
 yarn install
-```
 
-2. Run a local network in the first terminal:
-
-```
+# Start development server
 yarn chain
-```
-
-This command starts a local Ethereum network using Hardhat. The network runs on your local machine and can be used for testing and development. You can customize the network configuration in `packages/hardhat/hardhat.config.ts`.
-
-3. On a second terminal, deploy the test contract:
-
-```
 yarn deploy
-```
-
-This command deploys a test smart contract to the local network. The contract is located in `packages/hardhat/contracts` and can be modified to suit your needs. The `yarn deploy` command uses the deploy script located in `packages/hardhat/deploy` to deploy the contract to the network. You can also customize the deploy script.
-
-4. On a third terminal, start your NextJS app:
-
-```
 yarn start
 ```
 
-Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the `Debug Contracts` page. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
+### Usage
+1. Open `http://localhost:3000`
+2. Connect your Ethereum wallet
+3. Link your Nostr identity
+4. Explore the enhanced social features
 
-Run smart contract test with `yarn hardhat:test`
+## 📝 Contributing
 
-- Edit your smart contracts in `packages/hardhat/contracts`
-- Edit your frontend homepage at `packages/nextjs/app/page.tsx`. For guidance on [routing](https://nextjs.org/docs/app/building-your-application/routing/defining-routes) and configuring [pages/layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) checkout the Next.js documentation.
-- Edit your deployment scripts in `packages/hardhat/deploy`
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
+## 📄 License
 
-## Documentation
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Visit our [docs](https://docs.scaffoldeth.io) to learn how to start building with Scaffold-ETH 2.
+## 🔗 Links
 
-To know more about its features, check out our [website](https://scaffoldeth.io).
+- **Live Demo Base Sepolia** [https://nostreum-crchg2q24-vincenzoimps-projects.vercel.app]
+- **Live Demo Avalanche Fuji** [https://nostreum-r8srcy75v-vincenzoimps-projects.vercel.app]
+- **GitHub:** [https://github.com/VincenzoImp/nostreum]
+- **Presentation:** [https://github.com/VincenzoImp/nostreum/PRESENTATION.html]
 
-## Contributing to Scaffold-ETH 2
+---
 
-We welcome contributions to Scaffold-ETH 2!
-
-Please see [CONTRIBUTING.MD](https://github.com/scaffold-eth/scaffold-eth-2/blob/main/CONTRIBUTING.md) for more information and guidelines for contributing to Scaffold-ETH 2.
+**Building the foundation for unified decentralized identity** 🌉
