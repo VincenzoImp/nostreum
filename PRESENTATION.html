@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nostreum - Web3 Hackathon Presentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 50px;
+            margin: 30px 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            min-height: 700px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .slide-title {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+        }
+
+        .slide-subtitle {
+            font-size: 1.5rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 35px;
+            font-weight: 500;
+        }
+
+        .architecture-diagram {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .connection-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .protocol-box {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px 35px;
+            border-radius: 12px;
+            font-weight: 600;
+            min-width: 180px;
+            text-align: center;
+        }
+
+        .arrow {
+            font-size: 2.5rem;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .core-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 35px;
+        }
+
+        .point-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
+            border: 2px solid rgba(102, 126, 234, 0.15);
+            border-radius: 15px;
+            padding: 25px;
+            transition: transform 0.3s ease;
+        }
+
+        .point-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .point-number {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .point-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .point-description {
+            font-size: 1rem;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .slide-content {
+            font-size: 1.2rem;
+            line-height: 1.7;
+            color: #555;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide-number {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(78, 205, 196, 0.05));
+            border: 2px solid rgba(78, 205, 196, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            font-size: 1.1rem;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .feature-list li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .demo-section {
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 30px 20px;
+                min-height: 600px;
+            }
+            
+            .slide-title {
+                font-size: 2.2rem;
+            }
+            
+            .connection-flow {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .protocol-box {
+                min-width: 150px;
+                padding: 20px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Title & Core Concept -->
+        <div class="slide">
+            <div class="slide-number">1/5</div>
+            <h1 class="slide-title">🌉 Nostreum</h1>
+            <p class="slide-subtitle">Bridging Ethereum & Nostr Through Cryptographic Identity Linking</p>
+            
+            <div class="architecture-diagram">
+                <div class="connection-flow">
+                    <div class="protocol-box">
+                        <strong>Ethereum</strong><br>
+                        <small>ECDSA Keys</small><br>
+                        <small>Financial Ecosystem</small>
+                    </div>
+                    <div class="arrow">⟷</div>
+                    <div class="protocol-box">
+                        <strong>Nostr</strong><br>
+                        <small>Schnorr Keys</small><br>
+                        <small>Social Network</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="highlight-box">
+                <p style="font-size: 1.3rem; font-weight: 600;">
+                    First on-chain verification system linking different cryptographic protocols<br>
+                    <span style="font-size: 1rem; color: #666;">ECDSA ↔ Schnorr Key Bridge with Smart Contract Verification</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Core Innovation -->
+        <div class="slide">
+            <div class="slide-number">2/5</div>
+            <h2 class="slide-title">🔑 Core Innovation</h2>
+            <div class="slide-content">
+                <p style="text-align: center; font-size: 1.4rem; margin-bottom: 30px; font-weight: 600;">
+                    On-Chain Cryptographic Key Linking
+                </p>
+                
+                <div class="point-card" style="max-width: 800px; margin: 0 auto;">
+                    <div class="point-title" style="text-align: center; font-size: 1.5rem; margin-bottom: 20px;">
+                        🛠️ Technical Achievement
+                    </div>
+                    <div class="point-description" style="text-align: center; font-size: 1.2rem;">
+                        Built a <strong>Scaffold-ETH extension</strong> that enables <strong>on-chain verification</strong> 
+                        of the link between an <strong>Ethereum private key (ECDSA)</strong> and a <strong>Nostr private key (Schnorr)</strong>.
+                        <br><br>
+                        This creates a <strong>cryptographically provable bridge</strong> between two completely different 
+                        ecosystems: <strong>financial (Ethereum)</strong> and <strong>social (Nostr)</strong>.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Nostr Client with Enhanced Features -->
+        <div class="slide">
+            <div class="slide-number">3/5</div>
+            <h2 class="slide-title">🦜 Enhanced Nostr Client</h2>
+            <div class="slide-content">
+                <p style="text-align: center; font-size: 1.3rem; margin-bottom: 30px;">
+                    Full-featured social network client + unique cross-platform capabilities
+                </p>
+                
+                <div class="core-points">
+                    <div class="point-card">
+                        <div class="point-number">📱</div>
+                        <div class="point-title">Complete Social Features</div>
+                        <div class="point-description">
+                            All core Nostr functionality: social feed, following feed, profile discovery, 
+                            user search, and decentralized posting
+                        </div>
+                    </div>
+                    
+                    <div class="point-card">
+                        <div class="point-number">🏷️</div>
+                        <div class="point-title">ETH Verification Badges</div>
+                        <div class="point-description">
+                            Display verified Ethereum addresses on Nostr profiles - 
+                            first step toward showcasing on-chain achievements socially
+                        </div>
+                    </div>
+                    
+                    <div class="point-card">
+                        <div class="point-number">🔍</div>
+                        <div class="point-title">Cross-Platform Search</div>
+                        <div class="point-description">
+                            Find Nostr users by their linked Ethereum address - 
+                            giving financial accounts social identities
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Future Possibilities -->
+        <div class="slide">
+            <div class="slide-number">4/5</div>
+            <h2 class="slide-title">🚀 Unlocked Possibilities</h2>
+            <div class="slide-content">
+                <p style="text-align: center; font-size: 1.3rem; margin-bottom: 30px;">
+                    The key bridge enables powerful new use cases
+                </p>
+                
+                <div class="core-points">
+                    <div class="point-card">
+                        <div class="point-number">💎</div>
+                        <div class="point-title">Social → Financial</div>
+                        <div class="point-description">
+                            Leverage <strong>social influence and reputation</strong> from Nostr 
+                            to access <strong>financial opportunities</strong> on Ethereum (funding, DAOs, DeFi)
+                        </div>
+                    </div>
+                    
+                    <div class="point-card">
+                        <div class="point-number">🏆</div>
+                        <div class="point-title">Financial → Social</div>
+                        <div class="point-description">
+                            Display <strong>NFTs, DeFi achievements, on-chain reputation</strong> 
+                            to build <strong>social credibility</strong> and community status
+                        </div>
+                    </div>
+                    
+                    <div class="point-card">
+                        <div class="point-number">🌍</div>
+                        <div class="point-title">Real-World Impact</div>
+                        <div class="point-description">
+                            Activists can receive <strong>financial support via Ethereum</strong> 
+                            while maintaining <strong>censorship-resistant communication</strong> on Nostr
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Demo & Future -->
+        <div class="slide">
+            <div class="slide-number">5/5</div>
+            <h2 class="slide-title">🎯 Live Demo & Vision</h2>
+            <div class="slide-content">
+                <div class="demo-section">
+                    <h3 style="font-size: 1.8rem; margin-bottom: 20px;">Ready to Experience</h3>
+                    <ul class="feature-list" style="max-width: 600px; margin: 0 auto; text-align: left;">
+                        <li>Connect Ethereum wallet and link to Nostr identity</li>
+                        <li>Browse social feed with ETH verification badges</li>
+                        <li>Search users by Ethereum address</li>
+                        <li>See cryptographic proof of identity linking</li>
+                    </ul>
+                </div>
+                
+                <div style="margin-top: 35px; text-align: center;">
+                    <div style="background: rgba(118, 75, 162, 0.1); border-radius: 12px; padding: 25px; margin-bottom: 20px;">
+                        <p style="font-size: 1.1rem; color: #666;">
+                            <strong>Note:</strong> Schnorr signatures also work as Bitcoin addresses, 
+                            making this potentially a <strong>three-way bridge: Bitcoin ↔ Nostr ↔ Ethereum</strong>
+                        </p>
+                    </div>
+                    
+                    <p style="font-size: 1.4rem; font-weight: 600; color: #667eea;">
+                        🌉 Building the foundation for unified decentralized identity
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
