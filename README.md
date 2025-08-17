@@ -139,8 +139,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔗 Links
 
-- **Live Demo Base Sepolia** [https://nostreum-crchg2q24-vincenzoimps-projects.vercel.app]
-- **Live Demo Avalanche Fuji** [https://nostreum-r8srcy75v-vincenzoimps-projects.vercel.app]
+- **Live Demo Base Sepolia** [https://nostreum.vercel.app]
 - **GitHub:** [https://github.com/VincenzoImp/nostreum]
 - **Presentation:** [https://github.com/VincenzoImp/nostreum/blob/main/PRESENTATION.html]
 
