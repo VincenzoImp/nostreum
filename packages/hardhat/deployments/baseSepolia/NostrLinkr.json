@@ -1,0 +1,344 @@
+{
+  "address": "0x09acDeF938902d110016a1525FfaEa4aCead8d5A",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "addr",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "pubkey",
+          "type": "bytes32"
+        }
+      ],
+      "name": "LinkrPulled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "addr",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "pubkey",
+          "type": "bytes32"
+        }
+      ],
+      "name": "LinkrPushed",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "addressPubkey",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "pubkey",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "createdAt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "kind",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "tags",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "content",
+          "type": "address"
+        }
+      ],
+      "name": "getEventHash",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "pubkeyAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "pullLinkr",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "id",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "pubkey",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "createdAt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "kind",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "tags",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "content",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes",
+          "name": "sig",
+          "type": "bytes"
+        }
+      ],
+      "name": "pushLinkr",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "eventId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "pubkey",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "createdAt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "kind",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "tags",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "content",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes",
+          "name": "signature",
+          "type": "bytes"
+        }
+      ],
+      "name": "verifyNostrEvent",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0xb9b3cfcc8489538156fac050ea178faf3824be408320e0682efe2d33d8713844",
+  "receipt": {
+    "to": null,
+    "from": "0xf872Ab63F22a37B77247FC02F2C933B041b1e05E",
+    "contractAddress": "0x09acDeF938902d110016a1525FfaEa4aCead8d5A",
+    "transactionIndex": 5,
+    "gasUsed": "1205647",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x6ced38792846ead29a3a953e78f86e1e8829fa835ec63543e0574fa2ea5f969d",
+    "transactionHash": "0xb9b3cfcc8489538156fac050ea178faf3824be408320e0682efe2d33d8713844",
+    "logs": [],
+    "blockNumber": 29840377,
+    "cumulativeGasUsed": "1899262",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "numDeployments": 1,
+  "solcInputHash": "2027ab8c4e264d6132dc9e4f2babd83b",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.20+commit.a1b79de6\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"pubkey\",\"type\":\"bytes32\"}],\"name\":\"LinkrPulled\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"pubkey\",\"type\":\"bytes32\"}],\"name\":\"LinkrPushed\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"addressPubkey\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"pubkey\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"createdAt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"kind\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"tags\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"content\",\"type\":\"address\"}],\"name\":\"getEventHash\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"pubkeyAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"pullLinkr\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"id\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"pubkey\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"createdAt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"kind\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"tags\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"content\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"sig\",\"type\":\"bytes\"}],\"name\":\"pushLinkr\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"eventId\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"pubkey\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"createdAt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"kind\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"tags\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"content\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"verifyNostrEvent\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Smart contract to link Ethereum addresses with Nostr public keys\",\"kind\":\"dev\",\"methods\":{\"getEventHash(bytes32,uint256,uint256,string,address)\":{\"details\":\"Utility function for testing - compute event hash\",\"params\":{\"content\":\"Address content\",\"createdAt\":\"Unix timestamp\",\"kind\":\"Event kind\",\"pubkey\":\"The public key\",\"tags\":\"Event tags\"},\"returns\":{\"_0\":\"bytes32 The computed event hash\"}},\"pullLinkr()\":{\"details\":\"Remove the linkage between caller's address and their Nostr pubkey\"},\"pushLinkr(bytes32,bytes32,uint256,uint256,string,string,bytes)\":{\"details\":\"Main function to link Ethereum address to Nostr pubkey\",\"params\":{\"content\":\"The content of the event (must be sender's address without 0x prefix)\",\"createdAt\":\"Unix timestamp when the event was created\",\"id\":\"The Nostr event ID (hash of the event)\",\"kind\":\"The Nostr event kind (must be 27235 for linkage)\",\"pubkey\":\"The Nostr public key to link with\",\"sig\":\"The Schnorr signature of the Nostr event (64 bytes)\",\"tags\":\"JSON string of event tags (must be empty array \\\"[]\\\")\"}},\"verifyNostrEvent(bytes32,bytes32,uint256,uint256,string,string,bytes)\":{\"details\":\"Verify Nostr event according to NIP-01 specification\",\"params\":{\"content\":\"The event content\",\"createdAt\":\"Unix timestamp of event creation\",\"eventId\":\"The expected event ID (hash)\",\"kind\":\"The event kind\",\"pubkey\":\"The public key that signed the event\",\"signature\":\"The Schnorr signature (64 bytes)\",\"tags\":\"JSON string of event tags\"},\"returns\":{\"_0\":\"bool True if the event is valid, false otherwise\"}}},\"title\":\"NostrLinkr\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"notice\":\"This contract allows users to create verifiable links between their Ethereum address and Nostr identity\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/NostrLinkr.sol\":\"NostrLinkr\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"contracts/NostrLinkr.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.20;\\n\\n/**\\n * @title NostrLinkr\\n * @dev Smart contract to link Ethereum addresses with Nostr public keys\\n * @notice This contract allows users to create verifiable links between their Ethereum address and Nostr identity\\n */\\ncontract NostrLinkr {\\n\\n    // Mapping from Ethereum address to Nostr public key\\n    mapping(address => bytes32) public addressPubkey;\\n    \\n    // Mapping from Nostr public key to Ethereum address\\n    mapping(bytes32 => address) public pubkeyAddress;\\n\\n    // Event emitted when a new link is created\\n    event LinkrPushed(address indexed addr, bytes32 indexed pubkey);\\n    \\n    // Event emitted when a link is removed\\n    event LinkrPulled(address indexed addr, bytes32 indexed pubkey);\\n\\n    /**\\n     * @dev Main function to link Ethereum address to Nostr pubkey\\n     * @param id The Nostr event ID (hash of the event)\\n     * @param pubkey The Nostr public key to link with\\n     * @param createdAt Unix timestamp when the event was created\\n     * @param kind The Nostr event kind (must be 27235 for linkage)\\n     * @param tags JSON string of event tags (must be empty array \\\"[]\\\")\\n     * @param content The content of the event (must be sender's address without 0x prefix)\\n     * @param sig The Schnorr signature of the Nostr event (64 bytes)\\n     */\\n    function pushLinkr(\\n        bytes32 id, \\n        bytes32 pubkey, \\n        uint256 createdAt, \\n        uint256 kind,\\n        string memory tags,\\n        string memory content,\\n        bytes calldata sig\\n    ) external {\\n        // Validate signature length (Schnorr signatures are 64 bytes)\\n        require(sig.length == 64, \\\"Invalid signature length\\\");\\n        \\n        // Validate event kind - 27235 is the designated kind for Nostr linkage\\n        require(kind == 27235, \\\"Invalid kind for Nostr Linkr\\\");\\n        \\n        // Validate timestamp - allow some future tolerance (10000 seconds)\\n        require(createdAt <= block.timestamp+10000, \\\"CreatedAt must be in the past\\\");\\n        \\n        // Validate tags - must be empty for linkage events\\n        require(keccak256(bytes(tags)) == keccak256(bytes(\\\"[]\\\")), \\\"Tags must be empty for Nostr Linkr\\\");\\n        \\n        // Validate content - must match sender's address without 0x prefix\\n        require(\\n            keccak256(bytes(content)) == keccak256(bytes(addressToStringNoPrefix(msg.sender))), \\n            \\\"Content must be sender's address without 0x prefix\\\"\\n        );\\n        \\n        // Verify the Nostr event signature using NIP-01 and BIP-340 standards\\n        require(verifyNostrEvent(id, pubkey, createdAt, kind, tags, content, sig), \\\"Invalid Nostr signature\\\");\\n        \\n        // Remove any existing linkage for this address to prevent conflicts\\n        bytes32 existingPubkey = addressPubkey[msg.sender];\\n        if (existingPubkey != bytes32(0)) {\\n            delete pubkeyAddress[existingPubkey];\\n        }\\n        \\n        // Remove any existing linkage for this pubkey to prevent conflicts\\n        address existingAddress = pubkeyAddress[pubkey];\\n        if (existingAddress != address(0)) {\\n            delete addressPubkey[existingAddress];\\n        }\\n        \\n        // Create new bidirectional linkage\\n        addressPubkey[msg.sender] = pubkey;\\n        pubkeyAddress[pubkey] = msg.sender;\\n        \\n        // Emit event for the new linkage\\n        emit LinkrPushed(msg.sender, pubkey);\\n    }\\n\\n    /**\\n     * @dev Remove the linkage between caller's address and their Nostr pubkey\\n     */\\n    function pullLinkr() external {\\n        // Get the linked pubkey for the caller\\n        bytes32 pubkey = addressPubkey[msg.sender];\\n        require(pubkey != bytes32(0), \\\"No link found for this address\\\");\\n        \\n        // Remove bidirectional linkage\\n        delete addressPubkey[msg.sender];\\n        delete pubkeyAddress[pubkey];\\n        \\n        // Emit event for the removed linkage\\n        emit LinkrPulled(msg.sender, pubkey);\\n    }\\n\\n    /**\\n     * @dev Verify Nostr event according to NIP-01 specification\\n     * @param eventId The expected event ID (hash)\\n     * @param pubkey The public key that signed the event\\n     * @param createdAt Unix timestamp of event creation\\n     * @param kind The event kind\\n     * @param tags JSON string of event tags\\n     * @param content The event content\\n     * @param signature The Schnorr signature (64 bytes)\\n     * @return bool True if the event is valid, false otherwise\\n     */\\n    function verifyNostrEvent(\\n        bytes32 eventId,\\n        bytes32 pubkey,\\n        uint256 createdAt,\\n        uint256 kind,\\n        string memory tags,\\n        string memory content,\\n        bytes calldata signature\\n    ) public pure returns (bool) {\\n        // Validate signature length\\n        require(signature.length == 64, \\\"Signature must be 64 bytes\\\");\\n        \\n        // Reconstruct the event hash according to Nostr specification\\n        // Event serialization format: [0, pubkey, created_at, kind, tags, content]\\n        string memory serializedEvent = string(abi.encodePacked(\\n            '[0,\\\"',\\n            bytesToHexNoPrefix(abi.encodePacked(pubkey)),\\n            '\\\",',\\n            uint2str(createdAt),\\n            ',',\\n            uint2str(kind),\\n            ',',\\n            tags,\\n            ',\\\"',\\n            content,\\n            '\\\"]'\\n        ));\\n        \\n        // Compute SHA-256 hash of the serialized event\\n        bytes32 computedHash = sha256(bytes(serializedEvent));\\n        \\n        // Verify the computed hash matches the provided event ID\\n        require(computedHash == eventId, \\\"Event ID mismatch\\\");\\n        \\n        // Verify Schnorr signature according to BIP-340\\n        return verifySchnorrSignature(pubkey, eventId, signature);\\n    }\\n\\n    /**\\n     * @dev Simplified Schnorr verification for Nostr (BIP-340)\\n     * @param pubkey The public key (32 bytes)\\n     * @param message The message that was signed (32 bytes)\\n     * @param signature The signature to verify (64 bytes)\\n     * @return bool True if signature is valid (simplified validation)\\n     * @notice This is a simplified implementation for demonstration purposes\\n     */\\n    function verifySchnorrSignature(\\n        bytes32 pubkey,\\n        bytes32 message,\\n        bytes calldata signature\\n    ) internal pure returns (bool) {\\n        // Extract r and s components from signature\\n        bytes32 r = bytes32(signature[0:32]);  // First 32 bytes\\n        bytes32 s = bytes32(signature[32:64]); // Last 32 bytes\\n        \\n        // For on-chain verification, we'll use a simplified approach\\n        // In a production environment, you might want to use a more robust implementation\\n        // or an oracle for Schnorr verification\\n        \\n        // Convert to integers for range checking\\n        uint256 sInt = uint256(s);\\n        uint256 rInt = uint256(r);\\n        \\n        // Secp256k1 curve order (n)\\n        uint256 curveOrder = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141;\\n        \\n        // Check if s is in valid range (0 < s < n)\\n        if (sInt == 0 || sInt >= curveOrder) {\\n            return false;\\n        }\\n        \\n        // Check if r is in valid range (0 < r < n)\\n        if (rInt == 0 || rInt >= curveOrder) {\\n            return false;\\n        }\\n        \\n        // For now, we'll trust that the signature was verified client-side\\n        // In production, implement full BIP-340 verification or use an oracle\\n        return true;\\n    }\\n\\n    /**\\n     * @dev Convert bytes to hexadecimal string with 0x prefix\\n     * @param data The bytes to convert\\n     * @return string The hexadecimal representation\\n     */\\n    function bytesToHex(bytes memory data) internal pure returns (string memory) {\\n        bytes memory alphabet = \\\"0123456789abcdef\\\";\\n        bytes memory str = new bytes(2 + data.length * 2);\\n        str[0] = \\\"0\\\";\\n        str[1] = \\\"x\\\";\\n        for (uint256 i = 0; i < data.length; i++) {\\n            str[2 + i * 2] = alphabet[uint256(uint8(data[i] >> 4))];\\n            str[3 + i * 2] = alphabet[uint256(uint8(data[i] & 0x0f))];\\n        }\\n        return string(str);\\n    }\\n\\n    /**\\n     * @dev Convert unsigned integer to string\\n     * @param _i The integer to convert\\n     * @return string The string representation\\n     */\\n    function uint2str(uint256 _i) internal pure returns (string memory) {\\n        if (_i == 0) {\\n            return \\\"0\\\";\\n        }\\n        uint256 j = _i;\\n        uint256 len;\\n        \\n        // Calculate string length\\n        while (j != 0) {\\n            len++;\\n            j /= 10;\\n        }\\n        \\n        // Build string from right to left\\n        bytes memory bstr = new bytes(len);\\n        uint256 k = len;\\n        while (_i != 0) {\\n            k = k - 1;\\n            uint8 temp = (48 + uint8(_i - _i / 10 * 10));\\n            bytes1 b1 = bytes1(temp);\\n            bstr[k] = b1;\\n            _i /= 10;\\n        }\\n        return string(bstr);\\n    }\\n\\n    /**\\n     * @dev Convert address to hexadecimal string with 0x prefix\\n     * @param _addr The address to convert\\n     * @return string The hexadecimal representation with 0x prefix\\n     */\\n    function addressToString(address _addr) internal pure returns (string memory) {\\n        bytes32 value = bytes32(uint256(uint160(_addr)));\\n        bytes memory alphabet = \\\"0123456789abcdef\\\";\\n        bytes memory str = new bytes(42);\\n        str[0] = \\\"0\\\";\\n        str[1] = \\\"x\\\";\\n        for (uint256 i = 0; i < 20; i++) {\\n            str[2 + i * 2] = alphabet[uint256(uint8(value[i + 12] >> 4))];\\n            str[3 + i * 2] = alphabet[uint256(uint8(value[i + 12] & 0x0f))];\\n        }\\n        return string(str);\\n    }\\n\\n    /**\\n     * @dev Utility function for testing - compute event hash\\n     * @param pubkey The public key\\n     * @param createdAt Unix timestamp\\n     * @param kind Event kind\\n     * @param tags Event tags\\n     * @param content Address content\\n     * @return bytes32 The computed event hash\\n     */\\n    function getEventHash(\\n        bytes32 pubkey,\\n        uint256 createdAt,\\n        uint256 kind,\\n        string memory tags,\\n        address content\\n    ) external pure returns (bytes32) {\\n        // Serialize event according to Nostr specification\\n        string memory serializedEvent = string(abi.encodePacked(\\n            '[0,\\\"',\\n            bytesToHex(abi.encodePacked(pubkey)),\\n            '\\\",',\\n            uint2str(createdAt),\\n            ',',\\n            uint2str(kind),\\n            ',',\\n            tags,\\n            ',\\\"',\\n            addressToString(content),\\n            '\\\"]'\\n        ));\\n        \\n        // Return SHA-256 hash of serialized event\\n        return sha256(bytes(serializedEvent));\\n    }\\n\\n    /**\\n     * @dev Convert bytes to hexadecimal string without 0x prefix\\n     * @param data The bytes to convert\\n     * @return string The hexadecimal representation without prefix\\n     */\\n    function bytesToHexNoPrefix(bytes memory data) internal pure returns (string memory) {\\n        bytes memory alphabet = \\\"0123456789abcdef\\\";\\n        bytes memory str = new bytes(data.length * 2);\\n        for (uint256 i = 0; i < data.length; i++) {\\n            str[i * 2] = alphabet[uint256(uint8(data[i] >> 4))];\\n            str[1 + i * 2] = alphabet[uint256(uint8(data[i] & 0x0f))];\\n        }\\n        return string(str);\\n    }\\n\\n    /**\\n     * @dev Convert address to hexadecimal string without 0x prefix\\n     * @param _addr The address to convert\\n     * @return string The hexadecimal representation without 0x prefix (40 characters)\\n     */\\n    function addressToStringNoPrefix(address _addr) internal pure returns (string memory) {\\n        bytes32 value = bytes32(uint256(uint160(_addr)));\\n        bytes memory alphabet = \\\"0123456789abcdef\\\";\\n        bytes memory str = new bytes(40); // No 0x prefix, just 40 chars\\n        for (uint256 i = 0; i < 20; i++) {\\n            str[i * 2] = alphabet[uint256(uint8(value[i + 12] >> 4))];\\n            str[1 + i * 2] = alphabet[uint256(uint8(value[i + 12] & 0x0f))];\\n        }\\n        return string(str);\\n    }\\n}\",\"keccak256\":\"0x53744a307ed10320a302840116f8417bbb16ab92bd0ce632d252b16c5d37d880\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b506114d8806100206000396000f3fe608060405234801561001057600080fd5b50600436106100625760003560e01c806303fdff19146100675780630769218d1461008d5780633d2943c71461009757806369492107146100aa5780636c72992f146100eb578063a1f7347d1461010e575b600080fd5b61007a6100753660046110ee565b61012e565b6040519081526020015b60405180910390f35b6100956101f7565b005b6100956100a5366004611159565b6102af565b6100d36100b836600461123b565b6001602052600090815260409020546001600160a01b031681565b6040516001600160a01b039091168152602001610084565b6100fe6100f9366004611159565b6105ec565b6040519015158152602001610084565b61007a61011c366004611254565b60006020819052908152604090205481565b60008061015b8760405160200161014791815260200190565b604051602081830303815290604052610755565b6101648761096e565b61016d8761096e565b8661017787610a9a565b60405160200161018b95949392919061129a565b60405160208183030381529060405290506002816040516101ac9190611362565b602060405180830381855afa1580156101c9573d6000803e3d6000fd5b5050506040513d601f19601f820116820180604052508101906101ec919061137e565b979650505050505050565b33600090815260208190526040902054806102595760405162461bcd60e51b815260206004820152601e60248201527f4e6f206c696e6b20666f756e6420666f7220746869732061646472657373000060448201526064015b60405180910390fd5b33600081815260208181526040808320839055848352600190915280822080546001600160a01b0319169055518392917fcb1761c67e581f1806ca9344609c4f101f20600f0fbacb43bb965d5c899e136c91a350565b604081146102ff5760405162461bcd60e51b815260206004820152601860248201527f496e76616c6964207369676e6174757265206c656e67746800000000000000006044820152606401610250565b84616a63146103505760405162461bcd60e51b815260206004820152601c60248201527f496e76616c6964206b696e6420666f72204e6f737472204c696e6b72000000006044820152606401610250565b61035c426127106113ad565b8611156103ab5760405162461bcd60e51b815260206004820152601d60248201527f437265617465644174206d75737420626520696e2074686520706173740000006044820152606401610250565b6040805180820190915260028152615b5d60f01b6020918201528451908501207f518674ab2b227e5f11e9084f615d57663cde47bce1ba168b4c19c7ee22a73d70146104445760405162461bcd60e51b815260206004820152602260248201527f54616773206d75737420626520656d70747920666f72204e6f737472204c696e60448201526135b960f11b6064820152608401610250565b61044d33610c7c565b805190602001208380519060200120146104c45760405162461bcd60e51b815260206004820152603260248201527f436f6e74656e74206d7573742062652073656e64657227732061646472657373604482015271040eed2e8d0deeae84060f040e0e4caccd2f60731b6064820152608401610250565b6104d488888888888888886105ec565b6105205760405162461bcd60e51b815260206004820152601760248201527f496e76616c6964204e6f737472207369676e61747572650000000000000000006044820152606401610250565b33600090815260208190526040902054801561055357600081815260016020526040902080546001600160a01b03191690555b6000888152600160205260409020546001600160a01b0316801561058b576001600160a01b0381166000908152602081905260408120555b336000818152602081815260408083208d90558c8352600190915280822080546001600160a01b03191684179055518b92917f33d53066fcd804d37605011eda236659f0b7ae3d7006521f5ce372ce912411d291a350505050505050505050565b60006040821461063e5760405162461bcd60e51b815260206004820152601a60248201527f5369676e6174757265206d7573742062652036342062797465730000000000006044820152606401610250565b600061066a8960405160200161065691815260200190565b604051602081830303815290604052610df5565b6106738961096e565b61067c8961096e565b888860405160200161069295949392919061129a565b604051602081830303815290604052905060006002826040516106b59190611362565b602060405180830381855afa1580156106d2573d6000803e3d6000fd5b5050506040513d601f19601f820116820180604052508101906106f5919061137e565b90508a811461073a5760405162461bcd60e51b815260206004820152601160248201527008aeccadce840928840dad2e6dac2e8c6d607b1b6044820152606401610250565b6107468a8c8787610f92565b9b9a5050505050505050505050565b60408051808201909152601081526f181899199a1a9b1b9c1cb0b131b232b360811b60208201528151606091906000906107909060026113c6565b61079b9060026113ad565b67ffffffffffffffff8111156107b3576107b361102f565b6040519080825280601f01601f1916602001820160405280156107dd576020820181803683370190505b509050600360fc1b816000815181106107f8576107f86113dd565b60200101906001600160f81b031916908160001a905350600f60fb1b81600181518110610827576108276113dd565b60200101906001600160f81b031916908160001a90535060005b84518110156109665782600486838151811061085f5761085f6113dd565b016020015182516001600160f81b031990911690911c60f81c908110610887576108876113dd565b01602001516001600160f81b031916826108a28360026113c6565b6108ad9060026113ad565b815181106108bd576108bd6113dd565b60200101906001600160f81b031916908160001a905350828582815181106108e7576108e76113dd565b602091010151815160f89190911c600f16908110610907576109076113dd565b01602001516001600160f81b031916826109228360026113c6565b61092d9060036113ad565b8151811061093d5761093d6113dd565b60200101906001600160f81b031916908160001a9053508061095e816113f3565b915050610841565b509392505050565b6060816000036109955750506040805180820190915260018152600360fc1b602082015290565b8160005b81156109bf57806109a9816113f3565b91506109b89050600a8361140c565b9150610999565b60008167ffffffffffffffff8111156109da576109da61102f565b6040519080825280601f01601f191660200182016040528015610a04576020820181803683370190505b509050815b8515610a9157610a1a60018261142e565b90506000610a29600a8861140c565b610a3490600a6113c6565b610a3e908861142e565b610a49906030611441565b905060008160f81b905080848481518110610a6657610a666113dd565b60200101906001600160f81b031916908160001a905350610a88600a8961140c565b97505050610a09565b50949350505050565b604080518082018252601081526f181899199a1a9b1b9c1cb0b131b232b360811b60208201528151602a80825260608281019094526001600160a01b0385169291600091602082018180368337019050509050600360fc1b81600081518110610b0557610b056113dd565b60200101906001600160f81b031916908160001a905350600f60fb1b81600181518110610b3457610b346113dd565b60200101906001600160f81b031916908160001a90535060005b6014811015610a915782600485610b6684600c6113ad565b60208110610b7657610b766113dd565b1a60f81b6001600160f81b031916901c60f81c60ff1681518110610b9c57610b9c6113dd565b01602001516001600160f81b03191682610bb78360026113c6565b610bc29060026113ad565b81518110610bd257610bd26113dd565b60200101906001600160f81b031916908160001a9053508284610bf683600c6113ad565b60208110610c0657610c066113dd565b825191901a600f16908110610c1d57610c1d6113dd565b01602001516001600160f81b03191682610c388360026113c6565b610c439060036113ad565b81518110610c5357610c536113dd565b60200101906001600160f81b031916908160001a90535080610c74816113f3565b915050610b4e565b604080518082018252601081526f181899199a1a9b1b9c1cb0b131b232b360811b60208201528151602880825260608281019094526001600160a01b038516929160009160208201818036833701905050905060005b6014811015610a915782600485610cea84600c6113ad565b60208110610cfa57610cfa6113dd565b1a60f81b6001600160f81b031916901c60f81c60ff1681518110610d2057610d206113dd565b01602001516001600160f81b03191682610d3b8360026113c6565b81518110610d4b57610d4b6113dd565b60200101906001600160f81b031916908160001a9053508284610d6f83600c6113ad565b60208110610d7f57610d7f6113dd565b825191901a600f16908110610d9657610d966113dd565b01602001516001600160f81b03191682610db18360026113c6565b610dbc9060016113ad565b81518110610dcc57610dcc6113dd565b60200101906001600160f81b031916908160001a90535080610ded816113f3565b915050610cd2565b60408051808201909152601081526f181899199a1a9b1b9c1cb0b131b232b360811b6020820152815160609190600090610e309060026113c6565b67ffffffffffffffff811115610e4857610e4861102f565b6040519080825280601f01601f191660200182016040528015610e72576020820181803683370190505b50905060005b845181101561096657826004868381518110610e9657610e966113dd565b016020015182516001600160f81b031990911690911c60f81c908110610ebe57610ebe6113dd565b01602001516001600160f81b03191682610ed98360026113c6565b81518110610ee957610ee96113dd565b60200101906001600160f81b031916908160001a90535082858281518110610f1357610f136113dd565b602091010151815160f89190911c600f16908110610f3357610f336113dd565b01602001516001600160f81b03191682610f4e8360026113c6565b610f599060016113ad565b81518110610f6957610f696113dd565b60200101906001600160f81b031916908160001a90535080610f8a816113f3565b915050610e78565b600080610fa2602082858761145a565b610fab91611484565b90506000610fbd60406020868861145a565b610fc691611484565b9050808270014551231950b75fc4402da1732fc9bebe19821580610fea5750808310155b15610ffd57600095505050505050611027565b81158061100a5750808210155b1561101d57600095505050505050611027565b6001955050505050505b949350505050565b634e487b7160e01b600052604160045260246000fd5b600082601f83011261105657600080fd5b813567ffffffffffffffff808211156110715761107161102f565b604051601f8301601f19908116603f011681019082821181831017156110995761109961102f565b816040528381528660208588010111156110b257600080fd5b836020870160208301376000602085830101528094505050505092915050565b80356001600160a01b03811681146110e957600080fd5b919050565b600080600080600060a0868803121561110657600080fd5b853594506020860135935060408601359250606086013567ffffffffffffffff81111561113257600080fd5b61113e88828901611045565b92505061114d608087016110d2565b90509295509295909350565b60008060008060008060008060e0898b03121561117557600080fd5b88359750602089013596506040890135955060608901359450608089013567ffffffffffffffff808211156111a957600080fd5b6111b58c838d01611045565b955060a08b01359150808211156111cb57600080fd5b6111d78c838d01611045565b945060c08b01359150808211156111ed57600080fd5b818b0191508b601f83011261120157600080fd5b81358181111561121057600080fd5b8c602082850101111561122257600080fd5b6020830194508093505050509295985092959890939650565b60006020828403121561124d57600080fd5b5035919050565b60006020828403121561126657600080fd5b61126f826110d2565b9392505050565b60005b83811015611291578181015183820152602001611279565b50506000910152565b632d98161160e11b815285516000906112ba816004850160208b01611276565b61088b60f21b60049184019182015286516112dc816006840160208b01611276565b808201915050600b60fa1b8060068301528651611300816007850160208b01611276565b6007920191820152845161131b816008840160208901611276565b61161160f11b60089290910191820152835161133e81600a840160208801611276565b611355600a8284010161225d60f01b815260020190565b9998505050505050505050565b60008251611374818460208701611276565b9190910192915050565b60006020828403121561139057600080fd5b5051919050565b634e487b7160e01b600052601160045260246000fd5b808201808211156113c0576113c0611397565b92915050565b80820281158282048414176113c0576113c0611397565b634e487b7160e01b600052603260045260246000fd5b60006001820161140557611405611397565b5060010190565b60008261142957634e487b7160e01b600052601260045260246000fd5b500490565b818103818111156113c0576113c0611397565b60ff81811683821601908111156113c0576113c0611397565b6000808585111561146a57600080fd5b8386111561147757600080fd5b5050820193919092039150565b803560208310156113c057600019602084900360031b1b169291505056fea2646970667358221220575ebd911437bc12cc2ad54f8af2d293fb9ebd46011585a421beb597f578b41464736f6c63430008140033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100625760003560e01c806303fdff19146100675780630769218d1461008d5780633d2943c71461009757806369492107146100aa5780636c72992f146100eb578063a1f7347d1461010e575b600080fd5b61007a6100753660046110ee565b61012e565b6040519081526020015b60405180910390f35b6100956101f7565b005b6100956100a5366004611159565b6102af565b6100d36100b836600461123b565b6001602052600090815260409020546001600160a01b031681565b6040516001600160a01b039091168152602001610084565b6100fe6100f9366004611159565b6105ec565b6040519015158152602001610084565b61007a61011c366004611254565b60006020819052908152604090205481565b60008061015b8760405160200161014791815260200190565b604051602081830303815290604052610755565b6101648761096e565b61016d8761096e565b8661017787610a9a565b60405160200161018b95949392919061129a565b60405160208183030381529060405290506002816040516101ac9190611362565b602060405180830381855afa1580156101c9573d6000803e3d6000fd5b5050506040513d601f19601f820116820180604052508101906101ec919061137e565b979650505050505050565b33600090815260208190526040902054806102595760405162461bcd60e51b815260206004820152601e60248201527f4e6f206c696e6b20666f756e6420666f7220746869732061646472657373000060448201526064015b60405180910390fd5b33600081815260208181526040808320839055848352600190915280822080546001600160a01b0319169055518392917fcb1761c67e581f1806ca9344609c4f101f20600f0fbacb43bb965d5c899e136c91a350565b604081146102ff5760405162461bcd60e51b815260206004820152601860248201527f496e76616c6964207369676e6174757265206c656e67746800000000000000006044820152606401610250565b84616a63146103505760405162461bcd60e51b815260206004820152601c60248201527f496e76616c6964206b696e6420666f72204e6f737472204c696e6b72000000006044820152606401610250565b61035c426127106113ad565b8611156103ab5760405162461bcd60e51b815260206004820152601d60248201527f437265617465644174206d75737420626520696e2074686520706173740000006044820152606401610250565b6040805180820190915260028152615b5d60f01b6020918201528451908501207f518674ab2b227e5f11e9084f615d57663cde47bce1ba168b4c19c7ee22a73d70146104445760405162461bcd60e51b815260206004820152602260248201527f54616773206d75737420626520656d70747920666f72204e6f737472204c696e60448201526135b960f11b6064820152608401610250565b61044d33610c7c565b805190602001208380519060200120146104c45760405162461bcd60e51b815260206004820152603260248201527f436f6e74656e74206d7573742062652073656e64657227732061646472657373604482015271040eed2e8d0deeae84060f040e0e4caccd2f60731b6064820152608401610250565b6104d488888888888888886105ec565b6105205760405162461bcd60e51b815260206004820152601760248201527f496e76616c6964204e6f737472207369676e61747572650000000000000000006044820152606401610250565b33600090815260208190526040902054801561055357600081815260016020526040902080546001600160a01b03191690555b6000888152600160205260409020546001600160a01b0316801561058b576001600160a01b0381166000908152602081905260408120555b336000818152602081815260408083208d90558c8352600190915280822080546001600160a01b03191684179055518b92917f33d53066fcd804d37605011eda236659f0b7ae3d7006521f5ce372ce912411d291a350505050505050505050565b60006040821461063e5760405162461bcd60e51b815260206004820152601a60248201527f5369676e6174757265206d7573742062652036342062797465730000000000006044820152606401610250565b600061066a8960405160200161065691815260200190565b604051602081830303815290604052610df5565b6106738961096e565b61067c8961096e565b888860405160200161069295949392919061129a565b604051602081830303815290604052905060006002826040516106b59190611362565b602060405180830381855afa1580156106d2573d6000803e3d6000fd5b5050506040513d601f19601f820116820180604052508101906106f5919061137e565b90508a811461073a5760405162461bcd60e51b815260206004820152601160248201527008aeccadce840928840dad2e6dac2e8c6d607b1b6044820152606401610250565b6107468a8c8787610f92565b9b9a5050505050505050505050565b60408051808201909152601081526f181899199a1a9b1b9c1cb0b131b232b360811b60208201528151606091906000906107909060026113c6565b61079b9060026113ad565b67ffffffffffffffff8111156107b3576107b361102f565b6040519080825280601f01601f1916602001820160405280156107dd576020820181803683370190505b509050600360fc1b816000815181106107f8576107f86113dd565b60200101906001600160f81b031916908160001a905350600f60fb1b81600181518110610827576108276113dd565b60200101906001600160f81b031916908160001a90535060005b84518110156109665782600486838151811061085f5761085f6113dd565b016020015182516001600160f81b031990911690911c60f81c908110610887576108876113dd565b01602001516001600160f81b031916826108a28360026113c6565b6108ad9060026113ad565b815181106108bd576108bd6113dd565b60200101906001600160f81b031916908160001a905350828582815181106108e7576108e76113dd565b602091010151815160f89190911c600f16908110610907576109076113dd565b01602001516001600160f81b031916826109228360026113c6565b61092d9060036113ad565b8151811061093d5761093d6113dd565b60200101906001600160f81b031916908160001a9053508061095e816113f3565b915050610841565b509392505050565b6060816000036109955750506040805180820190915260018152600360fc1b602082015290565b8160005b81156109bf57806109a9816113f3565b91506109b89050600a8361140c565b9150610999565b60008167ffffffffffffffff8111156109da576109da61102f565b6040519080825280601f01601f191660200182016040528015610a04576020820181803683370190505b509050815b8515610a9157610a1a60018261142e565b90506000610a29600a8861140c565b610a3490600a6113c6565b610a3e908861142e565b610a49906030611441565b905060008160f81b905080848481518110610a6657610a666113dd565b60200101906001600160f81b031916908160001a905350610a88600a8961140c565b97505050610a09565b50949350505050565b604080518082018252601081526f181899199a1a9b1b9c1cb0b131b232b360811b60208201528151602a80825260608281019094526001600160a01b0385169291600091602082018180368337019050509050600360fc1b81600081518110610b0557610b056113dd565b60200101906001600160f81b031916908160001a905350600f60fb1b81600181518110610b3457610b346113dd565b60200101906001600160f81b031916908160001a90535060005b6014811015610a915782600485610b6684600c6113ad565b60208110610b7657610b766113dd565b1a60f81b6001600160f81b031916901c60f81c60ff1681518110610b9c57610b9c6113dd565b01602001516001600160f81b03191682610bb78360026113c6565b610bc29060026113ad565b81518110610bd257610bd26113dd565b60200101906001600160f81b031916908160001a9053508284610bf683600c6113ad565b60208110610c0657610c066113dd565b825191901a600f16908110610c1d57610c1d6113dd565b01602001516001600160f81b03191682610c388360026113c6565b610c439060036113ad565b81518110610c5357610c536113dd565b60200101906001600160f81b031916908160001a90535080610c74816113f3565b915050610b4e565b604080518082018252601081526f181899199a1a9b1b9c1cb0b131b232b360811b60208201528151602880825260608281019094526001600160a01b038516929160009160208201818036833701905050905060005b6014811015610a915782600485610cea84600c6113ad565b60208110610cfa57610cfa6113dd565b1a60f81b6001600160f81b031916901c60f81c60ff1681518110610d2057610d206113dd565b01602001516001600160f81b03191682610d3b8360026113c6565b81518110610d4b57610d4b6113dd565b60200101906001600160f81b031916908160001a9053508284610d6f83600c6113ad565b60208110610d7f57610d7f6113dd565b825191901a600f16908110610d9657610d966113dd565b01602001516001600160f81b03191682610db18360026113c6565b610dbc9060016113ad565b81518110610dcc57610dcc6113dd565b60200101906001600160f81b031916908160001a90535080610ded816113f3565b915050610cd2565b60408051808201909152601081526f181899199a1a9b1b9c1cb0b131b232b360811b6020820152815160609190600090610e309060026113c6565b67ffffffffffffffff811115610e4857610e4861102f565b6040519080825280601f01601f191660200182016040528015610e72576020820181803683370190505b50905060005b845181101561096657826004868381518110610e9657610e966113dd565b016020015182516001600160f81b031990911690911c60f81c908110610ebe57610ebe6113dd565b01602001516001600160f81b03191682610ed98360026113c6565b81518110610ee957610ee96113dd565b60200101906001600160f81b031916908160001a90535082858281518110610f1357610f136113dd565b602091010151815160f89190911c600f16908110610f3357610f336113dd565b01602001516001600160f81b03191682610f4e8360026113c6565b610f599060016113ad565b81518110610f6957610f696113dd565b60200101906001600160f81b031916908160001a90535080610f8a816113f3565b915050610e78565b600080610fa2602082858761145a565b610fab91611484565b90506000610fbd60406020868861145a565b610fc691611484565b9050808270014551231950b75fc4402da1732fc9bebe19821580610fea5750808310155b15610ffd57600095505050505050611027565b81158061100a5750808210155b1561101d57600095505050505050611027565b6001955050505050505b949350505050565b634e487b7160e01b600052604160045260246000fd5b600082601f83011261105657600080fd5b813567ffffffffffffffff808211156110715761107161102f565b604051601f8301601f19908116603f011681019082821181831017156110995761109961102f565b816040528381528660208588010111156110b257600080fd5b836020870160208301376000602085830101528094505050505092915050565b80356001600160a01b03811681146110e957600080fd5b919050565b600080600080600060a0868803121561110657600080fd5b853594506020860135935060408601359250606086013567ffffffffffffffff81111561113257600080fd5b61113e88828901611045565b92505061114d608087016110d2565b90509295509295909350565b60008060008060008060008060e0898b03121561117557600080fd5b88359750602089013596506040890135955060608901359450608089013567ffffffffffffffff808211156111a957600080fd5b6111b58c838d01611045565b955060a08b01359150808211156111cb57600080fd5b6111d78c838d01611045565b945060c08b01359150808211156111ed57600080fd5b818b0191508b601f83011261120157600080fd5b81358181111561121057600080fd5b8c602082850101111561122257600080fd5b6020830194508093505050509295985092959890939650565b60006020828403121561124d57600080fd5b5035919050565b60006020828403121561126657600080fd5b61126f826110d2565b9392505050565b60005b83811015611291578181015183820152602001611279565b50506000910152565b632d98161160e11b815285516000906112ba816004850160208b01611276565b61088b60f21b60049184019182015286516112dc816006840160208b01611276565b808201915050600b60fa1b8060068301528651611300816007850160208b01611276565b6007920191820152845161131b816008840160208901611276565b61161160f11b60089290910191820152835161133e81600a840160208801611276565b611355600a8284010161225d60f01b815260020190565b9998505050505050505050565b60008251611374818460208701611276565b9190910192915050565b60006020828403121561139057600080fd5b5051919050565b634e487b7160e01b600052601160045260246000fd5b808201808211156113c0576113c0611397565b92915050565b80820281158282048414176113c0576113c0611397565b634e487b7160e01b600052603260045260246000fd5b60006001820161140557611405611397565b5060010190565b60008261142957634e487b7160e01b600052601260045260246000fd5b500490565b818103818111156113c0576113c0611397565b60ff81811683821601908111156113c0576113c0611397565b6000808585111561146a57600080fd5b8386111561147757600080fd5b5050820193919092039150565b803560208310156113c057600019602084900360031b1b169291505056fea2646970667358221220575ebd911437bc12cc2ad54f8af2d293fb9ebd46011585a421beb597f578b41464736f6c63430008140033",
+  "devdoc": {
+    "details": "Smart contract to link Ethereum addresses with Nostr public keys",
+    "kind": "dev",
+    "methods": {
+      "getEventHash(bytes32,uint256,uint256,string,address)": {
+        "details": "Utility function for testing - compute event hash",
+        "params": {
+          "content": "Address content",
+          "createdAt": "Unix timestamp",
+          "kind": "Event kind",
+          "pubkey": "The public key",
+          "tags": "Event tags"
+        },
+        "returns": {
+          "_0": "bytes32 The computed event hash"
+        }
+      },
+      "pullLinkr()": {
+        "details": "Remove the linkage between caller's address and their Nostr pubkey"
+      },
+      "pushLinkr(bytes32,bytes32,uint256,uint256,string,string,bytes)": {
+        "details": "Main function to link Ethereum address to Nostr pubkey",
+        "params": {
+          "content": "The content of the event (must be sender's address without 0x prefix)",
+          "createdAt": "Unix timestamp when the event was created",
+          "id": "The Nostr event ID (hash of the event)",
+          "kind": "The Nostr event kind (must be 27235 for linkage)",
+          "pubkey": "The Nostr public key to link with",
+          "sig": "The Schnorr signature of the Nostr event (64 bytes)",
+          "tags": "JSON string of event tags (must be empty array \"[]\")"
+        }
+      },
+      "verifyNostrEvent(bytes32,bytes32,uint256,uint256,string,string,bytes)": {
+        "details": "Verify Nostr event according to NIP-01 specification",
+        "params": {
+          "content": "The event content",
+          "createdAt": "Unix timestamp of event creation",
+          "eventId": "The expected event ID (hash)",
+          "kind": "The event kind",
+          "pubkey": "The public key that signed the event",
+          "signature": "The Schnorr signature (64 bytes)",
+          "tags": "JSON string of event tags"
+        },
+        "returns": {
+          "_0": "bool True if the event is valid, false otherwise"
+        }
+      }
+    },
+    "title": "NostrLinkr",
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "notice": "This contract allows users to create verifiable links between their Ethereum address and Nostr identity",
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 6,
+        "contract": "contracts/NostrLinkr.sol:NostrLinkr",
+        "label": "addressPubkey",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_mapping(t_address,t_bytes32)"
+      },
+      {
+        "astId": 10,
+        "contract": "contracts/NostrLinkr.sol:NostrLinkr",
+        "label": "pubkeyAddress",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_address)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_mapping(t_address,t_bytes32)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bytes32)",
+        "numberOfBytes": "32",
+        "value": "t_bytes32"
+      },
+      "t_mapping(t_bytes32,t_address)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => address)",
+        "numberOfBytes": "32",
+        "value": "t_address"
+      }
+    }
+  }
+}
