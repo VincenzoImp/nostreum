@@ -139,7 +139,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔗 Links
 
-- **Article** [http://localhost:4321/posts/nostreum]
+- **Article** [https://vincenzo.imperati.dev/posts/nostreum]
 - **Live Demo Base Sepolia** [https://nostreum.vercel.app]
 - **GitHub:** [https://github.com/VincenzoImp/nostreum]
 - **Presentation:** [https://github.com/VincenzoImp/nostreum/blob/main/PRESENTATION.html]
