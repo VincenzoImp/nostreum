@@ -3,13 +3,13 @@
  * Represents a Nostr event according to NIP-01 specification
  */
 export interface NostrEvent {
-    id: string;
-    pubkey: string;
-    created_at: number;
-    kind: number;
-    tags: string[][];
-    content: string;
-    sig: string;
+  id: string;
+  pubkey: string;
+  created_at: number;
+  kind: number;
+  tags: string[][];
+  content: string;
+  sig: string;
 }
 
 /**
@@ -17,12 +17,12 @@ export interface NostrEvent {
  * Contains author information and Ethereum link status
  */
 export interface AuthorProfile {
-    pubkey: string;
-    name?: string;
-    about?: string;
-    picture?: string;
-    ethereumAddress?: string;
-    isFollowed: boolean;
+  pubkey: string;
+  name?: string;
+  about?: string;
+  picture?: string;
+  ethereumAddress?: string;
+  isFollowed: boolean;
 }
 
 /**
@@ -30,10 +30,10 @@ export interface AuthorProfile {
  * Manages connection to Nostr relays
  */
 export interface RelayConnection {
-    ws: WebSocket | null;
-    url: string;
-    connected: boolean;
-    connecting: boolean;
-    lastConnectAttempt: number;
-    reconnectAttempts: number;
+  ws: WebSocket | null;
+  url: string;
+  connected: boolean;
+  connecting: boolean;
+  lastConnectAttempt: number;
+  reconnectAttempts: number;
 }

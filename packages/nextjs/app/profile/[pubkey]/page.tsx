@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -9,10 +9,10 @@ import {
   CalendarIcon,
   ChatBubbleLeftIcon,
   DocumentTextIcon,
+  ExclamationTriangleIcon,
   LinkIcon,
   UserMinusIcon,
   UserPlusIcon,
-  ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 import { EventCard } from "~~/components/nostreum/EventCard";
 import { Address } from "~~/components/scaffold-eth";
@@ -54,7 +54,7 @@ export default function ProfileDetail() {
   const isMountedRef = useRef(true);
 
   // Get Ethereum address for this pubkey - only if valid pubkey
-  const validPubkeyForContract = pubkey && isValidPubkey(pubkey) ? `0x${pubkey}` as `0x${string}` : undefined;
+  const validPubkeyForContract = pubkey && isValidPubkey(pubkey) ? (`0x${pubkey}` as `0x${string}`) : undefined;
   const { data: ethereumAddress } = useScaffoldReadContract({
     contractName: "NostrLinkr",
     functionName: "pubkeyAddress",
@@ -80,30 +80,33 @@ export default function ProfileDetail() {
   /**
    * Safe redirect function to prevent multiple redirects and loops
    */
-  const safeRedirect = useCallback((url: string, delay: number = 0) => {
-    if (hasRedirected || !isMountedRef.current) return;
+  const safeRedirect = useCallback(
+    (url: string, delay: number = 0) => {
+      if (hasRedirected || !isMountedRef.current) return;
 
-    console.log(`Redirecting to: ${url} after ${delay}ms`);
-    setHasRedirected(true);
+      console.log(`Redirecting to: ${url} after ${delay}ms`);
+      setHasRedirected(true);
 
-    const redirect = () => {
-      if (isMountedRef.current) {
-        router.push(url);
+      const redirect = () => {
+        if (isMountedRef.current) {
+          router.push(url);
+        }
+      };
+
+      if (delay > 0) {
+        redirectTimeoutRef.current = setTimeout(redirect, delay);
+      } else {
+        redirect();
       }
-    };
-
-    if (delay > 0) {
-      redirectTimeoutRef.current = setTimeout(redirect, delay);
-    } else {
-      redirect();
-    }
-  }, [hasRedirected, router]);
+    },
+    [hasRedirected, router],
+  );
 
   /**
    * Load following list from localStorage
    */
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     try {
       const savedFollowing = localStorage.getItem("nostr-following");
@@ -258,7 +261,7 @@ export default function ProfileDetail() {
    * Toggle follow status
    */
   const toggleFollow = useCallback(() => {
-    if (!pubkey || typeof window === 'undefined') return;
+    if (!pubkey || typeof window === "undefined") return;
 
     const isCurrentlyFollowed = followedPubkeys.has(pubkey);
 
@@ -286,9 +289,9 @@ export default function ProfileDetail() {
       setProfile(prev =>
         prev
           ? {
-            ...prev,
-            isFollowed: !isCurrentlyFollowed,
-          }
+              ...prev,
+              isFollowed: !isCurrentlyFollowed,
+            }
           : null,
       );
     }
@@ -359,7 +362,14 @@ export default function ProfileDetail() {
    * Load profile when ready
    */
   useEffect(() => {
-    if (pubkey && relay.connected && isInitialized && !hasRedirected && isValidPubkey(pubkey) && !isFallbackPubkey(pubkey)) {
+    if (
+      pubkey &&
+      relay.connected &&
+      isInitialized &&
+      !hasRedirected &&
+      isValidPubkey(pubkey) &&
+      !isFallbackPubkey(pubkey)
+    ) {
       loadProfile();
     }
   }, [pubkey, relay.connected, isInitialized, hasRedirected, loadProfile]);
@@ -482,8 +492,9 @@ export default function ProfileDetail() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div
-                className={`w-3 h-3 rounded-full ${relay.connected ? "bg-success" : relay.connecting ? "bg-warning animate-pulse" : "bg-error"
-                  }`}
+                className={`w-3 h-3 rounded-full ${
+                  relay.connected ? "bg-success" : relay.connecting ? "bg-warning animate-pulse" : "bg-error"
+                }`}
               ></div>
               <span className="text-sm">
                 {relay.connected ? `Connected to ${relay.url}` : relay.connecting ? "Connecting..." : "Disconnected"}
@@ -511,8 +522,8 @@ export default function ProfileDetail() {
           <div>
             <h3 className="font-bold">Profile Not Found</h3>
             <div className="text-xs">
-              No profile metadata found for this pubkey. The user may not have published profile information yet,
-              or they might not exist on the connected relays.
+              No profile metadata found for this pubkey. The user may not have published profile information yet, or
+              they might not exist on the connected relays.
             </div>
           </div>
           <Link href={`/profile/fallback?reason=not_found&input=${encodeURIComponent(pubkey)}`} className="btn btn-sm">
