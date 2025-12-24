@@ -547,6 +547,7 @@ export default function ProfileDetail() {
                 <div className="avatar">
                   <div className="w-16 h-16 rounded-full">
                     {profile?.picture ? (
+                      // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={profile.picture}
                         alt="Avatar"

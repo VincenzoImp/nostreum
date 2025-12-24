@@ -40,6 +40,7 @@ const SafeImage = ({ src, alt, className }: { src: string; alt: string; classNam
   return (
     <div className={`relative ${className}`}>
       {imageLoading && <div className="absolute inset-0 bg-base-300 animate-pulse rounded-full" />}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
         alt={alt}
