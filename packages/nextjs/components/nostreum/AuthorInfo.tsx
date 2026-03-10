@@ -3,27 +3,15 @@
 import { useCallback, useState } from "react";
 import Link from "next/link";
 import { EyeIcon, LinkIcon, UserMinusIcon, UserPlusIcon } from "@heroicons/react/24/outline";
-import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { AuthorProfile } from "~~/types/nostreum";
 
 interface AuthorInfoProps {
   pubkey: string;
   author?: AuthorProfile;
+  ethereumAddress?: string;
   showFollowButton?: boolean;
   onToggleFollow?: (pubkey: string) => void;
 }
-
-/**
- * Hook to read Ethereum address for a given Nostr pubkey
- */
-const useEthereumAddress = (pubkey: string) => {
-  const { data: ethereumAddress } = useScaffoldReadContract({
-    contractName: "NostrLinkr",
-    functionName: "pubkeyAddress",
-    args: [pubkey ? `0x${pubkey}` : undefined],
-  });
-  return ethereumAddress;
-};
 
 /**
  * Safe Image Component that handles external URLs
@@ -59,11 +47,16 @@ const SafeImage = ({ src, alt, className }: { src: string; alt: string; classNam
 /**
  * AuthorInfo Component
  *
- * Displays author information with optional follow/unfollow functionality
+ * Displays author information with optional follow/unfollow functionality.
+ * Receives ethereumAddress as a prop to avoid duplicate RPC calls.
  */
-export const AuthorInfo = ({ pubkey, author, showFollowButton = true, onToggleFollow }: AuthorInfoProps) => {
-  const ethereumAddress = useEthereumAddress(pubkey);
-
+export const AuthorInfo = ({
+  pubkey,
+  author,
+  ethereumAddress,
+  showFollowButton = true,
+  onToggleFollow,
+}: AuthorInfoProps) => {
   const handleToggleFollow = useCallback(() => {
     if (onToggleFollow) {
       onToggleFollow(pubkey);
@@ -84,6 +77,8 @@ export const AuthorInfo = ({ pubkey, author, showFollowButton = true, onToggleFo
     return `${pubkey.slice(0, 8)}...${pubkey.slice(-4)}`;
   };
 
+  const hasEthLink = ethereumAddress && ethereumAddress !== "0x0000000000000000000000000000000000000000";
+
   return (
     <div className="flex items-center gap-3 mb-2">
       <div className="avatar">
@@ -95,11 +90,6 @@ export const AuthorInfo = ({ pubkey, author, showFollowButton = true, onToggleFo
               {getInitials()}
             </div>
           )}
-          {!author?.picture && (
-            <div className="bg-primary text-primary-content flex items-center justify-center w-10 h-10 rounded-full">
-              {getInitials()}
-            </div>
-          )}
         </div>
       </div>
 
@@ -107,7 +97,7 @@ export const AuthorInfo = ({ pubkey, author, showFollowButton = true, onToggleFo
         <div className="flex items-center gap-2">
           <span className="font-semibold">{getDisplayName()}</span>
 
-          {ethereumAddress && ethereumAddress !== "0x0000000000000000000000000000000000000000" && (
+          {hasEthLink && (
             <div className="flex items-center gap-1 text-xs bg-primary text-primary-content px-2 py-1 rounded-full">
               <LinkIcon className="w-3 h-3" />
               <span>ETH</span>

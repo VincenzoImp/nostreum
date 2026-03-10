@@ -673,7 +673,13 @@ export default function ProfileDetail() {
           </div>
         ) : (
           userPosts.map(event => (
-            <EventCard key={event.id} event={event} author={profile || undefined} showFollowButton={false} />
+            <EventCard
+              key={event.id}
+              event={event}
+              author={profile || undefined}
+              showFollowButton={false}
+              relayWs={relay.ws}
+            />
           ))
         )}
       </div>

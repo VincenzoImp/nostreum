@@ -1,23 +1,20 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import Link from "next/link";
 import { getEventHash } from "nostr-tools";
 import { ArrowPathIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { EventCard } from "~~/components/nostreum/EventCard";
+import { useFollowing } from "~~/hooks/nostreum/useFollowing";
 import { useNostrConnection } from "~~/hooks/nostreum/useNostrConnection";
 import { notification } from "~~/utils/scaffold-eth/notification";
 
 /**
  * Main Feed Component
  *
- * A Nostr feed reader that shows posts from the network.
- * Features include:
- * - Manual refresh
- * - All public posts (not filtered)
- * - Profile viewing with follow/unfollow
- * - Posting new notes
- * - Safe relay connection handling
+ * Shows all public posts from the Nostr network (no filtering).
+ * Uses the shared useFollowing hook and passes filter=undefined to useNostrConnection
+ * so all events are accepted without overriding onmessage.
  */
 export default function Feed() {
   const {
@@ -30,53 +27,17 @@ export default function Feed() {
     relay,
     subscriptionActive,
     setSubscriptionActive,
-    handleRelayMessage,
     MAX_RECONNECT_ATTEMPTS,
-  } = useNostrConnection();
+  } = useNostrConnection(); // No filter = accept all events
+
+  const { toggleFollow } = useFollowing(setAuthors);
 
   const [newNote, setNewNote] = useState("");
   const [showPostForm, setShowPostForm] = useState(false);
-  const [, setFollowedPubkeys] = useState<Set<string>>(new Set());
+  const receivedAuthorsRef = useRef<Set<string>>(new Set());
 
   /**
-   * Load following list from localStorage
-   */
-  useEffect(() => {
-    try {
-      const savedFollowing = localStorage.getItem("nostr-following");
-      if (savedFollowing) {
-        const followingArray = JSON.parse(savedFollowing);
-        setFollowedPubkeys(new Set(followingArray));
-
-        // Update authors with follow status
-        setAuthors(prev => {
-          const newAuthors = new Map(prev);
-          followingArray.forEach((pubkey: string) => {
-            const author = newAuthors.get(pubkey);
-            if (author) {
-              newAuthors.set(pubkey, { ...author, isFollowed: true });
-            }
-          });
-          return newAuthors;
-        });
-      }
-    } catch (error) {
-      console.error("Error loading following list:", error);
-    }
-  }, [setAuthors]);
-
-  /**
-   * Custom message handler for main feed (accepts all events)
-   */
-  const mainFeedMessageHandler = useCallback(
-    (message: any[]) => {
-      handleRelayMessage(message); // No filtering, accept all events
-    },
-    [handleRelayMessage],
-  );
-
-  /**
-   * Manual refresh function - fetches recent posts from the network
+   * Refresh feed: fetch recent posts, then request profiles only for authors in the feed
    */
   const refreshFeed = useCallback(() => {
     if (!relay.connected || !relay.ws) {
@@ -85,42 +46,58 @@ export default function Feed() {
     }
 
     setLoading(true);
-    setEvents([]);
     setSubscriptionActive(true);
+    receivedAuthorsRef.current = new Set();
+
+    // Track authors as events arrive to request their profiles after EOSE
+    const ws = relay.ws;
+    const originalOnMessage = ws.onmessage;
+
+    ws.onmessage = (wsEvent: MessageEvent) => {
+      try {
+        const message = JSON.parse(wsEvent.data);
+        const [type, , event] = message;
+
+        // Collect author pubkeys from kind-1 events
+        if (type === "EVENT" && event?.kind === 1) {
+          receivedAuthorsRef.current.add(event.pubkey);
+        }
+
+        // When feed EOSE arrives, request profiles for actual authors only
+        if (type === "EOSE" && message[1] === "main-feed") {
+          const authorPubkeys = Array.from(receivedAuthorsRef.current);
+          if (authorPubkeys.length > 0 && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify(["CLOSE", "main-profiles"]));
+            ws.send(JSON.stringify(["REQ", "main-profiles", { kinds: [0], authors: authorPubkeys }]));
+          }
+        }
+
+        // Delegate to hook's handler (which validates + processes events)
+        if (originalOnMessage) {
+          originalOnMessage.call(ws, wsEvent);
+        }
+      } catch (error) {
+        console.error("Error parsing relay message:", error);
+      }
+    };
 
     try {
       // Close existing subscriptions
-      relay.ws.send(JSON.stringify(["CLOSE", "main-feed"]));
-      relay.ws.send(JSON.stringify(["CLOSE", "main-profiles"]));
+      ws.send(JSON.stringify(["CLOSE", "main-feed"]));
+      ws.send(JSON.stringify(["CLOSE", "main-profiles"]));
 
       // Subscribe to recent text notes from the network
-      const subscriptionMessage = JSON.stringify([
-        "REQ",
-        "main-feed",
-        {
-          kinds: [1],
-          limit: 100,
-          since: Math.floor(Date.now() / 1000) - 24 * 60 * 60, // Last 24 hours
-        },
-      ]);
-
-      relay.ws.send(subscriptionMessage);
-
-      // Get profile metadata for authors
-      setTimeout(() => {
-        if (relay.ws && relay.connected) {
-          const profileSubscription = JSON.stringify([
-            "REQ",
-            "main-profiles",
-            {
-              kinds: [0],
-              limit: 500,
-            },
-          ]);
-
-          relay.ws.send(profileSubscription);
-        }
-      }, 1000);
+      ws.send(
+        JSON.stringify([
+          "REQ",
+          "main-feed",
+          {
+            kinds: [1],
+            limit: 100,
+            since: Math.floor(Date.now() / 1000) - 24 * 60 * 60,
+          },
+        ]),
+      );
 
       notification.success("Refreshing main feed...");
     } catch (error) {
@@ -128,7 +105,7 @@ export default function Feed() {
       notification.error("Failed to refresh feed");
       setLoading(false);
     }
-  }, [relay.connected, relay.ws, setEvents, setLoading, setSubscriptionActive]);
+  }, [relay.connected, relay.ws, setLoading, setSubscriptionActive]);
 
   /**
    * Post a new note to the Nostr network
@@ -164,8 +141,7 @@ export default function Feed() {
 
       const signedEvent = await window.nostr.signEvent(eventWithId);
 
-      const publishMessage = JSON.stringify(["EVENT", signedEvent]);
-      relay.ws.send(publishMessage);
+      relay.ws.send(JSON.stringify(["EVENT", signedEvent]));
 
       notification.success("Note published successfully!");
       setNewNote("");
@@ -181,75 +157,12 @@ export default function Feed() {
     }
   };
 
-  /**
-   * Toggle follow status for a user
-   */
-  const toggleFollow = useCallback(
-    (pubkey: string) => {
-      setFollowedPubkeys(prev => {
-        const newSet = new Set(prev);
-        if (newSet.has(pubkey)) {
-          newSet.delete(pubkey);
-          notification.success("Unfollowed user");
-        } else {
-          newSet.add(pubkey);
-          notification.success("Following user");
-        }
-
-        // Save to localStorage for persistence
-        try {
-          localStorage.setItem("nostr-following", JSON.stringify(Array.from(newSet)));
-        } catch (error) {
-          console.error("Error saving following list:", error);
-        }
-
-        return newSet;
-      });
-
-      // Update author follow status
-      setAuthors(prev => {
-        const newAuthors = new Map(prev);
-        const author = newAuthors.get(pubkey) || { pubkey, isFollowed: false };
-        newAuthors.set(pubkey, {
-          ...author,
-          isFollowed: !author.isFollowed,
-        });
-        return newAuthors;
-      });
-    },
-    [setAuthors],
-  );
-
-  /**
-   * Override connection to use custom message handler
-   */
-  useEffect(() => {
-    if (relay.connected && relay.ws) {
-      // Set up custom message handler
-      const originalOnMessage = relay.ws.onmessage;
-      relay.ws.onmessage = event => {
-        try {
-          const message = JSON.parse(event.data);
-          mainFeedMessageHandler(message);
-        } catch (error) {
-          console.error("Error parsing relay message:", error);
-        }
-      };
-
-      return () => {
-        if (relay.ws) {
-          relay.ws.onmessage = originalOnMessage;
-        }
-      };
-    }
-  }, [relay.connected, relay.ws, mainFeedMessageHandler]);
-
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-6">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-3xl font-bold mb-2">🦜 Social Feed</h1>
-        <p className="text-base-content/70">Real-time posts from the Nostr network • Manual refresh</p>
+        <h1 className="text-3xl font-bold mb-2">Social Feed</h1>
+        <p className="text-base-content/70">Real-time posts from the Nostr network</p>
       </div>
 
       {/* Connection status and controls */}
@@ -333,7 +246,7 @@ export default function Feed() {
 
       {/* Instructions */}
       <div className="text-center py-4 bg-info/20 rounded-xl">
-        <h3 className="text-lg font-semibold mb-2">🌐 Discover the Network</h3>
+        <h3 className="text-lg font-semibold mb-2">Discover the Network</h3>
         <p className="text-sm opacity-80 mb-4">
           Explore posts from across the Nostr network. Follow interesting users to add them to your{" "}
           <Link href="/following-feed" className="link link-primary">
@@ -352,7 +265,9 @@ export default function Feed() {
           </div>
         ) : events.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-base-content/70 mb-4">No posts loaded yet. Click "Refresh Feed" to start exploring!</p>
+            <p className="text-base-content/70 mb-4">
+              No posts loaded yet. Click &quot;Refresh Feed&quot; to start exploring!
+            </p>
             <button className="btn btn-primary" onClick={refreshFeed} disabled={!relay.connected}>
               <ArrowPathIcon className="w-4 h-4" />
               Refresh Feed
@@ -366,6 +281,7 @@ export default function Feed() {
               author={authors.get(event.pubkey)}
               showFollowButton={true}
               onToggleFollow={toggleFollow}
+              relayWs={relay.ws}
             />
           ))
         )}

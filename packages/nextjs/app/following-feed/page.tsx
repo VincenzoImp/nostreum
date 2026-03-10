@@ -1,26 +1,33 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import { getEventHash } from "nostr-tools";
 import { ArrowPathIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { EventCard } from "~~/components/nostreum/EventCard";
+import { useFollowing } from "~~/hooks/nostreum/useFollowing";
 import { useNostrConnection } from "~~/hooks/nostreum/useNostrConnection";
+import { NostrEvent } from "~~/types/nostreum";
 import { notification } from "~~/utils/scaffold-eth/notification";
 
 /**
  * Following Feed Component
  *
- * A Nostr feed reader that shows only posts from followed users.
- * Features include:
- * - Manual refresh only (no auto-refresh)
- * - Following-only feed
- * - Profile viewing with links
- * - Following/unfollowing users
- * - Posting new notes
- * - Safe relay connection handling
+ * Shows only posts from followed users. Uses the messageFilter parameter
+ * of useNostrConnection instead of overriding ws.onmessage.
  */
 export default function FollowingFeed() {
+  // We need followedPubkeys before creating the hook, so we lift useFollowing first
+  // and pass a stable filter based on followedPubkeys via useMemo.
+  const [, setTempAuthors] = useState<Map<string, import("~~/types/nostreum").AuthorProfile>>(new Map());
+  const { followedPubkeys, toggleFollow } = useFollowing(setTempAuthors);
+
+  // Create a stable filter that only accepts events from followed users
+  const followingFilter = useMemo(() => {
+    if (followedPubkeys.size === 0) return undefined;
+    return (event: NostrEvent) => followedPubkeys.has(event.pubkey);
+  }, [followedPubkeys]);
+
   const {
     events,
     setEvents,
@@ -31,65 +38,29 @@ export default function FollowingFeed() {
     relay,
     subscriptionActive,
     setSubscriptionActive,
-    handleRelayMessage,
     MAX_RECONNECT_ATTEMPTS,
-  } = useNostrConnection();
+  } = useNostrConnection(followingFilter);
+
+  // Sync the follow state into the connection's authors map
+  // (useFollowing writes to tempAuthors, but we also need it in the main authors)
+  const { toggleFollow: mainToggleFollow } = useFollowing(setAuthors);
 
   const [newNote, setNewNote] = useState("");
   const [showPostForm, setShowPostForm] = useState(false);
-  const [followedPubkeys, setFollowedPubkeys] = useState<Set<string>>(new Set());
 
   /**
-   * Load following list from localStorage
+   * Combined toggle that updates both author maps
    */
-  useEffect(() => {
-    try {
-      const savedFollowing = localStorage.getItem("nostr-following");
-      if (savedFollowing) {
-        const followingArray = JSON.parse(savedFollowing);
-        setFollowedPubkeys(new Set(followingArray));
-
-        // Update authors with follow status
-        setAuthors(prev => {
-          const newAuthors = new Map(prev);
-          followingArray.forEach((pubkey: string) => {
-            const author = newAuthors.get(pubkey);
-            if (author) {
-              newAuthors.set(pubkey, { ...author, isFollowed: true });
-            } else {
-              newAuthors.set(pubkey, { pubkey, isFollowed: true });
-            }
-          });
-          return newAuthors;
-        });
-      }
-    } catch (error) {
-      console.error("Error loading following list:", error);
-    }
-  }, [setAuthors]);
-
-  /**
-   * Custom message handler for following feed (filters by followed users)
-   */
-  const followingFeedMessageHandler = useCallback(
-    (message: any[]) => {
-      const [type, , event] = message;
-
-      if (type === "EVENT" && event.kind === 1) {
-        // Only add text notes from followed users
-        if (followedPubkeys.has(event.pubkey)) {
-          handleRelayMessage(message);
-        }
-      } else {
-        // Handle other event types normally (like profiles)
-        handleRelayMessage(message);
-      }
+  const handleToggleFollow = useCallback(
+    (pubkey: string) => {
+      toggleFollow(pubkey);
+      mainToggleFollow(pubkey);
     },
-    [followedPubkeys, handleRelayMessage],
+    [toggleFollow, mainToggleFollow],
   );
 
   /**
-   * Manual refresh function - fetches posts from followed users only
+   * Refresh feed: fetch posts from followed users only
    */
   const refreshFeed = useCallback(() => {
     if (!relay.connected || !relay.ws) {
@@ -103,7 +74,6 @@ export default function FollowingFeed() {
     }
 
     setLoading(true);
-    setEvents([]);
     setSubscriptionActive(true);
 
     try {
@@ -114,30 +84,30 @@ export default function FollowingFeed() {
       relay.ws.send(JSON.stringify(["CLOSE", "following-profiles"]));
 
       // Subscribe to recent text notes from followed users
-      const subscriptionMessage = JSON.stringify([
-        "REQ",
-        "following-feed",
-        {
-          kinds: [1],
-          authors: followedArray,
-          limit: 100,
-          since: Math.floor(Date.now() / 1000) - 7 * 24 * 60 * 60, // Last 7 days
-        },
-      ]);
+      relay.ws.send(
+        JSON.stringify([
+          "REQ",
+          "following-feed",
+          {
+            kinds: [1],
+            authors: followedArray,
+            limit: 100,
+            since: Math.floor(Date.now() / 1000) - 7 * 24 * 60 * 60,
+          },
+        ]),
+      );
 
-      relay.ws.send(subscriptionMessage);
-
-      // Get profile metadata for followed users
-      const profileSubscription = JSON.stringify([
-        "REQ",
-        "following-profiles",
-        {
-          kinds: [0],
-          authors: followedArray,
-        },
-      ]);
-
-      relay.ws.send(profileSubscription);
+      // Get profile metadata for followed users only
+      relay.ws.send(
+        JSON.stringify([
+          "REQ",
+          "following-profiles",
+          {
+            kinds: [0],
+            authors: followedArray,
+          },
+        ]),
+      );
 
       notification.success(`Refreshing feed from ${followedPubkeys.size} followed users...`);
     } catch (error) {
@@ -145,7 +115,7 @@ export default function FollowingFeed() {
       notification.error("Failed to refresh feed");
       setLoading(false);
     }
-  }, [relay.connected, relay.ws, followedPubkeys, setEvents, setLoading, setSubscriptionActive]);
+  }, [relay.connected, relay.ws, followedPubkeys, setLoading, setSubscriptionActive]);
 
   /**
    * Post a new note to the Nostr network
@@ -181,8 +151,7 @@ export default function FollowingFeed() {
 
       const signedEvent = await window.nostr.signEvent(eventWithId);
 
-      const publishMessage = JSON.stringify(["EVENT", signedEvent]);
-      relay.ws.send(publishMessage);
+      relay.ws.send(JSON.stringify(["EVENT", signedEvent]));
 
       notification.success("Note published successfully!");
       setNewNote("");
@@ -200,75 +169,12 @@ export default function FollowingFeed() {
     }
   };
 
-  /**
-   * Toggle follow status for a user
-   */
-  const toggleFollow = useCallback(
-    (pubkey: string) => {
-      setFollowedPubkeys(prev => {
-        const newSet = new Set(prev);
-        if (newSet.has(pubkey)) {
-          newSet.delete(pubkey);
-          notification.success("Unfollowed user");
-        } else {
-          newSet.add(pubkey);
-          notification.success("Following user");
-        }
-
-        // Save to localStorage for persistence
-        try {
-          localStorage.setItem("nostr-following", JSON.stringify(Array.from(newSet)));
-        } catch (error) {
-          console.error("Error saving following list:", error);
-        }
-
-        return newSet;
-      });
-
-      // Update author follow status
-      setAuthors(prev => {
-        const newAuthors = new Map(prev);
-        const author = newAuthors.get(pubkey) || { pubkey, isFollowed: false };
-        newAuthors.set(pubkey, {
-          ...author,
-          isFollowed: !author.isFollowed,
-        });
-        return newAuthors;
-      });
-    },
-    [setAuthors],
-  );
-
-  /**
-   * Override connection to use custom message handler
-   */
-  useEffect(() => {
-    if (relay.connected && relay.ws) {
-      // Set up custom message handler
-      const originalOnMessage = relay.ws.onmessage;
-      relay.ws.onmessage = event => {
-        try {
-          const message = JSON.parse(event.data);
-          followingFeedMessageHandler(message);
-        } catch (error) {
-          console.error("Error parsing relay message:", error);
-        }
-      };
-
-      return () => {
-        if (relay.ws) {
-          relay.ws.onmessage = originalOnMessage;
-        }
-      };
-    }
-  }, [relay.connected, relay.ws, followingFeedMessageHandler]);
-
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-6">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-3xl font-bold mb-2">👥 Following Feed</h1>
-        <p className="text-base-content/70">Posts from users you follow • Manual refresh only</p>
+        <h1 className="text-3xl font-bold mb-2">Following Feed</h1>
+        <p className="text-base-content/70">Posts from users you follow</p>
       </div>
 
       {/* Connection status and controls */}
@@ -353,7 +259,7 @@ export default function FollowingFeed() {
       {/* Instructions when no following */}
       {followedPubkeys.size === 0 && (
         <div className="text-center py-8 bg-info/20 rounded-xl">
-          <h3 className="text-lg font-semibold mb-2">👥 No Users Followed</h3>
+          <h3 className="text-lg font-semibold mb-2">No Users Followed</h3>
           <p className="text-sm opacity-80 mb-4">
             Follow some users to see their posts in your feed. You can discover users through the main feed.
           </p>
@@ -385,7 +291,8 @@ export default function FollowingFeed() {
               event={event}
               author={authors.get(event.pubkey)}
               showFollowButton={true}
-              onToggleFollow={toggleFollow}
+              onToggleFollow={handleToggleFollow}
+              relayWs={relay.ws}
             />
           ))
         )}

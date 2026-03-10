@@ -1,11 +1,29 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { verifyEvent } from "nostr-tools";
 import { AuthorProfile, NostrEvent, RelayConnection } from "~~/types/nostreum";
 import { notification } from "~~/utils/scaffold-eth/notification";
 
+// Constants for connection management
+const DEFAULT_RELAYS = [
+  "wss://relay.damus.io",
+  "wss://nos.lol",
+  "wss://relay.nostr.band",
+  "wss://nostr-pub.wellorder.net",
+];
+
+const CONNECTION_TIMEOUT = 10000;
+const RECONNECT_DELAY = 2000;
+const MAX_RECONNECT_ATTEMPTS = 5;
+const MIN_RECONNECT_INTERVAL = 1000;
+
 /**
- * Hook for managing Nostr relay connections and events
+ * Hook for managing Nostr relay connections and events.
+ *
+ * Accepts an optional messageFilter callback. When provided, kind-1 events
+ * are only added to state if the filter returns true. This replaces the
+ * fragile pattern of overriding relay.ws.onmessage from page components.
  */
-export const useNostrConnection = () => {
+export const useNostrConnection = (messageFilter?: (event: NostrEvent) => boolean) => {
   const [events, setEvents] = useState<NostrEvent[]>([]);
   const [authors, setAuthors] = useState<Map<string, AuthorProfile>>(new Map());
   const [loading, setLoading] = useState(false);
@@ -24,24 +42,33 @@ export const useNostrConnection = () => {
   const mountedRef = useRef(true);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const connectPromiseRef = useRef<Promise<void> | null>(null);
+  const messageFilterRef = useRef(messageFilter);
 
-  // Constants for connection management
-  const DEFAULT_RELAYS = [
-    "wss://relay.damus.io",
-    "wss://nos.lol",
-    "wss://relay.nostr.band",
-    "wss://nostr-pub.wellorder.net",
-  ];
-
-  const CONNECTION_TIMEOUT = 10000;
-  const RECONNECT_DELAY = 2000;
-  const MAX_RECONNECT_ATTEMPTS = 5;
-  const MIN_RECONNECT_INTERVAL = 1000;
+  // Keep filter ref up to date
+  useEffect(() => {
+    messageFilterRef.current = messageFilter;
+  }, [messageFilter]);
 
   // Update ref when relay state changes
   useEffect(() => {
     relayRef.current = relay;
   }, [relay]);
+
+  /**
+   * Validate an incoming Nostr event using nostr-tools
+   */
+  const isValidEvent = useCallback((event: NostrEvent): boolean => {
+    try {
+      // Basic structure validation
+      if (!event || !event.id || !event.pubkey || !event.sig) return false;
+      if (typeof event.kind !== "number" || typeof event.created_at !== "number") return false;
+
+      // Cryptographic signature verification
+      return verifyEvent(event);
+    } catch {
+      return false;
+    }
+  }, []);
 
   /**
    * Handle text note events (kind 1)
@@ -53,7 +80,14 @@ export const useNostrConnection = () => {
       const exists = prev.some(e => e.id === event.id);
       if (exists) return prev;
 
-      const newEvents = [...prev, event].sort((a, b) => b.created_at - a.created_at);
+      // Insert in sorted position instead of re-sorting the entire array
+      const newEvents = [...prev];
+      const insertIdx = newEvents.findIndex(e => e.created_at < event.created_at);
+      if (insertIdx === -1) {
+        newEvents.push(event);
+      } else {
+        newEvents.splice(insertIdx, 0, event);
+      }
       return newEvents;
     });
   }, []);
@@ -92,15 +126,22 @@ export const useNostrConnection = () => {
    * Handle incoming messages from Nostr relay
    */
   const handleRelayMessage = useCallback(
-    (message: any[], filterCallback?: (event: NostrEvent) => boolean) => {
+    (message: any[]) => {
       if (!mountedRef.current) return;
 
       const [type, subscriptionId, event] = message;
 
       if (type === "EVENT") {
+        // Validate event signature before processing
+        if (!isValidEvent(event)) {
+          console.warn("Rejected invalid event:", event?.id?.slice(0, 16));
+          return;
+        }
+
         if (event.kind === 1) {
           // Apply filter if provided, otherwise accept all events
-          if (!filterCallback || filterCallback(event)) {
+          const filter = messageFilterRef.current;
+          if (!filter || filter(event)) {
             handleTextNote(event);
           }
         } else if (event.kind === 0) {
@@ -111,7 +152,7 @@ export const useNostrConnection = () => {
         setLoading(false);
       }
     },
-    [handleTextNote, handleProfileMetadata],
+    [handleTextNote, handleProfileMetadata, isValidEvent],
   );
 
   /**
@@ -142,7 +183,7 @@ export const useNostrConnection = () => {
    * Connect to a Nostr relay
    */
   const connectToRelay = useCallback(
-    async (relayUrl: string, messageHandler?: (message: any[]) => void, isReconnect: boolean = false) => {
+    async (relayUrl: string, isReconnect: boolean = false) => {
       if (!mountedRef.current) return;
 
       if (connectPromiseRef.current) {
@@ -214,16 +255,12 @@ export const useNostrConnection = () => {
             resolve();
           };
 
-          ws.onmessage = event => {
+          ws.onmessage = wsEvent => {
             if (!mountedRef.current) return;
 
             try {
-              const message = JSON.parse(event.data);
-              if (messageHandler) {
-                messageHandler(message);
-              } else {
-                handleRelayMessage(message);
-              }
+              const message = JSON.parse(wsEvent.data);
+              handleRelayMessage(message);
             } catch (error) {
               console.error("Error parsing relay message:", error);
             }
@@ -245,9 +282,9 @@ export const useNostrConnection = () => {
             reject(error);
           };
 
-          ws.onclose = event => {
+          ws.onclose = closeEvent => {
             clearTimeout(connectionTimeout);
-            console.log(`Disconnected from relay: ${relayUrl}`, event.code, event.reason);
+            console.log(`Disconnected from relay: ${relayUrl}`, closeEvent.code, closeEvent.reason);
 
             if (!mountedRef.current) {
               reject(new Error("Component unmounted"));
@@ -263,14 +300,14 @@ export const useNostrConnection = () => {
 
             setSubscriptionActive(false);
 
-            if (event.code !== 1000 && event.code !== 1001 && mountedRef.current) {
+            if (closeEvent.code !== 1000 && closeEvent.code !== 1001 && mountedRef.current) {
               const currentRelay = relayRef.current;
               if (currentRelay.reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
                 console.log(`Attempting reconnection in ${RECONNECT_DELAY}ms...`);
 
                 reconnectTimeoutRef.current = setTimeout(() => {
                   if (mountedRef.current) {
-                    connectToRelay(relayUrl, messageHandler, true).catch(err => {
+                    connectToRelay(relayUrl, true).catch(err => {
                       console.error("Reconnection failed:", err);
                     });
                   }
@@ -328,6 +365,7 @@ export const useNostrConnection = () => {
       mountedRef.current = false;
       cleanupConnection();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
