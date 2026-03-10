@@ -1,0 +1,106 @@
+{
+  "name": "nostr-linkr",
+  "version": "0.1.0",
+  "description": "TypeScript SDK for the NostrLinkr smart contract — on-chain Ethereum↔Nostr identity bridge with BIP-340 Schnorr verification",
+  "license": "MIT",
+  "author": "Vincenzo Imp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/VincenzoImp/nostr-linkr"
+  },
+  "keywords": [
+    "nostr",
+    "ethereum",
+    "identity",
+    "schnorr",
+    "bip340",
+    "viem",
+    "web3",
+    "sdk",
+    "smart-contract",
+    "evm"
+  ],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./abi": {
+      "import": {
+        "types": "./dist/abi/index.d.ts",
+        "default": "./dist/abi/index.js"
+      },
+      "require": {
+        "types": "./dist/abi/index.d.cts",
+        "default": "./dist/abi/index.cjs"
+      }
+    },
+    "./event": {
+      "import": {
+        "types": "./dist/event/index.d.ts",
+        "default": "./dist/event/index.js"
+      },
+      "require": {
+        "types": "./dist/event/index.d.cts",
+        "default": "./dist/event/index.cjs"
+      }
+    },
+    "./constants": {
+      "import": {
+        "types": "./dist/constants/index.d.ts",
+        "default": "./dist/constants/index.js"
+      },
+      "require": {
+        "types": "./dist/constants/index.d.cts",
+        "default": "./dist/constants/index.cjs"
+      }
+    },
+    "./utils": {
+      "import": {
+        "types": "./dist/utils/index.d.ts",
+        "default": "./dist/utils/index.js"
+      },
+      "require": {
+        "types": "./dist/utils/index.d.cts",
+        "default": "./dist/utils/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "peerDependencies": {
+    "viem": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.0",
+    "viem": "^2.39.0",
+    "vitest": "^3.1.0"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build && npm run test"
+  }
+}
