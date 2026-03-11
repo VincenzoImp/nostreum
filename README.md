@@ -1,149 +1,152 @@
-# 🌉 Nostreum
+# Nostreum
 
-> **Bridging Ethereum & Nostr Through Cryptographic Identity Linking**
+> The first on-chain identity bridge between Ethereum and Nostr
 
-The first on-chain verification system linking different cryptographic protocols - connecting ECDSA (Ethereum) and Schnorr (Nostr) keys through smart contract verification.
+Nostreum cryptographically links Ethereum addresses (ECDSA) with Nostr public keys (Schnorr/BIP-340) through smart contract verification. It creates a provable bridge between Ethereum's financial ecosystem and Nostr's decentralized social network.
 
-## 🔑 Core Innovation
+## Core Innovation
 
 ### On-Chain Cryptographic Key Linking
 
-Nostreum introduces a groundbreaking **Scaffold-ETH extension** that enables **on-chain verification** of the link between an **Ethereum private key (ECDSA)** and a **Nostr private key (Schnorr)**.
-
-This creates a **cryptographically provable bridge** between two completely different ecosystems:
-- **Financial Ecosystem:** Ethereum (DeFi, NFTs, DAOs)
-- **Social Ecosystem:** Nostr (decentralized social network)
+Nostreum enables on-chain verification of the link between an Ethereum private key (ECDSA) and a Nostr private key (Schnorr/BIP-340), using the MODEXP precompile for modular arithmetic.
 
 ```
-Ethereum (ECDSA) ⟷ Smart Contract Verification ⟷ Nostr (Schnorr)
+Ethereum (ECDSA)  <-->  Smart Contract (BIP-340 Verification)  <-->  Nostr (Schnorr)
 ```
 
-## 🦜 Enhanced Nostr Client
+This creates bidirectional, cryptographically verified mappings stored on-chain:
+- `addressPubkey`: Ethereum address -> Nostr public key
+- `pubkeyAddress`: Nostr public key -> Ethereum address
 
-Nostreum is a full-featured social network client built on the Nostr protocol, enhanced with unique cross-platform capabilities enabled by cryptographic identity linking.
+## Features
 
-### Core Social Features
-- **Social Feed:** Browse real-time posts from the Nostr network
-- **Following Feed:** Curated personal feed from followed users
-- **Profile Discovery:** Advanced user search and profile exploration
-- **Decentralized Publishing:** Post uncensorable, cryptographically signed content
+### Identity Bridge
+- Full on-chain BIP-340 Schnorr signature verification
+- Bidirectional lookup between Ethereum addresses and Nostr public keys
+- Verified badges on profiles with proven on-chain links
+- Owner-controlled pause/unpause for emergency stops
 
-### Enhanced Cross-Platform Features
+### Nostr Social Client
+- Real-time global feed from Nostr relays
+- Following feed with localStorage-backed follow lists
+- Compose and publish cryptographically signed text notes
+- Profile pages with avatar, bio, and ETH verification badges
+- Cross-platform profile search by hex pubkey or Ethereum address
 
-#### 🏷️ ETH Verification Badges
-- Display verified Ethereum addresses on Nostr profiles
-- Cryptographic proof of identity ownership
-- Foundation for showcasing on-chain achievements socially
+### Unlocked Use Cases
 
-#### 🔍 Cross-Platform User Search
-- Find Nostr users by their linked Ethereum address
-- Give financial accounts social identities
-- Bridge the gap between DeFi and social networking
+**Social -> Financial**
+- Leverage Nostr social reputation for DeFi access
+- Community-driven funding based on social credibility
+- Reputation-based financial trust
 
-## 🚀 Unlocked Possibilities
+**Financial -> Social**
+- Display on-chain achievements (NFTs, DeFi activity) in social profiles
+- Ethereum activity as social proof
+- Cross-platform reputation building
 
-The cryptographic key bridge enables powerful new use cases that leverage both ecosystems:
+**Real-World Impact**
+- Activists receive financial support via Ethereum while communicating on censorship-resistant Nostr
+- Content creators monetize through Ethereum while building audience on Nostr
+- Political refugees access crypto funding while communicating safely
 
-### Social → Financial
-- **Social Influence to Financial Access:** Leverage social reputation from Nostr to access financial opportunities on Ethereum
-- **Community-Driven Funding:** Social credibility can unlock DeFi positions, DAO participation, and investment opportunities
-- **Reputation-Based Finance:** Social standing translates to financial trust and opportunities
+## Smart Contract: NostrLinkr
 
-### Financial → Social  
-- **On-Chain Achievements:** Display NFTs, DeFi success, and blockchain achievements in social profiles
-- **Financial Status as Social Proof:** On-chain wealth and activity become social credibility indicators
-- **Cross-Platform Reputation:** Ethereum success builds Nostr social standing
+Solidity ^0.8.20 with OpenZeppelin Ownable + Pausable.
 
-### Real-World Impact
-- **Activists & Creators:** Receive financial support via Ethereum while maintaining censorship-resistant communication on Nostr
-- **Political Refugees:** Access funding through crypto while communicating safely on decentralized networks
-- **Content Creators:** Monetize through Ethereum ecosystem while building audience on Nostr
+| Function | Description |
+|---|---|
+| `pushLinkr(id, pubkey, createdAt, kind, tags, content, sig)` | Create identity link with Schnorr verification |
+| `pullLinkr()` | Remove caller's identity link |
+| `verifyNostrEvent(...)` | Verify Nostr event hash + Schnorr signature (view) |
+| `getEventHash(...)` | Compute NIP-01 compliant event hash |
+| `addressPubkey(address)` | Lookup: ETH address -> Nostr pubkey |
+| `pubkeyAddress(bytes32)` | Lookup: Nostr pubkey -> ETH address |
 
-## 🛠️ Technical Architecture
+**Deployed on Base Sepolia**
 
-### Built With
-- **Scaffold-ETH:** Extended framework for Ethereum development
-- **Nostr Protocol:** Decentralized social networking protocol
-- **Smart Contracts:** On-chain verification and identity linking
-- **ECDSA Signatures:** Ethereum cryptographic standard
-- **Schnorr Signatures:** Nostr/Bitcoin cryptographic standard
+## Tech Stack
 
-### How It Works
-1. **Identity Creation:** User connects Ethereum wallet to the application
-2. **Key Linking:** Custom extension generates cryptographic proof linking Ethereum and Nostr keys
-3. **On-Chain Verification:** Smart contract validates and stores the identity link
-4. **Cross-Platform Features:** Enhanced social features become available based on verified links
+| Layer | Technology |
+|---|---|
+| Smart Contracts | Solidity, Hardhat, OpenZeppelin, hardhat-deploy |
+| Frontend | Next.js 15 (App Router), React 19, TypeScript 5.8 |
+| Web3 | wagmi 2.x, viem 2.x, RainbowKit 2.x |
+| Nostr | nostr-tools 2.x, WebSocket relay connections |
+| Styling | Tailwind CSS 4, DaisyUI 5 |
+| State | Zustand, React Query, localStorage |
+| Package Manager | Yarn 3.2 (workspaces) |
 
-## 🎯 Live Demo Features
-
-Experience Nostreum's capabilities:
-
-- ✅ **Connect Ethereum wallet** and link to Nostr identity
-- ✅ **Browse social feed** with ETH verification badges  
-- ✅ **Search users** by Ethereum address or Nostr pubkey
-- ✅ **View cryptographic proof** of identity linking
-- ✅ **Post and interact** on decentralized social network
-
-## 🌍 Future Vision
-
-### Immediate Roadmap
-- **NFT Gallery Integration:** Display owned NFTs directly in Nostr profiles
-- **DeFi Activity Badges:** Show lending, staking, and trading achievements
-- **Enhanced Verification:** Multi-signature and advanced cryptographic proofs
-
-### Long-Term Goals
-- **Multi-Chain Support:** Extend linking to other blockchain ecosystems
-- **Advanced Social Finance:** Reputation-based lending and investment
-- **Cross-Platform DAOs:** Governance that spans social and financial networks
-
-### Bitcoin Connection
-*Note: Schnorr signatures also function as Bitcoin addresses, making this potentially a **three-way bridge: Bitcoin ↔ Nostr ↔ Ethereum***
-
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
-- Node.js 18+
-- Ethereum wallet (MetaMask recommended)
+- Node.js >= 20
+- Yarn
 - Git
+- Ethereum wallet extension (MetaMask)
+- Nostr browser extension (Alby, nos2x) for identity linking
 
 ### Installation
+
 ```bash
-# Clone the repository
 git clone https://github.com/VincenzoImp/nostreum.git
-
-# Navigate to project directory
 cd nostreum
-
-# Install dependencies
 yarn install
+```
 
-# Start development server
+### Development
+
+```bash
+# Terminal 1: Start local Hardhat node
 yarn chain
+
+# Terminal 2: Deploy contracts
 yarn deploy
+
+# Terminal 3: Start Next.js dev server
 yarn start
 ```
 
-### Usage
-1. Open `http://localhost:3000`
-2. Connect your Ethereum wallet
-3. Link your Nostr identity
-4. Explore the enhanced social features
+Open `http://localhost:3000`
 
-## 📝 Contributing
+### Testing
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+```bash
+# Run contract tests (22 tests)
+yarn workspace @se-2/hardhat hardhat test --network hardhat
+```
 
-## 📄 License
+### Production
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+```bash
+yarn next:build
+```
 
-## 🔗 Links
+## Nostr Relay Configuration
 
-- **Article** [https://vincenzo.imperati.dev/posts/nostreum]
-- **Live Demo Base Sepolia** [https://nostreum.vercel.app]
-- **GitHub:** [https://github.com/VincenzoImp/nostreum]
-- **Presentation:** [https://github.com/VincenzoImp/nostreum/blob/main/PRESENTATION.html]
+Default relay: `wss://relay.damus.io`
 
----
+Fallbacks: `wss://nos.lol`, `wss://relay.nostr.band`, `wss://nostr-pub.wellorder.net`
 
-**Building the foundation for unified decentralized identity** 🌉
+Auto-reconnect with exponential backoff. All events validated with `nostr-tools.verifyEvent()`.
+
+## Future Vision
+
+- Multi-chain support (extend linking to other blockchains)
+- NFT gallery integration in Nostr profiles
+- DeFi activity badges
+- Advanced social finance (reputation-based lending)
+- Cross-platform DAO governance
+
+Note: Schnorr signatures also function as Bitcoin addresses, making this potentially a three-way bridge: **Bitcoin <-> Nostr <-> Ethereum**
+
+## Links
+
+- **Live Demo (Base Sepolia):** https://nostreum.vercel.app
+- **Article:** https://vincenzo.imperati.dev/posts/nostreum
+- **GitHub:** https://github.com/VincenzoImp/nostreum
+- **Presentation:** https://github.com/VincenzoImp/nostreum/blob/main/PRESENTATION.html
+
+## License
+
+MIT
