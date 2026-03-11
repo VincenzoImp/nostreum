@@ -36,12 +36,10 @@ export default function BridgePage() {
       await writePushLinkr({
         functionName: "pushLinkr",
         args: [
-          `0x${signedEvent.id}` as `0x${string}`,
           `0x${signedEvent.pubkey}` as `0x${string}`,
           BigInt(signedEvent.created_at),
           BigInt(signedEvent.kind),
           JSON.stringify(signedEvent.tags),
-          signedEvent.content,
           `0x${signedEvent.sig}` as `0x${string}`,
         ],
       });
@@ -253,7 +251,7 @@ export default function BridgePage() {
         {[
           {
             title: "Sign with Nostr",
-            desc: "Your Nostr extension signs a kind 27235 event containing your Ethereum address",
+            desc: "Your Nostr extension signs a kind 13372 event containing your Ethereum address",
           },
           {
             title: "On-Chain Verification",

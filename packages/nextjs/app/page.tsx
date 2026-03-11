@@ -174,7 +174,7 @@ export default function LandingPage() {
                 {
                   step: "2",
                   title: "Sign",
-                  desc: "Your Nostr extension signs a kind 27235 event containing your ETH address",
+                  desc: "Your Nostr extension signs a kind 13372 event containing your ETH address",
                 },
                 {
                   step: "3",
