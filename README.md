@@ -23,7 +23,7 @@ Nostr social client with on-chain Ethereum identity verification, powered by [no
 
 ## Contract
 
-**Base Sepolia:** [`0xbC379bEFBAA269AfC2a1891438A7b8737E79A476`](https://sepolia.basescan.org/address/0xbC379bEFBAA269AfC2a1891438A7b8737E79A476#code)
+**Base Sepolia:** [`0xf311342bce77086D7C28e5Ba4544c02c5bbE3443`](https://sepolia.basescan.org/address/0xf311342bce77086D7C28e5Ba4544c02c5bbE3443#code)
 
 The NostrLinkr contract is developed and maintained in the [nostr-linkr](https://github.com/VincenzoImp/nostr-linkr) repository.
 
