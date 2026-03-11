@@ -10,7 +10,6 @@ import "@openzeppelin/contracts/utils/Pausable.sol";
  * @notice This contract allows users to create verifiable links between their Ethereum address and Nostr identity
  */
 contract NostrLinkr is Ownable, Pausable {
-
     // Mapping from Ethereum address to Nostr public key
     mapping(address => bytes32) public addressPubkey;
 
@@ -154,19 +153,21 @@ contract NostrLinkr is Ownable, Pausable {
 
         // Reconstruct the event hash according to Nostr specification
         // Event serialization format: [0, pubkey, created_at, kind, tags, content]
-        string memory serializedEvent = string(abi.encodePacked(
-            '[0,"',
-            bytesToHexNoPrefix(abi.encodePacked(pubkey)),
-            '",',
-            uint2str(createdAt),
-            ',',
-            uint2str(kind),
-            ',',
-            tags,
-            ',"',
-            content,
-            '"]'
-        ));
+        string memory serializedEvent = string(
+            abi.encodePacked(
+                '[0,"',
+                bytesToHexNoPrefix(abi.encodePacked(pubkey)),
+                '",',
+                uint2str(createdAt),
+                ",",
+                uint2str(kind),
+                ",",
+                tags,
+                ',"',
+                content,
+                '"]'
+            )
+        );
 
         // Compute SHA-256 hash of the serialized event
         bytes32 computedHash = sha256(bytes(serializedEvent));
@@ -220,13 +221,8 @@ contract NostrLinkr is Ownable, Pausable {
 
         // Compute BIP-340 challenge: e = int(tagged_hash("BIP0340/challenge", r || pubkey || message)) mod n
         bytes32 challengeTag = sha256("BIP0340/challenge");
-        uint256 e = uint256(sha256(abi.encodePacked(
-            challengeTag,
-            challengeTag,
-            bytes32(r),
-            pubkey,
-            message
-        ))) % CURVE_ORDER;
+        uint256 e = uint256(sha256(abi.encodePacked(challengeTag, challengeTag, bytes32(r), pubkey, message))) %
+            CURVE_ORDER;
 
         // Verify: s*G == R + e*P
         // This is equivalent to checking that s*G - e*P has x-coordinate == r and even y
@@ -279,7 +275,7 @@ contract NostrLinkr is Ownable, Pausable {
     function modExp(uint256 base, uint256 exponent, uint256 modulus) internal view returns (uint256 result) {
         assembly {
             let ptr := mload(0x40)
-            mstore(ptr, 0x20)           // base length
+            mstore(ptr, 0x20) // base length
             mstore(add(ptr, 0x20), 0x20) // exponent length
             mstore(add(ptr, 0x40), 0x20) // modulus length
             mstore(add(ptr, 0x60), base)
@@ -357,7 +353,11 @@ contract NostrLinkr is Ownable, Pausable {
         rx = addmod(mulmod(lambda, lambda, FIELD_PRIME), FIELD_PRIME - addmod(x1, x2, FIELD_PRIME), FIELD_PRIME);
 
         // ry = lambda * (x1 - rx) - y1 mod p
-        ry = addmod(mulmod(lambda, addmod(x1, FIELD_PRIME - rx, FIELD_PRIME), FIELD_PRIME), FIELD_PRIME - y1, FIELD_PRIME);
+        ry = addmod(
+            mulmod(lambda, addmod(x1, FIELD_PRIME - rx, FIELD_PRIME), FIELD_PRIME),
+            FIELD_PRIME - y1,
+            FIELD_PRIME
+        );
     }
 
     /**
@@ -390,7 +390,7 @@ contract NostrLinkr is Ownable, Pausable {
         uint256 k = len;
         while (_i != 0) {
             k = k - 1;
-            uint8 temp = (48 + uint8(_i - _i / 10 * 10));
+            uint8 temp = (48 + uint8(_i - (_i / 10) * 10));
             bytes1 b1 = bytes1(temp);
             bstr[k] = b1;
             _i /= 10;
@@ -415,19 +415,21 @@ contract NostrLinkr is Ownable, Pausable {
         string memory content
     ) external pure returns (bytes32) {
         // Serialize event according to Nostr specification (no 0x prefixes)
-        string memory serializedEvent = string(abi.encodePacked(
-            '[0,"',
-            bytesToHexNoPrefix(abi.encodePacked(pubkey)),
-            '",',
-            uint2str(createdAt),
-            ',',
-            uint2str(kind),
-            ',',
-            tags,
-            ',"',
-            content,
-            '"]'
-        ));
+        string memory serializedEvent = string(
+            abi.encodePacked(
+                '[0,"',
+                bytesToHexNoPrefix(abi.encodePacked(pubkey)),
+                '",',
+                uint2str(createdAt),
+                ",",
+                uint2str(kind),
+                ",",
+                tags,
+                ',"',
+                content,
+                '"]'
+            )
+        );
 
         // Return SHA-256 hash of serialized event
         return sha256(bytes(serializedEvent));

@@ -19,22 +19,22 @@
 @plugin "daisyui/theme" {
   name: "light";
 
-  --color-primary: #7C3AED;
+  --color-primary: #7c3aed;
   --color-primary-content: #ffffff;
-  --color-secondary: #EDE9FE;
-  --color-secondary-content: #4C1D95;
-  --color-accent: #F59E0B;
-  --color-accent-content: #451A03;
-  --color-neutral: #18181B;
-  --color-neutral-content: #FAFAFA;
-  --color-base-100: #FFFFFF;
-  --color-base-200: #F9FAFB;
-  --color-base-300: #F0ECFE;
-  --color-base-content: #18181B;
-  --color-info: #7C3AED;
-  --color-success: #10B981;
-  --color-warning: #F59E0B;
-  --color-error: #EF4444;
+  --color-secondary: #ede9fe;
+  --color-secondary-content: #4c1d95;
+  --color-accent: #f59e0b;
+  --color-accent-content: #451a03;
+  --color-neutral: #18181b;
+  --color-neutral-content: #fafafa;
+  --color-base-100: #ffffff;
+  --color-base-200: #f9fafb;
+  --color-base-300: #f0ecfe;
+  --color-base-content: #18181b;
+  --color-info: #7c3aed;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
 
   --radius-field: 0.75rem;
   --radius-box: 1rem;
@@ -43,22 +43,22 @@
 @plugin "daisyui/theme" {
   name: "dark";
 
-  --color-primary: #A78BFA;
-  --color-primary-content: #1A1025;
-  --color-secondary: #2E1065;
-  --color-secondary-content: #DDD6FE;
-  --color-accent: #FBBF24;
-  --color-accent-content: #451A03;
-  --color-neutral: #FAFAFA;
-  --color-neutral-content: #18181B;
-  --color-base-100: #0F0A1A;
-  --color-base-200: #0A0612;
-  --color-base-300: #1E1630;
-  --color-base-content: #F5F0FF;
-  --color-info: #A78BFA;
-  --color-success: #34D399;
-  --color-warning: #FBBF24;
-  --color-error: #F87171;
+  --color-primary: #a78bfa;
+  --color-primary-content: #1a1025;
+  --color-secondary: #2e1065;
+  --color-secondary-content: #ddd6fe;
+  --color-accent: #fbbf24;
+  --color-accent-content: #451a03;
+  --color-neutral: #fafafa;
+  --color-neutral-content: #18181b;
+  --color-base-100: #0f0a1a;
+  --color-base-200: #0a0612;
+  --color-base-300: #1e1630;
+  --color-base-content: #f5f0ff;
+  --color-info: #a78bfa;
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-error: #f87171;
 
   --radius-field: 0.75rem;
   --radius-box: 1rem;
@@ -258,12 +258,24 @@
   animation: fade-in-up 0.5s ease-out forwards;
 }
 
-.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
-.stagger-children > *:nth-child(2) { animation-delay: 80ms; }
-.stagger-children > *:nth-child(3) { animation-delay: 160ms; }
-.stagger-children > *:nth-child(4) { animation-delay: 240ms; }
-.stagger-children > *:nth-child(5) { animation-delay: 320ms; }
-.stagger-children > *:nth-child(6) { animation-delay: 400ms; }
+.stagger-children > *:nth-child(1) {
+  animation-delay: 0ms;
+}
+.stagger-children > *:nth-child(2) {
+  animation-delay: 80ms;
+}
+.stagger-children > *:nth-child(3) {
+  animation-delay: 160ms;
+}
+.stagger-children > *:nth-child(4) {
+  animation-delay: 240ms;
+}
+.stagger-children > *:nth-child(5) {
+  animation-delay: 320ms;
+}
+.stagger-children > *:nth-child(6) {
+  animation-delay: 400ms;
+}
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar {
