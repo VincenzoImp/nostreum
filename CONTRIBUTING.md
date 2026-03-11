@@ -4,10 +4,7 @@ Thanks for your interest in contributing to Nostreum.
 
 ## Project Overview
 
-Nostreum is an on-chain identity bridge between Ethereum and Nostr, built on Scaffold-ETH 2. It consists of two packages:
-
-- **`packages/hardhat`** - Smart contracts (NostrLinkr with BIP-340 Schnorr verification)
-- **`packages/nextjs`** - Frontend (Nostr social client with identity bridge UI)
+Nostreum is a Nostr social client with on-chain Ethereum identity verification, powered by the [nostr-linkr](https://github.com/VincenzoImp/nostr-linkr) SDK. Built on Scaffold-ETH 2.
 
 ## Getting Started
 
@@ -15,29 +12,22 @@ Nostreum is an on-chain identity bridge between Ethereum and Nostr, built on Sca
 git clone https://github.com/VincenzoImp/nostreum.git
 cd nostreum
 yarn install
-yarn chain    # Terminal 1
-yarn deploy   # Terminal 2
-yarn start    # Terminal 3
+yarn dev
 ```
+
+Open http://localhost:3000
 
 ## Development Workflow
 
 ### Code Style
-- Prettier for formatting (with Solidity plugin)
+- Prettier for formatting
 - ESLint with Next.js config
 - Pre-commit hooks via Husky + lint-staged
 
 ```bash
-yarn format   # Run Prettier
-yarn lint     # Run ESLint
-```
-
-### Testing
-
-```bash
-yarn hardhat:test         # 22 contract tests
-yarn hardhat:check-types  # Hardhat TypeScript check
-yarn next:check-types     # Next.js TypeScript check
+yarn format       # Run Prettier
+yarn lint         # Run ESLint
+yarn check-types  # TypeScript checks
 ```
 
 ### Architecture Conventions
@@ -45,43 +35,26 @@ yarn next:check-types     # Next.js TypeScript check
 - All frontend pages use `"use client"` directive
 - Path alias: `~~/*` maps to `packages/nextjs/`
 - Contract interactions use `useScaffoldReadContract` / `useScaffoldWriteContract`
+- Identity bridge uses `nostr-linkr` SDK (`createAndSignLinkEvent`, etc.)
 - Nostr hooks go in `hooks/nostr/`, bridge hooks in `hooks/bridge/`
 - Shared UI components go in `components/shared/`
 - Feed components go in `components/feed/`
 - Layout components go in `components/layout/`
-- External images use `<img>` tags (not `next/image`) with eslint-disable comment
 - Glass morphism design: use `glass-card` and `glass-card-hover` CSS classes
 
-### Smart Contract Changes
+### Smart Contract
 
-If you modify `NostrLinkr.sol`:
-1. Run `yarn hardhat:compile`
-2. Update/add tests in `NostrLinkr.test.ts`
-3. Run `yarn hardhat:test` and ensure all tests pass
-4. Redeploy with `yarn deploy`
+The NostrLinkr smart contract is maintained in the [nostr-linkr](https://github.com/VincenzoImp/nostr-linkr) repository. Contract changes should be submitted there.
 
 ## How to Contribute
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/your-feature`)
 3. Make your changes
-4. Run tests and type checks
+4. Run `yarn lint` and `yarn check-types`
 5. Commit with a clear message
-6. Push to your fork
-7. Open a Pull Request
-
-### Pull Request Guidelines
-
-- Keep PRs focused on a single change
-- Include a clear description of what and why
-- Ensure all tests pass
-- Follow existing code conventions
-- Update documentation if needed
+6. Open a Pull Request
 
 ## Reporting Issues
 
-Open an issue with:
-- Clear description of the problem or feature request
-- Steps to reproduce (for bugs)
-- Expected vs actual behavior
-- Environment details (OS, Node version, browser)
+Use the [bug report template](https://github.com/VincenzoImp/nostreum/issues/new?template=bug_report.yml).
