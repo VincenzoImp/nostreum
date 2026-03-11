@@ -1,0 +1,570 @@
+{
+  "address": "0xB2E3da5028AEBe3896470C7EE91a75a8f2ca0806",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "EnforcedPause",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ExpectedPause",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableInvalidOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableUnauthorizedAccount",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "addr",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "pubkey",
+          "type": "bytes32"
+        }
+      ],
+      "name": "LinkrPulled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "addr",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "pubkey",
+          "type": "bytes32"
+        }
+      ],
+      "name": "LinkrPushed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "Paused",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "Unpaused",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "addressPubkey",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "pubkey",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "createdAt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "kind",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "tags",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "content",
+          "type": "string"
+        }
+      ],
+      "name": "getEventHash",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "pause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "paused",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "pubkeyAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "pullLinkr",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "id",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "pubkey",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "createdAt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "kind",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "tags",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "content",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes",
+          "name": "sig",
+          "type": "bytes"
+        }
+      ],
+      "name": "pushLinkr",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "unpause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "eventId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "pubkey",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "createdAt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "kind",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "tags",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "content",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes",
+          "name": "signature",
+          "type": "bytes"
+        }
+      ],
+      "name": "verifyNostrEvent",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0xbd45a0d3228ecb5b39486bca6ad4166d5af76d21dc34cd28db6ff19add78728f",
+  "receipt": {
+    "to": null,
+    "from": "0xf872Ab63F22a37B77247FC02F2C933B041b1e05E",
+    "contractAddress": "0xB2E3da5028AEBe3896470C7EE91a75a8f2ca0806",
+    "transactionIndex": 18,
+    "gasUsed": "1462618",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001010100000000000000000000000000000000020000000000000000000800000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000802000000000000000000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000080000000000000000000008000000000000",
+    "blockHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "transactionHash": "0xbd45a0d3228ecb5b39486bca6ad4166d5af76d21dc34cd28db6ff19add78728f",
+    "logs": [
+      {
+        "transactionIndex": 18,
+        "blockNumber": 38725622,
+        "transactionHash": "0xbd45a0d3228ecb5b39486bca6ad4166d5af76d21dc34cd28db6ff19add78728f",
+        "address": "0xB2E3da5028AEBe3896470C7EE91a75a8f2ca0806",
+        "topics": [
+          "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x000000000000000000000000f872ab63f22a37b77247fc02f2c933b041b1e05e"
+        ],
+        "data": "0x",
+        "logIndex": 131,
+        "blockHash": "0x0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    ],
+    "blockNumber": 38725622,
+    "cumulativeGasUsed": "5002914",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "numDeployments": 1,
+  "solcInputHash": "10fa0852511f48a536c2c1af1540fc7d",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.30+commit.73712a01\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"EnforcedPause\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ExpectedPause\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"OwnableInvalidOwner\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"OwnableUnauthorizedAccount\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"pubkey\",\"type\":\"bytes32\"}],\"name\":\"LinkrPulled\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"pubkey\",\"type\":\"bytes32\"}],\"name\":\"LinkrPushed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Paused\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Unpaused\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"addressPubkey\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"pubkey\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"createdAt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"kind\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"tags\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"content\",\"type\":\"string\"}],\"name\":\"getEventHash\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"pause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"paused\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"pubkeyAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"pullLinkr\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"id\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"pubkey\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"createdAt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"kind\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"tags\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"content\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"sig\",\"type\":\"bytes\"}],\"name\":\"pushLinkr\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"unpause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"eventId\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"pubkey\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"createdAt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"kind\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"tags\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"content\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"verifyNostrEvent\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Smart contract to link Ethereum addresses with Nostr public keys\",\"errors\":{\"EnforcedPause()\":[{\"details\":\"The operation failed because the contract is paused.\"}],\"ExpectedPause()\":[{\"details\":\"The operation failed because the contract is not paused.\"}],\"OwnableInvalidOwner(address)\":[{\"details\":\"The owner is not a valid owner account. (eg. `address(0)`)\"}],\"OwnableUnauthorizedAccount(address)\":[{\"details\":\"The caller account is not authorized to perform an operation.\"}]},\"events\":{\"Paused(address)\":{\"details\":\"Emitted when the pause is triggered by `account`.\"},\"Unpaused(address)\":{\"details\":\"Emitted when the pause is lifted by `account`.\"}},\"kind\":\"dev\",\"methods\":{\"getEventHash(bytes32,uint256,uint256,string,string)\":{\"details\":\"Utility function for testing - compute event hash\",\"params\":{\"content\":\"Address content (without 0x prefix)\",\"createdAt\":\"Unix timestamp\",\"kind\":\"Event kind\",\"pubkey\":\"The public key\",\"tags\":\"Event tags\"},\"returns\":{\"_0\":\"bytes32 The computed event hash\"}},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"pause()\":{\"details\":\"Pause the contract - only owner\"},\"paused()\":{\"details\":\"Returns true if the contract is paused, and false otherwise.\"},\"pullLinkr()\":{\"details\":\"Remove the linkage between caller's address and their Nostr pubkey\"},\"pushLinkr(bytes32,bytes32,uint256,uint256,string,string,bytes)\":{\"details\":\"Main function to link Ethereum address to Nostr pubkey\",\"params\":{\"content\":\"The content of the event (must be sender's address without 0x prefix)\",\"createdAt\":\"Unix timestamp when the event was created\",\"id\":\"The Nostr event ID (hash of the event)\",\"kind\":\"The Nostr event kind (must be 27235 for linkage)\",\"pubkey\":\"The Nostr public key to link with\",\"sig\":\"The Schnorr signature of the Nostr event (64 bytes)\",\"tags\":\"JSON string of event tags (must be empty array \\\"[]\\\")\"}},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"},\"unpause()\":{\"details\":\"Unpause the contract - only owner\"},\"verifyNostrEvent(bytes32,bytes32,uint256,uint256,string,string,bytes)\":{\"details\":\"Verify Nostr event according to NIP-01 specification\",\"params\":{\"content\":\"The event content\",\"createdAt\":\"Unix timestamp of event creation\",\"eventId\":\"The expected event ID (hash)\",\"kind\":\"The event kind\",\"pubkey\":\"The public key that signed the event\",\"signature\":\"The Schnorr signature (64 bytes)\",\"tags\":\"JSON string of event tags\"},\"returns\":{\"_0\":\"bool True if the event is valid, false otherwise\"}}},\"title\":\"NostrLinkr\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"notice\":\"This contract allows users to create verifiable links between their Ethereum address and Nostr identity\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/NostrLinkr.sol\":\"NostrLinkr\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/access/Ownable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v5.0.0) (access/Ownable.sol)\\n\\npragma solidity ^0.8.20;\\n\\nimport {Context} from \\\"../utils/Context.sol\\\";\\n\\n/**\\n * @dev Contract module which provides a basic access control mechanism, where\\n * there is an account (an owner) that can be granted exclusive access to\\n * specific functions.\\n *\\n * The initial owner is set to the address provided by the deployer. This can\\n * later be changed with {transferOwnership}.\\n *\\n * This module is used through inheritance. It will make available the modifier\\n * `onlyOwner`, which can be applied to your functions to restrict their use to\\n * the owner.\\n */\\nabstract contract Ownable is Context {\\n    address private _owner;\\n\\n    /**\\n     * @dev The caller account is not authorized to perform an operation.\\n     */\\n    error OwnableUnauthorizedAccount(address account);\\n\\n    /**\\n     * @dev The owner is not a valid owner account. (eg. `address(0)`)\\n     */\\n    error OwnableInvalidOwner(address owner);\\n\\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\\n\\n    /**\\n     * @dev Initializes the contract setting the address provided by the deployer as the initial owner.\\n     */\\n    constructor(address initialOwner) {\\n        if (initialOwner == address(0)) {\\n            revert OwnableInvalidOwner(address(0));\\n        }\\n        _transferOwnership(initialOwner);\\n    }\\n\\n    /**\\n     * @dev Throws if called by any account other than the owner.\\n     */\\n    modifier onlyOwner() {\\n        _checkOwner();\\n        _;\\n    }\\n\\n    /**\\n     * @dev Returns the address of the current owner.\\n     */\\n    function owner() public view virtual returns (address) {\\n        return _owner;\\n    }\\n\\n    /**\\n     * @dev Throws if the sender is not the owner.\\n     */\\n    function _checkOwner() internal view virtual {\\n        if (owner() != _msgSender()) {\\n            revert OwnableUnauthorizedAccount(_msgSender());\\n        }\\n    }\\n\\n    /**\\n     * @dev Leaves the contract without owner. It will not be possible to call\\n     * `onlyOwner` functions. Can only be called by the current owner.\\n     *\\n     * NOTE: Renouncing ownership will leave the contract without an owner,\\n     * thereby disabling any functionality that is only available to the owner.\\n     */\\n    function renounceOwnership() public virtual onlyOwner {\\n        _transferOwnership(address(0));\\n    }\\n\\n    /**\\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\\n     * Can only be called by the current owner.\\n     */\\n    function transferOwnership(address newOwner) public virtual onlyOwner {\\n        if (newOwner == address(0)) {\\n            revert OwnableInvalidOwner(address(0));\\n        }\\n        _transferOwnership(newOwner);\\n    }\\n\\n    /**\\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\\n     * Internal function without access restriction.\\n     */\\n    function _transferOwnership(address newOwner) internal virtual {\\n        address oldOwner = _owner;\\n        _owner = newOwner;\\n        emit OwnershipTransferred(oldOwner, newOwner);\\n    }\\n}\\n\",\"keccak256\":\"0xff6d0bb2e285473e5311d9d3caacb525ae3538a80758c10649a4d61029b017bb\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/Context.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v5.0.1) (utils/Context.sol)\\n\\npragma solidity ^0.8.20;\\n\\n/**\\n * @dev Provides information about the current execution context, including the\\n * sender of the transaction and its data. While these are generally available\\n * via msg.sender and msg.data, they should not be accessed in such a direct\\n * manner, since when dealing with meta-transactions the account sending and\\n * paying for execution may not be the actual sender (as far as an application\\n * is concerned).\\n *\\n * This contract is only required for intermediate, library-like contracts.\\n */\\nabstract contract Context {\\n    function _msgSender() internal view virtual returns (address) {\\n        return msg.sender;\\n    }\\n\\n    function _msgData() internal view virtual returns (bytes calldata) {\\n        return msg.data;\\n    }\\n\\n    function _contextSuffixLength() internal view virtual returns (uint256) {\\n        return 0;\\n    }\\n}\\n\",\"keccak256\":\"0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/Pausable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v5.0.0) (utils/Pausable.sol)\\n\\npragma solidity ^0.8.20;\\n\\nimport {Context} from \\\"../utils/Context.sol\\\";\\n\\n/**\\n * @dev Contract module which allows children to implement an emergency stop\\n * mechanism that can be triggered by an authorized account.\\n *\\n * This module is used through inheritance. It will make available the\\n * modifiers `whenNotPaused` and `whenPaused`, which can be applied to\\n * the functions of your contract. Note that they will not be pausable by\\n * simply including this module, only once the modifiers are put in place.\\n */\\nabstract contract Pausable is Context {\\n    bool private _paused;\\n\\n    /**\\n     * @dev Emitted when the pause is triggered by `account`.\\n     */\\n    event Paused(address account);\\n\\n    /**\\n     * @dev Emitted when the pause is lifted by `account`.\\n     */\\n    event Unpaused(address account);\\n\\n    /**\\n     * @dev The operation failed because the contract is paused.\\n     */\\n    error EnforcedPause();\\n\\n    /**\\n     * @dev The operation failed because the contract is not paused.\\n     */\\n    error ExpectedPause();\\n\\n    /**\\n     * @dev Initializes the contract in unpaused state.\\n     */\\n    constructor() {\\n        _paused = false;\\n    }\\n\\n    /**\\n     * @dev Modifier to make a function callable only when the contract is not paused.\\n     *\\n     * Requirements:\\n     *\\n     * - The contract must not be paused.\\n     */\\n    modifier whenNotPaused() {\\n        _requireNotPaused();\\n        _;\\n    }\\n\\n    /**\\n     * @dev Modifier to make a function callable only when the contract is paused.\\n     *\\n     * Requirements:\\n     *\\n     * - The contract must be paused.\\n     */\\n    modifier whenPaused() {\\n        _requirePaused();\\n        _;\\n    }\\n\\n    /**\\n     * @dev Returns true if the contract is paused, and false otherwise.\\n     */\\n    function paused() public view virtual returns (bool) {\\n        return _paused;\\n    }\\n\\n    /**\\n     * @dev Throws if the contract is paused.\\n     */\\n    function _requireNotPaused() internal view virtual {\\n        if (paused()) {\\n            revert EnforcedPause();\\n        }\\n    }\\n\\n    /**\\n     * @dev Throws if the contract is not paused.\\n     */\\n    function _requirePaused() internal view virtual {\\n        if (!paused()) {\\n            revert ExpectedPause();\\n        }\\n    }\\n\\n    /**\\n     * @dev Triggers stopped state.\\n     *\\n     * Requirements:\\n     *\\n     * - The contract must not be paused.\\n     */\\n    function _pause() internal virtual whenNotPaused {\\n        _paused = true;\\n        emit Paused(_msgSender());\\n    }\\n\\n    /**\\n     * @dev Returns to normal state.\\n     *\\n     * Requirements:\\n     *\\n     * - The contract must be paused.\\n     */\\n    function _unpause() internal virtual whenPaused {\\n        _paused = false;\\n        emit Unpaused(_msgSender());\\n    }\\n}\\n\",\"keccak256\":\"0xb2e5f50762c27fb4b123e3619c3c02bdcba5e515309382e5bfb6f7d6486510bd\",\"license\":\"MIT\"},\"contracts/NostrLinkr.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.20;\\n\\nimport \\\"@openzeppelin/contracts/access/Ownable.sol\\\";\\nimport \\\"@openzeppelin/contracts/utils/Pausable.sol\\\";\\n\\n/**\\n * @title NostrLinkr\\n * @dev Smart contract to link Ethereum addresses with Nostr public keys\\n * @notice This contract allows users to create verifiable links between their Ethereum address and Nostr identity\\n */\\ncontract NostrLinkr is Ownable, Pausable {\\n\\n    // Mapping from Ethereum address to Nostr public key\\n    mapping(address => bytes32) public addressPubkey;\\n\\n    // Mapping from Nostr public key to Ethereum address\\n    mapping(bytes32 => address) public pubkeyAddress;\\n\\n    // Event emitted when a new link is created\\n    event LinkrPushed(address indexed addr, bytes32 indexed pubkey);\\n\\n    // Event emitted when a link is removed\\n    event LinkrPulled(address indexed addr, bytes32 indexed pubkey);\\n\\n    // Secp256k1 curve constants\\n    uint256 private constant CURVE_ORDER = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141;\\n    uint256 private constant FIELD_PRIME = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F;\\n    uint256 private constant GX = 0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798;\\n    uint256 private constant GY = 0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8;\\n\\n    // Maximum future timestamp tolerance (5 minutes)\\n    uint256 private constant MAX_FUTURE_TOLERANCE = 300;\\n    // Maximum past timestamp tolerance (1 hour)\\n    uint256 private constant MAX_PAST_TOLERANCE = 3600;\\n\\n    constructor() Ownable(msg.sender) {}\\n\\n    /**\\n     * @dev Pause the contract - only owner\\n     */\\n    function pause() external onlyOwner {\\n        _pause();\\n    }\\n\\n    /**\\n     * @dev Unpause the contract - only owner\\n     */\\n    function unpause() external onlyOwner {\\n        _unpause();\\n    }\\n\\n    /**\\n     * @dev Main function to link Ethereum address to Nostr pubkey\\n     * @param id The Nostr event ID (hash of the event)\\n     * @param pubkey The Nostr public key to link with\\n     * @param createdAt Unix timestamp when the event was created\\n     * @param kind The Nostr event kind (must be 27235 for linkage)\\n     * @param tags JSON string of event tags (must be empty array \\\"[]\\\")\\n     * @param content The content of the event (must be sender's address without 0x prefix)\\n     * @param sig The Schnorr signature of the Nostr event (64 bytes)\\n     */\\n    function pushLinkr(\\n        bytes32 id,\\n        bytes32 pubkey,\\n        uint256 createdAt,\\n        uint256 kind,\\n        string memory tags,\\n        string memory content,\\n        bytes calldata sig\\n    ) external whenNotPaused {\\n        // Validate signature length (Schnorr signatures are 64 bytes)\\n        require(sig.length == 64, \\\"Invalid signature length\\\");\\n\\n        // Validate event kind - 27235 is the designated kind for Nostr linkage\\n        require(kind == 27235, \\\"Invalid kind for Nostr Linkr\\\");\\n\\n        // Validate timestamp - allow 5 minutes future tolerance\\n        require(createdAt <= block.timestamp + MAX_FUTURE_TOLERANCE, \\\"CreatedAt too far in the future\\\");\\n\\n        // Validate timestamp - reject events older than 1 hour\\n        require(createdAt >= block.timestamp - MAX_PAST_TOLERANCE, \\\"CreatedAt too far in the past\\\");\\n\\n        // Validate tags - must be empty for linkage events\\n        require(keccak256(bytes(tags)) == keccak256(bytes(\\\"[]\\\")), \\\"Tags must be empty for Nostr Linkr\\\");\\n\\n        // Validate content - must match sender's address without 0x prefix\\n        require(\\n            keccak256(bytes(content)) == keccak256(bytes(addressToStringNoPrefix(msg.sender))),\\n            \\\"Content must be sender's address without 0x prefix\\\"\\n        );\\n\\n        // Verify the Nostr event signature using NIP-01 and BIP-340 standards\\n        require(verifyNostrEvent(id, pubkey, createdAt, kind, tags, content, sig), \\\"Invalid Nostr signature\\\");\\n\\n        // Remove any existing linkage for this address to prevent conflicts\\n        bytes32 existingPubkey = addressPubkey[msg.sender];\\n        if (existingPubkey != bytes32(0)) {\\n            delete pubkeyAddress[existingPubkey];\\n        }\\n\\n        // Remove any existing linkage for this pubkey to prevent conflicts\\n        address existingAddress = pubkeyAddress[pubkey];\\n        if (existingAddress != address(0)) {\\n            delete addressPubkey[existingAddress];\\n        }\\n\\n        // Create new bidirectional linkage\\n        addressPubkey[msg.sender] = pubkey;\\n        pubkeyAddress[pubkey] = msg.sender;\\n\\n        // Emit event for the new linkage\\n        emit LinkrPushed(msg.sender, pubkey);\\n    }\\n\\n    /**\\n     * @dev Remove the linkage between caller's address and their Nostr pubkey\\n     */\\n    function pullLinkr() external {\\n        // Get the linked pubkey for the caller\\n        bytes32 pubkey = addressPubkey[msg.sender];\\n        require(pubkey != bytes32(0), \\\"No link found for this address\\\");\\n\\n        // Remove bidirectional linkage\\n        delete addressPubkey[msg.sender];\\n        delete pubkeyAddress[pubkey];\\n\\n        // Emit event for the removed linkage\\n        emit LinkrPulled(msg.sender, pubkey);\\n    }\\n\\n    /**\\n     * @dev Verify Nostr event according to NIP-01 specification\\n     * @param eventId The expected event ID (hash)\\n     * @param pubkey The public key that signed the event\\n     * @param createdAt Unix timestamp of event creation\\n     * @param kind The event kind\\n     * @param tags JSON string of event tags\\n     * @param content The event content\\n     * @param signature The Schnorr signature (64 bytes)\\n     * @return bool True if the event is valid, false otherwise\\n     */\\n    function verifyNostrEvent(\\n        bytes32 eventId,\\n        bytes32 pubkey,\\n        uint256 createdAt,\\n        uint256 kind,\\n        string memory tags,\\n        string memory content,\\n        bytes calldata signature\\n    ) public view returns (bool) {\\n        // Validate signature length\\n        require(signature.length == 64, \\\"Signature must be 64 bytes\\\");\\n\\n        // Reconstruct the event hash according to Nostr specification\\n        // Event serialization format: [0, pubkey, created_at, kind, tags, content]\\n        string memory serializedEvent = string(abi.encodePacked(\\n            '[0,\\\"',\\n            bytesToHexNoPrefix(abi.encodePacked(pubkey)),\\n            '\\\",',\\n            uint2str(createdAt),\\n            ',',\\n            uint2str(kind),\\n            ',',\\n            tags,\\n            ',\\\"',\\n            content,\\n            '\\\"]'\\n        ));\\n\\n        // Compute SHA-256 hash of the serialized event\\n        bytes32 computedHash = sha256(bytes(serializedEvent));\\n\\n        // Verify the computed hash matches the provided event ID\\n        require(computedHash == eventId, \\\"Event ID mismatch\\\");\\n\\n        // Verify Schnorr signature according to BIP-340\\n        return verifySchnorrSignature(pubkey, eventId, signature);\\n    }\\n\\n    /**\\n     * @dev BIP-340 Schnorr signature verification\\n     * @param pubkey The x-coordinate of the public key (32 bytes)\\n     * @param message The message hash that was signed (32 bytes)\\n     * @param signature The signature to verify (64 bytes: r || s)\\n     * @return bool True if signature is valid\\n     *\\n     * Implements the BIP-340 verification algorithm:\\n     * 1. Lift the x-only pubkey to a full curve point P\\n     * 2. Compute challenge e = tagged_hash(\\\"BIP0340/challenge\\\", r || P || m)\\n     * 3. Verify that s*G == R + e*P\\n     *\\n     * Uses the MODEXP precompile (address 0x05) for modular arithmetic.\\n     */\\n    function verifySchnorrSignature(\\n        bytes32 pubkey,\\n        bytes32 message,\\n        bytes calldata signature\\n    ) internal view returns (bool) {\\n        // Extract r and s components from signature\\n        uint256 r = uint256(bytes32(signature[0:32]));\\n        uint256 s = uint256(bytes32(signature[32:64]));\\n\\n        // Validate r < field prime and s < curve order\\n        if (r >= FIELD_PRIME) return false;\\n        if (s >= CURVE_ORDER) return false;\\n\\n        // Lift x-only public key to curve point P = (px, py) where py is even\\n        uint256 px = uint256(pubkey);\\n        if (px >= FIELD_PRIME) return false;\\n\\n        // Compute py from px: py^2 = px^3 + 7 (mod p)\\n        uint256 py = liftX(px);\\n        if (py == 0) return false;\\n\\n        // Ensure py is even (BIP-340 convention)\\n        if (py % 2 != 0) {\\n            py = FIELD_PRIME - py;\\n        }\\n\\n        // Compute BIP-340 challenge: e = int(tagged_hash(\\\"BIP0340/challenge\\\", r || pubkey || message)) mod n\\n        bytes32 challengeTag = sha256(\\\"BIP0340/challenge\\\");\\n        uint256 e = uint256(sha256(abi.encodePacked(\\n            challengeTag,\\n            challengeTag,\\n            bytes32(r),\\n            pubkey,\\n            message\\n        ))) % CURVE_ORDER;\\n\\n        // Verify: s*G == R + e*P\\n        // This is equivalent to checking that s*G - e*P has x-coordinate == r and even y\\n\\n        // Compute s*G\\n        (uint256 sgx, uint256 sgy) = ecMul(GX, GY, s);\\n\\n        // Compute e*P\\n        (uint256 epx, uint256 epy) = ecMul(px, py, e);\\n\\n        // Compute R = s*G - e*P = s*G + (-e*P)\\n        // Negate epy for subtraction\\n        uint256 negEpy = FIELD_PRIME - epy;\\n        (uint256 rx, uint256 ry) = ecAdd(sgx, sgy, epx, negEpy);\\n\\n        // Check R is not point at infinity\\n        if (rx == 0 && ry == 0) return false;\\n\\n        // Check R.x == r\\n        if (rx != r) return false;\\n\\n        // Check R.y is even (BIP-340 requirement)\\n        if (ry % 2 != 0) return false;\\n\\n        return true;\\n    }\\n\\n    /**\\n     * @dev Lift x-coordinate to curve point (compute y from x on secp256k1)\\n     * @param x The x-coordinate\\n     * @return y The y-coordinate (positive root), or 0 if x is not on the curve\\n     */\\n    function liftX(uint256 x) internal view returns (uint256) {\\n        // y^2 = x^3 + 7 (mod p)\\n        uint256 ySquared = addmod(mulmod(mulmod(x, x, FIELD_PRIME), x, FIELD_PRIME), 7, FIELD_PRIME);\\n\\n        // Compute square root using Euler's criterion: y = ySquared^((p+1)/4) mod p\\n        // This works because p \\u2261 3 (mod 4) for secp256k1\\n        uint256 y = modExp(ySquared, (FIELD_PRIME + 1) / 4, FIELD_PRIME);\\n\\n        // Verify the result\\n        if (mulmod(y, y, FIELD_PRIME) != ySquared) return 0;\\n\\n        return y;\\n    }\\n\\n    /**\\n     * @dev Modular exponentiation using the MODEXP precompile (address 0x05)\\n     */\\n    function modExp(uint256 base, uint256 exponent, uint256 modulus) internal view returns (uint256 result) {\\n        assembly {\\n            let ptr := mload(0x40)\\n            mstore(ptr, 0x20)           // base length\\n            mstore(add(ptr, 0x20), 0x20) // exponent length\\n            mstore(add(ptr, 0x40), 0x20) // modulus length\\n            mstore(add(ptr, 0x60), base)\\n            mstore(add(ptr, 0x80), exponent)\\n            mstore(add(ptr, 0xa0), modulus)\\n\\n            // Call MODEXP precompile at address 0x05\\n            if iszero(staticcall(gas(), 0x05, ptr, 0xc0, ptr, 0x20)) {\\n                revert(0, 0)\\n            }\\n            result := mload(ptr)\\n        }\\n    }\\n\\n    /**\\n     * @dev Elliptic curve point multiplication using double-and-add\\n     * @param x X-coordinate of the point\\n     * @param y Y-coordinate of the point\\n     * @param scalar The scalar to multiply by\\n     * @return rx X-coordinate of the result\\n     * @return ry Y-coordinate of the result\\n     */\\n    function ecMul(uint256 x, uint256 y, uint256 scalar) internal view returns (uint256 rx, uint256 ry) {\\n        if (scalar == 0) return (0, 0);\\n\\n        rx = 0;\\n        ry = 0;\\n        uint256 qx = x;\\n        uint256 qy = y;\\n\\n        while (scalar > 0) {\\n            if (scalar & 1 == 1) {\\n                if (rx == 0 && ry == 0) {\\n                    rx = qx;\\n                    ry = qy;\\n                } else {\\n                    (rx, ry) = ecAdd(rx, ry, qx, qy);\\n                }\\n            }\\n            (qx, qy) = ecAdd(qx, qy, qx, qy); // Point doubling\\n            scalar >>= 1;\\n        }\\n    }\\n\\n    /**\\n     * @dev Elliptic curve point addition (affine coordinates)\\n     * @return rx X-coordinate of the result\\n     * @return ry Y-coordinate of the result\\n     */\\n    function ecAdd(uint256 x1, uint256 y1, uint256 x2, uint256 y2) internal view returns (uint256 rx, uint256 ry) {\\n        // Point at infinity handling\\n        if (x1 == 0 && y1 == 0) return (x2, y2);\\n        if (x2 == 0 && y2 == 0) return (x1, y1);\\n\\n        uint256 lambda;\\n\\n        if (x1 == x2) {\\n            if (y1 != y2) {\\n                // Points are inverses, return point at infinity\\n                return (0, 0);\\n            }\\n            // Point doubling: lambda = (3 * x1^2) / (2 * y1) mod p\\n            if (y1 == 0) return (0, 0);\\n            uint256 numerator = mulmod(3, mulmod(x1, x1, FIELD_PRIME), FIELD_PRIME);\\n            uint256 denominator = mulmod(2, y1, FIELD_PRIME);\\n            lambda = mulmod(numerator, modInverse(denominator, FIELD_PRIME), FIELD_PRIME);\\n        } else {\\n            // Point addition: lambda = (y2 - y1) / (x2 - x1) mod p\\n            uint256 numerator = addmod(y2, FIELD_PRIME - y1, FIELD_PRIME);\\n            uint256 denominator = addmod(x2, FIELD_PRIME - x1, FIELD_PRIME);\\n            lambda = mulmod(numerator, modInverse(denominator, FIELD_PRIME), FIELD_PRIME);\\n        }\\n\\n        // rx = lambda^2 - x1 - x2 mod p\\n        rx = addmod(mulmod(lambda, lambda, FIELD_PRIME), FIELD_PRIME - addmod(x1, x2, FIELD_PRIME), FIELD_PRIME);\\n\\n        // ry = lambda * (x1 - rx) - y1 mod p\\n        ry = addmod(mulmod(lambda, addmod(x1, FIELD_PRIME - rx, FIELD_PRIME), FIELD_PRIME), FIELD_PRIME - y1, FIELD_PRIME);\\n    }\\n\\n    /**\\n     * @dev Modular inverse using Fermat's little theorem: a^(-1) = a^(p-2) mod p\\n     */\\n    function modInverse(uint256 a, uint256 modulus) internal view returns (uint256) {\\n        return modExp(a, modulus - 2, modulus);\\n    }\\n\\n    /**\\n     * @dev Convert unsigned integer to string\\n     * @param _i The integer to convert\\n     * @return string The string representation\\n     */\\n    function uint2str(uint256 _i) internal pure returns (string memory) {\\n        if (_i == 0) {\\n            return \\\"0\\\";\\n        }\\n        uint256 j = _i;\\n        uint256 len;\\n\\n        // Calculate string length\\n        while (j != 0) {\\n            len++;\\n            j /= 10;\\n        }\\n\\n        // Build string from right to left\\n        bytes memory bstr = new bytes(len);\\n        uint256 k = len;\\n        while (_i != 0) {\\n            k = k - 1;\\n            uint8 temp = (48 + uint8(_i - _i / 10 * 10));\\n            bytes1 b1 = bytes1(temp);\\n            bstr[k] = b1;\\n            _i /= 10;\\n        }\\n        return string(bstr);\\n    }\\n\\n    /**\\n     * @dev Utility function for testing - compute event hash\\n     * @param pubkey The public key\\n     * @param createdAt Unix timestamp\\n     * @param kind Event kind\\n     * @param tags Event tags\\n     * @param content Address content (without 0x prefix)\\n     * @return bytes32 The computed event hash\\n     */\\n    function getEventHash(\\n        bytes32 pubkey,\\n        uint256 createdAt,\\n        uint256 kind,\\n        string memory tags,\\n        string memory content\\n    ) external pure returns (bytes32) {\\n        // Serialize event according to Nostr specification (no 0x prefixes)\\n        string memory serializedEvent = string(abi.encodePacked(\\n            '[0,\\\"',\\n            bytesToHexNoPrefix(abi.encodePacked(pubkey)),\\n            '\\\",',\\n            uint2str(createdAt),\\n            ',',\\n            uint2str(kind),\\n            ',',\\n            tags,\\n            ',\\\"',\\n            content,\\n            '\\\"]'\\n        ));\\n\\n        // Return SHA-256 hash of serialized event\\n        return sha256(bytes(serializedEvent));\\n    }\\n\\n    /**\\n     * @dev Convert bytes to hexadecimal string without 0x prefix\\n     * @param data The bytes to convert\\n     * @return string The hexadecimal representation without prefix\\n     */\\n    function bytesToHexNoPrefix(bytes memory data) internal pure returns (string memory) {\\n        bytes memory alphabet = \\\"0123456789abcdef\\\";\\n        bytes memory str = new bytes(data.length * 2);\\n        for (uint256 i = 0; i < data.length; i++) {\\n            str[i * 2] = alphabet[uint256(uint8(data[i] >> 4))];\\n            str[1 + i * 2] = alphabet[uint256(uint8(data[i] & 0x0f))];\\n        }\\n        return string(str);\\n    }\\n\\n    /**\\n     * @dev Convert address to hexadecimal string without 0x prefix\\n     * @param _addr The address to convert\\n     * @return string The hexadecimal representation without 0x prefix (40 characters)\\n     */\\n    function addressToStringNoPrefix(address _addr) internal pure returns (string memory) {\\n        bytes32 value = bytes32(uint256(uint160(_addr)));\\n        bytes memory alphabet = \\\"0123456789abcdef\\\";\\n        bytes memory str = new bytes(40);\\n        for (uint256 i = 0; i < 20; i++) {\\n            str[i * 2] = alphabet[uint256(uint8(value[i + 12] >> 4))];\\n            str[1 + i * 2] = alphabet[uint256(uint8(value[i + 12] & 0x0f))];\\n        }\\n        return string(str);\\n    }\\n}\\n\",\"keccak256\":\"0x8369102c3ff09682b622c85ed5fa00a85708684710c24c047b6873d2ec2fe602\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b503380603557604051631e4fbdf760e01b81526000600482015260240160405180910390fd5b603c81604e565b506000805460ff60a01b19169055609e565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b611908806100ad6000396000f3fe608060405234801561001057600080fd5b50600436106100b45760003560e01c80636c72992f116100715780636c72992f14610163578063715018a6146101765780638456cb591461017e5780638da5cb5b14610186578063a1f7347d14610197578063f2fde38b146101b757600080fd5b80630769218d146100b957806328b556b5146100c35780633d2943c7146100e95780633f4ba83a146100fc5780635c975abb146101045780636949210714610122575b600080fd5b6100c16101ca565b005b6100d66100d13660046114b7565b610284565b6040519081526020015b60405180910390f35b6100c16100f736600461153d565b610345565b6100c16106e7565b600054600160a01b900460ff165b60405190151581526020016100e0565b61014b61013036600461162e565b6002602052600090815260409020546001600160a01b031681565b6040516001600160a01b0390911681526020016100e0565b61011261017136600461153d565b6106f9565b6100c161084e565b6100c1610860565b6000546001600160a01b031661014b565b6100d66101a5366004611647565b60016020526000908152604090205481565b6100c16101c5366004611647565b610870565b336000908152600160205260409020548061022c5760405162461bcd60e51b815260206004820152601e60248201527f4e6f206c696e6b20666f756e6420666f7220746869732061646472657373000060448201526064015b60405180910390fd5b336000818152600160209081526040808320839055848352600290915280822080546001600160a01b0319169055518392917fcb1761c67e581f1806ca9344609c4f101f20600f0fbacb43bb965d5c899e136c91a350565b6000806102b18760405160200161029d91815260200190565b6040516020818303038152906040526108ae565b6102ba87610a49565b6102c387610a49565b86866040516020016102d99594939291906116b0565b60405160208183030381529060405290506002816040516102fa919061177c565b602060405180830381855afa158015610317573d6000803e3d6000fd5b5050506040513d601f19601f8201168201806040525081019061033a9190611798565b979650505050505050565b61034d610b75565b6040811461039d5760405162461bcd60e51b815260206004820152601860248201527f496e76616c6964207369676e6174757265206c656e67746800000000000000006044820152606401610223565b84616a63146103ee5760405162461bcd60e51b815260206004820152601c60248201527f496e76616c6964206b696e6420666f72204e6f737472204c696e6b72000000006044820152606401610223565b6103fa61012c426117c7565b8611156104495760405162461bcd60e51b815260206004820152601f60248201527f43726561746564417420746f6f2066617220696e2074686520667574757265006044820152606401610223565b610455610e10426117da565b8610156104a45760405162461bcd60e51b815260206004820152601d60248201527f43726561746564417420746f6f2066617220696e2074686520706173740000006044820152606401610223565b6040805180820190915260028152615b5d60f01b6020918201528451908501207f518674ab2b227e5f11e9084f615d57663cde47bce1ba168b4c19c7ee22a73d701461053d5760405162461bcd60e51b815260206004820152602260248201527f54616773206d75737420626520656d70747920666f72204e6f737472204c696e60448201526135b960f11b6064820152608401610223565b61054633610ba0565b805190602001208380519060200120146105bd5760405162461bcd60e51b815260206004820152603260248201527f436f6e74656e74206d7573742062652073656e64657227732061646472657373604482015271040eed2e8d0deeae84060f040e0e4caccd2f60731b6064820152608401610223565b6105cd88888888888888886106f9565b6106195760405162461bcd60e51b815260206004820152601760248201527f496e76616c6964204e6f737472207369676e61747572650000000000000000006044820152606401610223565b33600090815260016020526040902054801561064c57600081815260026020526040902080546001600160a01b03191690555b6000888152600260205260409020546001600160a01b03168015610684576001600160a01b0381166000908152600160205260408120555b3360008181526001602090815260408083208d90558c8352600290915280822080546001600160a01b03191684179055518b92917f33d53066fcd804d37605011eda236659f0b7ae3d7006521f5ce372ce912411d291a350505050505050505050565b6106ef610d0f565b6106f7610d3c565b565b60006040821461074b5760405162461bcd60e51b815260206004820152601a60248201527f5369676e6174757265206d7573742062652036342062797465730000000000006044820152606401610223565b60006107638960405160200161029d91815260200190565b61076c89610a49565b61077589610a49565b888860405160200161078b9594939291906116b0565b604051602081830303815290604052905060006002826040516107ae919061177c565b602060405180830381855afa1580156107cb573d6000803e3d6000fd5b5050506040513d601f19601f820116820180604052508101906107ee9190611798565b90508a81146108335760405162461bcd60e51b815260206004820152601160248201527008aeccadce840928840dad2e6dac2e8c6d607b1b6044820152606401610223565b61083f8a8c8787610d91565b9b9a5050505050505050505050565b610856610d0f565b6106f76000611088565b610868610d0f565b6106f76110d8565b610878610d0f565b6001600160a01b0381166108a257604051631e4fbdf760e01b815260006004820152602401610223565b6108ab81611088565b50565b60408051808201909152601081526f181899199a1a9b1b9c1cb0b131b232b360811b60208201528151606091906000906108e99060026117ed565b67ffffffffffffffff81111561090157610901611412565b6040519080825280601f01601f19166020018201604052801561092b576020820181803683370190505b50905060005b8451811015610a415782600486838151811061094f5761094f611804565b016020015182516001600160f81b031990911690911c60f81c90811061097757610977611804565b01602001516001600160f81b031916826109928360026117ed565b815181106109a2576109a2611804565b60200101906001600160f81b031916908160001a905350828582815181106109cc576109cc611804565b602091010151815160f89190911c600f169081106109ec576109ec611804565b01602001516001600160f81b03191682610a078360026117ed565b610a129060016117c7565b81518110610a2257610a22611804565b60200101906001600160f81b031916908160001a905350600101610931565b509392505050565b606081600003610a705750506040805180820190915260018152600360fc1b602082015290565b8160005b8115610a9a5780610a848161181a565b9150610a939050600a83611849565b9150610a74565b60008167ffffffffffffffff811115610ab557610ab5611412565b6040519080825280601f01601f191660200182016040528015610adf576020820181803683370190505b509050815b8515610b6c57610af56001826117da565b90506000610b04600a88611849565b610b0f90600a6117ed565b610b1990886117da565b610b2490603061185d565b905060008160f81b905080848481518110610b4157610b41611804565b60200101906001600160f81b031916908160001a905350610b63600a89611849565b97505050610ae4565b50949350505050565b600054600160a01b900460ff16156106f75760405163d93c066560e01b815260040160405180910390fd5b604080518082018252601081526f181899199a1a9b1b9c1cb0b131b232b360811b60208201528151602880825260608281019094526001600160a01b038516929160009160208201818036833701905050905060005b6014811015610b6c5782600485610c0e84600c6117c7565b60208110610c1e57610c1e611804565b1a60f81b6001600160f81b031916901c60f81c60ff1681518110610c4457610c44611804565b01602001516001600160f81b03191682610c5f8360026117ed565b81518110610c6f57610c6f611804565b60200101906001600160f81b031916908160001a9053508284610c9383600c6117c7565b60208110610ca357610ca3611804565b825191901a600f16908110610cba57610cba611804565b01602001516001600160f81b03191682610cd58360026117ed565b610ce09060016117c7565b81518110610cf057610cf0611804565b60200101906001600160f81b031916908160001a905350600101610bf6565b6000546001600160a01b031633146106f75760405163118cdaa760e01b8152336004820152602401610223565b610d4461111b565b6000805460ff60a01b191690557f5db9ee0a495bf2e6ff9c91a7834c1ba4fdd244a5e8aa4e537bd38aeae4b073aa335b6040516001600160a01b03909116815260200160405180910390a1565b600080610da16020828587611876565b610daa916118a0565b90506000610dbc604060208688611876565b610dc5916118a0565b90506401000003d0198210610ddf57600092505050611080565b70014551231950b75fc4402da1732fc9bebe198110610e0357600092505050611080565b866401000003d0198110610e1d5760009350505050611080565b6000610e2882611145565b905080600003610e3f576000945050505050611080565b610e4a6002826118be565b15610e6257610e5f816401000003d0196117da565b90505b60006002604051610e8a9070424950303334302f6368616c6c656e676560781b815260110190565b602060405180830381855afa158015610ea7573d6000803e3d6000fd5b5050506040513d601f19601f82011682018060405250810190610eca9190611798565b604080516020810183905290810182905260608101879052608081018c905260a081018b905290915060009070014551231950b75fc4402da1732fc9bebe199060029060c00160408051601f1981840301815290829052610f2a9161177c565b602060405180830381855afa158015610f47573d6000803e3d6000fd5b5050506040513d601f19601f82011682018060405250810190610f6a9190611798565b610f7491906118be565b9050600080610fc47f79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817987f483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8896111b9565b91509150600080610fd68888876111b9565b90925090506000610fed826401000003d0196117da565b9050600080610ffe8787878661123f565b91509150816000148015611010575080155b1561102b5760009d5050505050505050505050505050611080565b8c82146110485760009d5050505050505050505050505050611080565b6110536002826118be565b1561106e5760009d5050505050505050505050505050611080565b60019d50505050505050505050505050505b949350505050565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b6110e0610b75565b6000805460ff60a01b1916600160a01b1790557f62e78cea01bee320cd4e420270b5ea74000d11b0c9f74754ebdbfc544b05a258610d743390565b600054600160a01b900460ff166106f757604051638dfc202b60e01b815260040160405180910390fd5b6000806401000003d01960076401000003d019856401000003d0198788090908905060006111968260046111806401000003d01960016117c7565b61118a9190611849565b6401000003d0196113ae565b9050816401000003d019828309146111b2575060009392505050565b9392505050565b600080826000036111cf57506000905080611237565b50600090508084845b8415611234578460011660010361121757831580156111f5575082155b1561120557819350809250611217565b6112118484848461123f565b90945092505b6112238282848461123f565b60019690961c9590925090506111d8565b50505b935093915050565b6000808515801561124e575084155b1561125d5750829050816113a5565b83158015611269575082155b156112785750849050836113a5565b60008487036112ed578386146112955760008092509250506113a5565b856000036112aa5760008092509250506113a5565b60006401000003d01980898a09600309905060006401000003d0198860020990506401000003d0196112e2826401000003d0196113f2565b830992505050611345565b60006401000003d019611306886401000003d0196117da565b8608905060006401000003d0196113238a6401000003d0196117da565b880890506401000003d01961133e826401000003d0196113f2565b8309925050505b6401000003d01980868908611360906401000003d0196117da565b6401000003d0198384090892506401000003d019611384876401000003d0196117da565b6401000003d0198061139c876401000003d0196117da565b8b088409089150505b94509492505050565b600060405160208152602080820152602060408201528460608201528360808201528260a082015260208160c08360055afa6113e957600080fd5b51949350505050565b6000611409836114036002856117da565b846113ae565b90505b92915050565b634e487b7160e01b600052604160045260246000fd5b600082601f83011261143957600080fd5b813567ffffffffffffffff81111561145357611453611412565b604051601f8201601f19908116603f0116810167ffffffffffffffff8111828210171561148257611482611412565b60405281815283820160200185101561149a57600080fd5b816020850160208301376000918101602001919091529392505050565b600080600080600060a086880312156114cf57600080fd5b853594506020860135935060408601359250606086013567ffffffffffffffff8111156114fb57600080fd5b61150788828901611428565b925050608086013567ffffffffffffffff81111561152457600080fd5b61153088828901611428565b9150509295509295909350565b60008060008060008060008060e0898b03121561155957600080fd5b88359750602089013596506040890135955060608901359450608089013567ffffffffffffffff81111561158c57600080fd5b6115988b828c01611428565b94505060a089013567ffffffffffffffff8111156115b557600080fd5b6115c18b828c01611428565b93505060c089013567ffffffffffffffff8111156115de57600080fd5b8901601f81018b136115ef57600080fd5b803567ffffffffffffffff81111561160657600080fd5b8b602082840101111561161857600080fd5b989b979a50959850939692959194602001935050565b60006020828403121561164057600080fd5b5035919050565b60006020828403121561165957600080fd5b81356001600160a01b03811681146111b257600080fd5b60005b8381101561168b578181015183820152602001611673565b50506000910152565b600081516116a6818560208601611670565b9290920192915050565b632d98161160e11b815285516000906116d0816004850160208b01611670565b61088b60f21b60049184019182015286516116f2816006840160208b01611670565b600481830101915050600b60fa1b60028201528551611718816003840160208a01611670565b600281830101915050600b60fa1b6001820152845161173e816002840160208901611670565b61176f61176161175b60028585010161161160f11b815260020190565b87611694565b61225d60f01b815260020190565b9998505050505050505050565b6000825161178e818460208701611670565b9190910192915050565b6000602082840312156117aa57600080fd5b5051919050565b634e487b7160e01b600052601160045260246000fd5b8082018082111561140c5761140c6117b1565b8181038181111561140c5761140c6117b1565b808202811582820484141761140c5761140c6117b1565b634e487b7160e01b600052603260045260246000fd5b60006001820161182c5761182c6117b1565b5060010190565b634e487b7160e01b600052601260045260246000fd5b60008261185857611858611833565b500490565b60ff818116838216019081111561140c5761140c6117b1565b6000808585111561188657600080fd5b8386111561189357600080fd5b5050820193919092039150565b8035602083101561140c57600019602084900360031b1b1692915050565b6000826118cd576118cd611833565b50069056fea2646970667358221220c3e3d54ae90194119edbbead48e592a79a7941cc45aaaa384a3f44e2838e529764736f6c634300081e0033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100b45760003560e01c80636c72992f116100715780636c72992f14610163578063715018a6146101765780638456cb591461017e5780638da5cb5b14610186578063a1f7347d14610197578063f2fde38b146101b757600080fd5b80630769218d146100b957806328b556b5146100c35780633d2943c7146100e95780633f4ba83a146100fc5780635c975abb146101045780636949210714610122575b600080fd5b6100c16101ca565b005b6100d66100d13660046114b7565b610284565b6040519081526020015b60405180910390f35b6100c16100f736600461153d565b610345565b6100c16106e7565b600054600160a01b900460ff165b60405190151581526020016100e0565b61014b61013036600461162e565b6002602052600090815260409020546001600160a01b031681565b6040516001600160a01b0390911681526020016100e0565b61011261017136600461153d565b6106f9565b6100c161084e565b6100c1610860565b6000546001600160a01b031661014b565b6100d66101a5366004611647565b60016020526000908152604090205481565b6100c16101c5366004611647565b610870565b336000908152600160205260409020548061022c5760405162461bcd60e51b815260206004820152601e60248201527f4e6f206c696e6b20666f756e6420666f7220746869732061646472657373000060448201526064015b60405180910390fd5b336000818152600160209081526040808320839055848352600290915280822080546001600160a01b0319169055518392917fcb1761c67e581f1806ca9344609c4f101f20600f0fbacb43bb965d5c899e136c91a350565b6000806102b18760405160200161029d91815260200190565b6040516020818303038152906040526108ae565b6102ba87610a49565b6102c387610a49565b86866040516020016102d99594939291906116b0565b60405160208183030381529060405290506002816040516102fa919061177c565b602060405180830381855afa158015610317573d6000803e3d6000fd5b5050506040513d601f19601f8201168201806040525081019061033a9190611798565b979650505050505050565b61034d610b75565b6040811461039d5760405162461bcd60e51b815260206004820152601860248201527f496e76616c6964207369676e6174757265206c656e67746800000000000000006044820152606401610223565b84616a63146103ee5760405162461bcd60e51b815260206004820152601c60248201527f496e76616c6964206b696e6420666f72204e6f737472204c696e6b72000000006044820152606401610223565b6103fa61012c426117c7565b8611156104495760405162461bcd60e51b815260206004820152601f60248201527f43726561746564417420746f6f2066617220696e2074686520667574757265006044820152606401610223565b610455610e10426117da565b8610156104a45760405162461bcd60e51b815260206004820152601d60248201527f43726561746564417420746f6f2066617220696e2074686520706173740000006044820152606401610223565b6040805180820190915260028152615b5d60f01b6020918201528451908501207f518674ab2b227e5f11e9084f615d57663cde47bce1ba168b4c19c7ee22a73d701461053d5760405162461bcd60e51b815260206004820152602260248201527f54616773206d75737420626520656d70747920666f72204e6f737472204c696e60448201526135b960f11b6064820152608401610223565b61054633610ba0565b805190602001208380519060200120146105bd5760405162461bcd60e51b815260206004820152603260248201527f436f6e74656e74206d7573742062652073656e64657227732061646472657373604482015271040eed2e8d0deeae84060f040e0e4caccd2f60731b6064820152608401610223565b6105cd88888888888888886106f9565b6106195760405162461bcd60e51b815260206004820152601760248201527f496e76616c6964204e6f737472207369676e61747572650000000000000000006044820152606401610223565b33600090815260016020526040902054801561064c57600081815260026020526040902080546001600160a01b03191690555b6000888152600260205260409020546001600160a01b03168015610684576001600160a01b0381166000908152600160205260408120555b3360008181526001602090815260408083208d90558c8352600290915280822080546001600160a01b03191684179055518b92917f33d53066fcd804d37605011eda236659f0b7ae3d7006521f5ce372ce912411d291a350505050505050505050565b6106ef610d0f565b6106f7610d3c565b565b60006040821461074b5760405162461bcd60e51b815260206004820152601a60248201527f5369676e6174757265206d7573742062652036342062797465730000000000006044820152606401610223565b60006107638960405160200161029d91815260200190565b61076c89610a49565b61077589610a49565b888860405160200161078b9594939291906116b0565b604051602081830303815290604052905060006002826040516107ae919061177c565b602060405180830381855afa1580156107cb573d6000803e3d6000fd5b5050506040513d601f19601f820116820180604052508101906107ee9190611798565b90508a81146108335760405162461bcd60e51b815260206004820152601160248201527008aeccadce840928840dad2e6dac2e8c6d607b1b6044820152606401610223565b61083f8a8c8787610d91565b9b9a5050505050505050505050565b610856610d0f565b6106f76000611088565b610868610d0f565b6106f76110d8565b610878610d0f565b6001600160a01b0381166108a257604051631e4fbdf760e01b815260006004820152602401610223565b6108ab81611088565b50565b60408051808201909152601081526f181899199a1a9b1b9c1cb0b131b232b360811b60208201528151606091906000906108e99060026117ed565b67ffffffffffffffff81111561090157610901611412565b6040519080825280601f01601f19166020018201604052801561092b576020820181803683370190505b50905060005b8451811015610a415782600486838151811061094f5761094f611804565b016020015182516001600160f81b031990911690911c60f81c90811061097757610977611804565b01602001516001600160f81b031916826109928360026117ed565b815181106109a2576109a2611804565b60200101906001600160f81b031916908160001a905350828582815181106109cc576109cc611804565b602091010151815160f89190911c600f169081106109ec576109ec611804565b01602001516001600160f81b03191682610a078360026117ed565b610a129060016117c7565b81518110610a2257610a22611804565b60200101906001600160f81b031916908160001a905350600101610931565b509392505050565b606081600003610a705750506040805180820190915260018152600360fc1b602082015290565b8160005b8115610a9a5780610a848161181a565b9150610a939050600a83611849565b9150610a74565b60008167ffffffffffffffff811115610ab557610ab5611412565b6040519080825280601f01601f191660200182016040528015610adf576020820181803683370190505b509050815b8515610b6c57610af56001826117da565b90506000610b04600a88611849565b610b0f90600a6117ed565b610b1990886117da565b610b2490603061185d565b905060008160f81b905080848481518110610b4157610b41611804565b60200101906001600160f81b031916908160001a905350610b63600a89611849565b97505050610ae4565b50949350505050565b600054600160a01b900460ff16156106f75760405163d93c066560e01b815260040160405180910390fd5b604080518082018252601081526f181899199a1a9b1b9c1cb0b131b232b360811b60208201528151602880825260608281019094526001600160a01b038516929160009160208201818036833701905050905060005b6014811015610b6c5782600485610c0e84600c6117c7565b60208110610c1e57610c1e611804565b1a60f81b6001600160f81b031916901c60f81c60ff1681518110610c4457610c44611804565b01602001516001600160f81b03191682610c5f8360026117ed565b81518110610c6f57610c6f611804565b60200101906001600160f81b031916908160001a9053508284610c9383600c6117c7565b60208110610ca357610ca3611804565b825191901a600f16908110610cba57610cba611804565b01602001516001600160f81b03191682610cd58360026117ed565b610ce09060016117c7565b81518110610cf057610cf0611804565b60200101906001600160f81b031916908160001a905350600101610bf6565b6000546001600160a01b031633146106f75760405163118cdaa760e01b8152336004820152602401610223565b610d4461111b565b6000805460ff60a01b191690557f5db9ee0a495bf2e6ff9c91a7834c1ba4fdd244a5e8aa4e537bd38aeae4b073aa335b6040516001600160a01b03909116815260200160405180910390a1565b600080610da16020828587611876565b610daa916118a0565b90506000610dbc604060208688611876565b610dc5916118a0565b90506401000003d0198210610ddf57600092505050611080565b70014551231950b75fc4402da1732fc9bebe198110610e0357600092505050611080565b866401000003d0198110610e1d5760009350505050611080565b6000610e2882611145565b905080600003610e3f576000945050505050611080565b610e4a6002826118be565b15610e6257610e5f816401000003d0196117da565b90505b60006002604051610e8a9070424950303334302f6368616c6c656e676560781b815260110190565b602060405180830381855afa158015610ea7573d6000803e3d6000fd5b5050506040513d601f19601f82011682018060405250810190610eca9190611798565b604080516020810183905290810182905260608101879052608081018c905260a081018b905290915060009070014551231950b75fc4402da1732fc9bebe199060029060c00160408051601f1981840301815290829052610f2a9161177c565b602060405180830381855afa158015610f47573d6000803e3d6000fd5b5050506040513d601f19601f82011682018060405250810190610f6a9190611798565b610f7491906118be565b9050600080610fc47f79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817987f483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8896111b9565b91509150600080610fd68888876111b9565b90925090506000610fed826401000003d0196117da565b9050600080610ffe8787878661123f565b91509150816000148015611010575080155b1561102b5760009d5050505050505050505050505050611080565b8c82146110485760009d5050505050505050505050505050611080565b6110536002826118be565b1561106e5760009d5050505050505050505050505050611080565b60019d50505050505050505050505050505b949350505050565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b6110e0610b75565b6000805460ff60a01b1916600160a01b1790557f62e78cea01bee320cd4e420270b5ea74000d11b0c9f74754ebdbfc544b05a258610d743390565b600054600160a01b900460ff166106f757604051638dfc202b60e01b815260040160405180910390fd5b6000806401000003d01960076401000003d019856401000003d0198788090908905060006111968260046111806401000003d01960016117c7565b61118a9190611849565b6401000003d0196113ae565b9050816401000003d019828309146111b2575060009392505050565b9392505050565b600080826000036111cf57506000905080611237565b50600090508084845b8415611234578460011660010361121757831580156111f5575082155b1561120557819350809250611217565b6112118484848461123f565b90945092505b6112238282848461123f565b60019690961c9590925090506111d8565b50505b935093915050565b6000808515801561124e575084155b1561125d5750829050816113a5565b83158015611269575082155b156112785750849050836113a5565b60008487036112ed578386146112955760008092509250506113a5565b856000036112aa5760008092509250506113a5565b60006401000003d01980898a09600309905060006401000003d0198860020990506401000003d0196112e2826401000003d0196113f2565b830992505050611345565b60006401000003d019611306886401000003d0196117da565b8608905060006401000003d0196113238a6401000003d0196117da565b880890506401000003d01961133e826401000003d0196113f2565b8309925050505b6401000003d01980868908611360906401000003d0196117da565b6401000003d0198384090892506401000003d019611384876401000003d0196117da565b6401000003d0198061139c876401000003d0196117da565b8b088409089150505b94509492505050565b600060405160208152602080820152602060408201528460608201528360808201528260a082015260208160c08360055afa6113e957600080fd5b51949350505050565b6000611409836114036002856117da565b846113ae565b90505b92915050565b634e487b7160e01b600052604160045260246000fd5b600082601f83011261143957600080fd5b813567ffffffffffffffff81111561145357611453611412565b604051601f8201601f19908116603f0116810167ffffffffffffffff8111828210171561148257611482611412565b60405281815283820160200185101561149a57600080fd5b816020850160208301376000918101602001919091529392505050565b600080600080600060a086880312156114cf57600080fd5b853594506020860135935060408601359250606086013567ffffffffffffffff8111156114fb57600080fd5b61150788828901611428565b925050608086013567ffffffffffffffff81111561152457600080fd5b61153088828901611428565b9150509295509295909350565b60008060008060008060008060e0898b03121561155957600080fd5b88359750602089013596506040890135955060608901359450608089013567ffffffffffffffff81111561158c57600080fd5b6115988b828c01611428565b94505060a089013567ffffffffffffffff8111156115b557600080fd5b6115c18b828c01611428565b93505060c089013567ffffffffffffffff8111156115de57600080fd5b8901601f81018b136115ef57600080fd5b803567ffffffffffffffff81111561160657600080fd5b8b602082840101111561161857600080fd5b989b979a50959850939692959194602001935050565b60006020828403121561164057600080fd5b5035919050565b60006020828403121561165957600080fd5b81356001600160a01b03811681146111b257600080fd5b60005b8381101561168b578181015183820152602001611673565b50506000910152565b600081516116a6818560208601611670565b9290920192915050565b632d98161160e11b815285516000906116d0816004850160208b01611670565b61088b60f21b60049184019182015286516116f2816006840160208b01611670565b600481830101915050600b60fa1b60028201528551611718816003840160208a01611670565b600281830101915050600b60fa1b6001820152845161173e816002840160208901611670565b61176f61176161175b60028585010161161160f11b815260020190565b87611694565b61225d60f01b815260020190565b9998505050505050505050565b6000825161178e818460208701611670565b9190910192915050565b6000602082840312156117aa57600080fd5b5051919050565b634e487b7160e01b600052601160045260246000fd5b8082018082111561140c5761140c6117b1565b8181038181111561140c5761140c6117b1565b808202811582820484141761140c5761140c6117b1565b634e487b7160e01b600052603260045260246000fd5b60006001820161182c5761182c6117b1565b5060010190565b634e487b7160e01b600052601260045260246000fd5b60008261185857611858611833565b500490565b60ff818116838216019081111561140c5761140c6117b1565b6000808585111561188657600080fd5b8386111561189357600080fd5b5050820193919092039150565b8035602083101561140c57600019602084900360031b1b1692915050565b6000826118cd576118cd611833565b50069056fea2646970667358221220c3e3d54ae90194119edbbead48e592a79a7941cc45aaaa384a3f44e2838e529764736f6c634300081e0033",
+  "devdoc": {
+    "details": "Smart contract to link Ethereum addresses with Nostr public keys",
+    "errors": {
+      "EnforcedPause()": [
+        {
+          "details": "The operation failed because the contract is paused."
+        }
+      ],
+      "ExpectedPause()": [
+        {
+          "details": "The operation failed because the contract is not paused."
+        }
+      ],
+      "OwnableInvalidOwner(address)": [
+        {
+          "details": "The owner is not a valid owner account. (eg. `address(0)`)"
+        }
+      ],
+      "OwnableUnauthorizedAccount(address)": [
+        {
+          "details": "The caller account is not authorized to perform an operation."
+        }
+      ]
+    },
+    "events": {
+      "Paused(address)": {
+        "details": "Emitted when the pause is triggered by `account`."
+      },
+      "Unpaused(address)": {
+        "details": "Emitted when the pause is lifted by `account`."
+      }
+    },
+    "kind": "dev",
+    "methods": {
+      "getEventHash(bytes32,uint256,uint256,string,string)": {
+        "details": "Utility function for testing - compute event hash",
+        "params": {
+          "content": "Address content (without 0x prefix)",
+          "createdAt": "Unix timestamp",
+          "kind": "Event kind",
+          "pubkey": "The public key",
+          "tags": "Event tags"
+        },
+        "returns": {
+          "_0": "bytes32 The computed event hash"
+        }
+      },
+      "owner()": {
+        "details": "Returns the address of the current owner."
+      },
+      "pause()": {
+        "details": "Pause the contract - only owner"
+      },
+      "paused()": {
+        "details": "Returns true if the contract is paused, and false otherwise."
+      },
+      "pullLinkr()": {
+        "details": "Remove the linkage between caller's address and their Nostr pubkey"
+      },
+      "pushLinkr(bytes32,bytes32,uint256,uint256,string,string,bytes)": {
+        "details": "Main function to link Ethereum address to Nostr pubkey",
+        "params": {
+          "content": "The content of the event (must be sender's address without 0x prefix)",
+          "createdAt": "Unix timestamp when the event was created",
+          "id": "The Nostr event ID (hash of the event)",
+          "kind": "The Nostr event kind (must be 27235 for linkage)",
+          "pubkey": "The Nostr public key to link with",
+          "sig": "The Schnorr signature of the Nostr event (64 bytes)",
+          "tags": "JSON string of event tags (must be empty array \"[]\")"
+        }
+      },
+      "renounceOwnership()": {
+        "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner."
+      },
+      "transferOwnership(address)": {
+        "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+      },
+      "unpause()": {
+        "details": "Unpause the contract - only owner"
+      },
+      "verifyNostrEvent(bytes32,bytes32,uint256,uint256,string,string,bytes)": {
+        "details": "Verify Nostr event according to NIP-01 specification",
+        "params": {
+          "content": "The event content",
+          "createdAt": "Unix timestamp of event creation",
+          "eventId": "The expected event ID (hash)",
+          "kind": "The event kind",
+          "pubkey": "The public key that signed the event",
+          "signature": "The Schnorr signature (64 bytes)",
+          "tags": "JSON string of event tags"
+        },
+        "returns": {
+          "_0": "bool True if the event is valid, false otherwise"
+        }
+      }
+    },
+    "title": "NostrLinkr",
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "notice": "This contract allows users to create verifiable links between their Ethereum address and Nostr identity",
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 8,
+        "contract": "contracts/NostrLinkr.sol:NostrLinkr",
+        "label": "_owner",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_address"
+      },
+      {
+        "astId": 186,
+        "contract": "contracts/NostrLinkr.sol:NostrLinkr",
+        "label": "_paused",
+        "offset": 20,
+        "slot": "0",
+        "type": "t_bool"
+      },
+      {
+        "astId": 307,
+        "contract": "contracts/NostrLinkr.sol:NostrLinkr",
+        "label": "addressPubkey",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_address,t_bytes32)"
+      },
+      {
+        "astId": 311,
+        "contract": "contracts/NostrLinkr.sol:NostrLinkr",
+        "label": "pubkeyAddress",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_mapping(t_bytes32,t_address)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_mapping(t_address,t_bytes32)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bytes32)",
+        "numberOfBytes": "32",
+        "value": "t_bytes32"
+      },
+      "t_mapping(t_bytes32,t_address)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => address)",
+        "numberOfBytes": "32",
+        "value": "t_address"
+      }
+    }
+  }
+}
