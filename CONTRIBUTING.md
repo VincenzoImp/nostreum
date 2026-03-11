@@ -12,8 +12,8 @@ Nostreum is an on-chain identity bridge between Ethereum and Nostr, built on Sca
 ## Getting Started
 
 ```bash
-git clone https://github.com/VincenzoImp/nostreum-v2.git
-cd nostreum-v2
+git clone https://github.com/VincenzoImp/nostreum.git
+cd nostreum
 yarn install
 yarn chain    # Terminal 1
 yarn deploy   # Terminal 2

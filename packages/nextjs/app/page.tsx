@@ -212,7 +212,7 @@ export default function LandingPage() {
           <p className="text-xs text-base-content/30">
             Built on Base Sepolia &middot; Open Source &middot;{" "}
             <a
-              href="https://github.com/VincenzoImp/nostreum-v2"
+              href="https://github.com/VincenzoImp/nostreum"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-primary transition-colors"

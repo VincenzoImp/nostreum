@@ -106,8 +106,8 @@ packages/
 ### Installation
 
 ```bash
-git clone https://github.com/VincenzoImp/nostreum-v2.git
-cd nostreum-v2
+git clone https://github.com/VincenzoImp/nostreum.git
+cd nostreum
 yarn install
 ```
 
@@ -170,7 +170,7 @@ Auto-reconnect with exponential backoff (max 5 attempts). All incoming events ar
 
 - **Live Demo (Base Sepolia):** https://nostreum.vercel.app
 - **Article:** https://vincenzo.imperati.dev/posts/nostreum
-- **GitHub:** https://github.com/VincenzoImp/nostreum-v2
+- **GitHub:** https://github.com/VincenzoImp/nostreum
 
 ## License
 
