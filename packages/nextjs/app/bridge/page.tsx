@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { getEventHash } from "nostr-tools";
+import { createAndSignLinkEvent } from "nostr-linkr";
 import { useAccount } from "wagmi";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useLinkStatus } from "~~/hooks/bridge/useLinkStatus";
@@ -28,18 +28,9 @@ export default function BridgePage() {
     setLinking(true);
     try {
       setStep(1);
-      const pubkey = await window.nostr.getPublicKey();
-      const createdAt = Math.floor(Date.now() / 1000);
-      const content = address.toLowerCase().replace("0x", "");
 
       setStep(2);
-      const nostrEvent = { kind: 27235, created_at: createdAt, tags: [] as string[][], content, pubkey };
-      const eventWithId = { ...nostrEvent, id: getEventHash(nostrEvent) };
-      const signedEvent = await window.nostr.signEvent(eventWithId);
-
-      if (!signedEvent.sig || signedEvent.sig.length !== 128) {
-        throw new Error("Invalid signature from Nostr extension");
-      }
+      const signedEvent = await createAndSignLinkEvent(window.nostr, address);
 
       setStep(3);
       await writePushLinkr({

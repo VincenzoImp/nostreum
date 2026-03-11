@@ -2614,6 +2614,7 @@ __metadata:
     next: ~15.2.8
     next-nprogress-bar: ~2.3.13
     next-themes: ~0.3.0
+    nostr-linkr: ^0.1.0
     nostr-tools: ^2.23.3
     postcss: ~8.4.45
     prettier: ~3.5.3
@@ -11208,6 +11209,15 @@ __metadata:
   version: 8.1.1
   resolution: "normalize-url@npm:8.1.1"
   checksum: 4fabd2fe2a2948384125282a4b8649ba5d470509c18576066c7aa8ee4809f5cb8a658861095dff4a04973bb5929f34c43b7ba192eb940a1ccd8324783a387060
+  languageName: node
+  linkType: hard
+
+"nostr-linkr@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "nostr-linkr@npm:0.1.0"
+  peerDependencies:
+    viem: ^2.0.0
+  checksum: 9fda7a9ca49a06ebaebb8a51957319cae7738ccae96b57d26818e2bd5387ef920666beef18ce5dab18a5c4991722306c84242428ddc1b693f05926b66b7dd08c
   languageName: node
   linkType: hard
 
