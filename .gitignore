@@ -21,4 +21,8 @@ node_modules
 
 # cli
 dist
-.env
+
+# Local files
+CLAUDE.md
+.cursor/
+package-lock.json

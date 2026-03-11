@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { NetworkOptions } from "./NetworkOptions";
 import { getAddress } from "viem";
 import { Address } from "viem";
-import { useDisconnect } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 import {
   ArrowLeftOnRectangleIcon,
   ArrowTopRightOnSquareIcon,
@@ -10,11 +10,15 @@ import {
   CheckCircleIcon,
   ChevronDownIcon,
   DocumentDuplicateIcon,
+  EyeIcon,
   QrCodeIcon,
 } from "@heroicons/react/24/outline";
-import { BlockieAvatar, isENS } from "~~/components/scaffold-eth";
+import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useCopyToClipboard, useOutsideClick } from "~~/hooks/scaffold-eth";
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
+import { isENS } from "~~/utils/scaffold-eth/common";
+
+const BURNER_WALLET_ID = "burnerWallet";
 
 const allowedNetworks = getTargetNetworks();
 
@@ -32,6 +36,7 @@ export const AddressInfoDropdown = ({
   blockExplorerAddressLink,
 }: AddressInfoDropdownProps) => {
   const { disconnect } = useDisconnect();
+  const { connector } = useAccount();
   const checkSumAddress = getAddress(address);
 
   const { copyToClipboard: copyAddressToClipboard, isCopiedToClipboard: isAddressCopiedToClipboard } =
@@ -106,6 +111,14 @@ export const AddressInfoDropdown = ({
               >
                 <ArrowsRightLeftIcon className="h-6 w-4 ml-2 sm:ml-0" /> <span>Switch Network</span>
               </button>
+            </li>
+          ) : null}
+          {connector?.id === BURNER_WALLET_ID ? (
+            <li>
+              <label htmlFor="reveal-burner-pk-modal" className="h-8 btn-sm rounded-xl! flex gap-3 py-3 text-error">
+                <EyeIcon className="h-6 w-4 ml-2 sm:ml-0" />
+                <span>Reveal Private Key</span>
+              </label>
             </li>
           ) : null}
           <li className={selectingNetwork ? "hidden" : ""}>

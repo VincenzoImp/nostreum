@@ -1,57 +1,49 @@
-# CLAUDE.md - Nostreum Project Guide
+# CLAUDE.md
 
 ## Project Overview
 
-Nostreum is the first on-chain verification system that cryptographically links Ethereum addresses (ECDSA) with Nostr public keys (Schnorr/BIP-340). It bridges Ethereum's financial network with Nostr's decentralized social platform.
+**Nostreum** is the first on-chain identity verification system linking Ethereum addresses (ECDSA) with Nostr public keys (Schnorr/BIP-340). Built on Scaffold-ETH 2. Full Nostr social client with identity bridge.
 
-**Live**: https://nostreum.vercel.app (Base Sepolia testnet)
-
-## Tech Stack
-
-- **Smart Contracts**: Solidity ^0.8.20, Hardhat, OpenZeppelin (Ownable, Pausable), hardhat-deploy
-- **Frontend**: Next.js 15 (App Router), React 19, TypeScript 5.8
-- **Web3**: wagmi 2.x, viem 2.x, RainbowKit 2.x
-- **Nostr**: nostr-tools 2.x (event hashing, signature verification), WebSocket connections
-- **UI**: Tailwind CSS 4.x, DaisyUI 5.x
-- **State**: Zustand 5.x, React Query 5.x
-- **Package Manager**: Yarn 3.2 (workspaces)
+**Live:** https://nostreum.vercel.app (Base Sepolia)
 
 ## Repository Structure
 
 ```
 packages/
-  hardhat/                    # Smart contract package
-    contracts/NostrLinkr.sol  # Core contract with BIP-340 Schnorr verification
-    deploy/                   # Deployment scripts
-    deployments/baseSepolia/  # Deployed contract artifacts
-    test/NostrLinkr.test.ts   # Contract tests (22 tests)
-  nextjs/                     # Frontend package
-    app/                      # Next.js App Router pages
-      page.tsx                # Landing page
-      feed/page.tsx           # Main Nostr social feed
-      following-feed/page.tsx # Filtered feed (following only)
-      profile/page.tsx        # Profile search
-      profile/[pubkey]/       # Individual profile view
-      blockexplorer/          # Transaction/address explorer
-      debug/                  # Contract debugging interface
+  hardhat/
+    contracts/NostrLinkr.sol          # Core contract, BIP-340 Schnorr verification
+    deploy/00_deploy_your_contract.ts
+    test/NostrLinkr.test.ts           # 22 tests
+    deployments/baseSepolia/          # Deployed at 0xB2E3da5028AEBe3896470C7EE91a75a8f2ca0806
+  nextjs/
+    app/
+      page.tsx                        # Landing page (hero, features)
+      feed/page.tsx                   # Global Nostr feed
+      feed/following/page.tsx         # Following-only feed
+      bridge/page.tsx                 # Identity linking UI
+      profile/page.tsx                # Profile search (pubkey or ETH address)
+      profile/[identifier]/page.tsx   # Profile detail page
     components/
-      nostr-linkr/            # Identity linking UI
-      nostreum/               # Feed, EventCard, AuthorInfo, PostForm
-      scaffold-eth/           # Scaffold-ETH base components
+      feed/                           # EventCard, FeedTabs, ComposeModal, NoteContent
+      layout/                         # Header, MobileNav, NavTabs, Logo, ThemeToggle
+      shared/                         # Avatar, VerifiedBadge, EmptyState, SkeletonCard, ConnectionIndicator
+      scaffold-eth/                   # RainbowKit wallet, BlockieAvatar
+    contexts/
+      NostrContext.tsx                 # WebSocket relay management, subscribe/publish
+      FollowingContext.tsx             # Follow state, localStorage persistence
+      ProfileCacheContext.tsx          # Batch profile fetching + cache
     hooks/
-      nostreum/
-        useNostrConnection.ts # Core Nostr relay hook with event validation
-        useEthereumAddress.ts # Shared hook for ETH address lookup (single RPC per pubkey)
-        useFollowing.ts       # Shared following list management with localStorage
-      scaffold-eth/           # Contract interaction hooks
-    services/
-      store/store.ts          # Zustand global store
-      web3/                   # Wagmi config, connectors
-    types/nostreum.ts         # Nostr types
-    scaffold.config.ts        # App configuration
+      nostr/useFeed.ts                # Feed subscription with profile batching
+      nostr/useProfileDetail.ts       # Single profile + posts (kind 0, 1)
+      bridge/useLinkStatus.ts         # Current user link status via addressPubkey
+      bridge/useLinkedAddress.ts      # Pubkey -> ETH address via pubkeyAddress
+      scaffold-eth/                   # Contract interaction hooks
+    utils/nostr/                      # formatting.ts (truncate, isHex, etc.), parsing.ts
+    types/nostr.ts                    # NostrEvent, AuthorProfile, Window.nostr
+    styles/globals.css                # Tailwind 4 + DaisyUI 5 themes, glass-card, animations
 ```
 
-## Key Commands
+## Commands
 
 ```bash
 yarn install          # Install all dependencies
@@ -60,54 +52,70 @@ yarn deploy           # Deploy contracts
 yarn start            # Start Next.js dev server (port 3000)
 yarn format           # Format with Prettier
 yarn lint             # ESLint
-yarn workspace @se-2/hardhat hardhat test --network hardhat  # Run contract tests
+yarn hardhat:test     # Run 22 contract tests (uses --network hardhat)
+yarn hardhat:compile  # Compile contracts
 yarn next:build       # Production build
-yarn vercel:yolo      # Deploy to Vercel (ignore build errors)
 ```
 
 ## Smart Contract: NostrLinkr
 
-**Address**: Deployed on Base Sepolia (see `packages/hardhat/deployments/baseSepolia/`)
+- **Solidity 0.8.30** with OpenZeppelin Ownable + Pausable
+- Full BIP-340 Schnorr verification using MODEXP precompile (0x05)
+- Functions are `view` not `pure` due to MODEXP precompile
+- Event kind 27235 for identity linking
+- Bidirectional mappings: `addressPubkey(address)` / `pubkeyAddress(bytes32)`
+- Timestamp validation: 5min future / 1hr past tolerance
 
-### Features
-- **Ownable**: Owner can pause/unpause contract (OpenZeppelin Ownable)
-- **Pausable**: Emergency stop for `pushLinkr` (OpenZeppelin Pausable)
-- **BIP-340 Schnorr verification**: Full on-chain verification using MODEXP precompile
-- **Timestamp bounds**: 5-minute future tolerance, 1-hour past tolerance
-
-### Core Functions
-- `pushLinkr(id, pubkey, createdAt, kind, tags, content, sig)` - Create bidirectional link (whenNotPaused)
+### Key Functions
+- `pushLinkr(id, pubkey, createdAt, kind, tags, content, sig)` - Create link (whenNotPaused)
 - `pullLinkr()` - Remove caller's link
-- `verifyNostrEvent(...)` - Verify Nostr event per NIP-01 (view)
-- `addressPubkey(address)` / `pubkeyAddress(bytes32)` - Lookup mappings
-- `getEventHash(pubkey, createdAt, kind, tags, content)` - Compute event hash (consistent with verifyNostrEvent)
+- `verifyNostrEvent(...)` - Verify event hash + Schnorr signature (view)
+- `getEventHash(...)` - Compute NIP-01 event hash (uses `bytesToHexNoPrefix`)
 - `pause()` / `unpause()` - Emergency controls (onlyOwner)
-
-### Linking Flow
-1. Nostr extension signs event (kind 27235) containing Ethereum address
-2. Event submitted to contract with all parameters
-3. Contract verifies SHA-256 event hash matches NIP-01 serialization
-4. BIP-340 Schnorr signature verified on-chain (liftX, ecMul, ecAdd)
-5. Bidirectional mapping stored on-chain
 
 ## Frontend Architecture
 
-### Nostr Connection (`useNostrConnection` hook)
-- Default relay: `wss://relay.damus.io`
+### Design System
+- **Themes:** Custom light (purple #7C3AED primary, amber #F59E0B accent) and dark (lavender #A78BFA, gold #FBBF24)
+- **Glass morphism:** `.glass-card` and `.glass-card-hover` CSS classes
+- **Animations:** fade-in, fade-in-up, scale-in, float, gradient-x, stagger-children
+- **Navigation:** 3 tabs (Feed, Bridge, Profile) + mobile bottom nav
+
+### Contexts
+- `NostrContext` - WebSocket relay management with auto-reconnect, subscribe/publish, event validation via `nostr-tools.verifyEvent()`
+- `FollowingContext` - Follow/unfollow with localStorage persistence (`nostr-following`)
+- `ProfileCacheContext` - Batch profile fetching (kind 0) with in-memory cache
+
+### Custom Hooks
+- `useFeed(options?)` - Subscribe to kind 1 events, optional author filter, profile batch fetching
+- `useProfileDetail(pubkey)` - Fetch kind 0 metadata + kind 1 posts for single user
+- `useLinkStatus()` - Current wallet's link status (isLinked, linkedPubkey)
+- `useLinkedAddress(pubkey)` - Reverse lookup: Nostr pubkey -> ETH address
+
+### Nostr Relays
+- Default: `wss://relay.damus.io`
 - Fallbacks: `wss://nos.lol`, `wss://relay.nostr.band`, `wss://nostr-pub.wellorder.net`
 - Auto-reconnect with exponential backoff (max 5 attempts)
-- Event signature verification via `nostr-tools.verifyEvent()` before processing
-- Accepts optional `messageFilter` callback for page-specific filtering (replaces onmessage override pattern)
-- Event kinds: 0 (metadata), 1 (text notes), 7 (reactions), 27235 (linking)
 
-### Shared Hooks
-- `useEthereumAddress(pubkey)` - Single contract read per pubkey, passed as prop to avoid duplicates
-- `useFollowing(setAuthors)` - localStorage-backed follow/unfollow with author state sync
+## Tech Stack
 
-### State Management
-- Following list: localStorage (`nostr-following`) via `useFollowing` hook
-- Contract state: wagmi hooks with React Query
-- Global state: Zustand (currency price, network)
+- Hardhat 2.28, Solidity 0.8.30, ethers 6.x
+- Next.js 15 (App Router), React 19, TypeScript 5.8
+- wagmi 2.x, viem 2.x, RainbowKit 2.x
+- Tailwind CSS 4, DaisyUI 5
+- nostr-tools 2.x
+- Yarn 3.2 workspaces
+
+## Code Conventions
+
+- All pages use `"use client"` directive
+- Path alias: `~~/*` maps to `packages/nextjs/`
+- Contract hooks: `useScaffoldReadContract`, `useScaffoldWriteContract`
+- External images: `<img>` with `eslint-disable @next/next/no-img-element`
+- No emojis in code unless explicitly requested
+- Prettier + ESLint, pre-commit via Husky + lint-staged
+- `glass-card` / `glass-card-hover` for card UI (do NOT use `@apply glass-card` in other classes - Tailwind 4 limitation)
+- Default target network: hardhat (configure in `scaffold.config.ts`)
 
 ## Environment Variables
 
@@ -122,20 +130,8 @@ NEXT_PUBLIC_ALCHEMY_API_KEY=
 NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=
 ```
 
-Defaults are provided in config files but should be overridden for production.
-
-## Code Conventions
-
-- Prettier for formatting (with Solidity plugin)
-- ESLint with Next.js config
-- Pre-commit hooks via Husky + lint-staged
-- Path aliases: `~~/` maps to `packages/nextjs/`
-- Components use "use client" directive (client-side rendering)
-- Contract interactions via scaffold-eth hooks (`useScaffoldReadContract`, `useScaffoldWriteContract`)
-- Ethereum address lookups centralized in `useEthereumAddress` hook (never duplicate in components)
-- Following logic centralized in `useFollowing` hook (never duplicate in pages)
-
 ## Known Issues
 
-- Pre-existing SSR build error: `localStorage.getItem is not a function` in pages that access localStorage during static generation. Use `typeof window !== "undefined"` guards or dynamic imports to fix.
-- The deployed contract on Base Sepolia uses the OLD contract without Schnorr verification. A redeployment is needed.
+- Tailwind CSS 4: Cannot use `@apply` to reference custom classes defined with `@apply` (e.g., `@apply glass-card` inside another class won't work)
+- Hardhat local node: block timestamp drifts from real time when idle. Use `evm_setNextBlockTimestamp` + `evm_mine` before testing bridge locally
+- `next/dynamic` with `ssr: false` causes expected "Bail out to client-side rendering" messages in server logs (not an error)

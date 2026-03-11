@@ -1,12 +1,13 @@
 import "@rainbow-me/rainbowkit/styles.css";
-import { ScaffoldEthAppWithProviders } from "~~/components/ScaffoldEthAppWithProviders";
+import "@scaffold-ui/components/styles.css";
+import { ClientProviders } from "~~/components/ClientProviders";
 import { ThemeProvider } from "~~/components/ThemeProvider";
 import "~~/styles/globals.css";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
 export const metadata = getMetadata({
   title: "Nostreum",
-  description: "First client bridging Ethereum and Nostr",
+  description: "Bridge Ethereum and Nostr — on-chain identity verification with BIP-340 Schnorr signatures",
 });
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
@@ -14,7 +15,7 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
     <html suppressHydrationWarning className={``}>
       <body>
         <ThemeProvider enableSystem>
-          <ScaffoldEthAppWithProviders>{children}</ScaffoldEthAppWithProviders>
+          <ClientProviders>{children}</ClientProviders>
         </ThemeProvider>
       </body>
     </html>
