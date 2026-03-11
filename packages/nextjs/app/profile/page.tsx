@@ -2,97 +2,110 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAccount } from "wagmi";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
-import { notification } from "~~/utils/scaffold-eth/notification";
+import { useLinkStatus } from "~~/hooks/bridge/useLinkStatus";
+import { isEthAddress, isHexPubkey, truncatePubkey } from "~~/utils/nostr/formatting";
 
 export default function ProfileSearchPage() {
   const router = useRouter();
-  const { address } = useAccount();
-  const [searchInput, setSearchInput] = useState("");
-
-  const { data: myLinkedPubkey } = useScaffoldReadContract({
-    contractName: "NostrLinkr",
-    functionName: "addressPubkey",
-    args: [address],
-  });
-
-  const isValidPubkey = (key: string): boolean => /^[a-fA-F0-9]{64}$/.test(key.trim());
+  const { isLinked, linkedPubkey } = useLinkStatus();
+  const [query, setQuery] = useState("");
+  const [error, setError] = useState("");
 
   const handleSearch = () => {
-    const input = searchInput.trim();
-    if (!input) {
-      notification.error("Enter a Nostr public key");
-      return;
-    }
-    if (!isValidPubkey(input)) {
-      notification.error("Invalid pubkey format. Must be 64 hex characters.");
-      return;
-    }
-    router.push(`/profile/${input}`);
-  };
-
-  const handleViewMyProfile = () => {
-    if (myLinkedPubkey && myLinkedPubkey !== "0x0000000000000000000000000000000000000000000000000000000000000000") {
-      const cleanPubkey = myLinkedPubkey.replace("0x", "");
-      router.push(`/profile/${cleanPubkey}`);
+    const trimmed = query.trim();
+    if (isHexPubkey(trimmed) || isEthAddress(trimmed)) {
+      router.push(`/profile/${trimmed}`);
     } else {
-      notification.info("No Nostr pubkey linked. Link your identity first.");
+      setError("Enter a valid 64-character hex pubkey or 0x Ethereum address");
     }
   };
-
-  const hasLink =
-    myLinkedPubkey && myLinkedPubkey !== "0x0000000000000000000000000000000000000000000000000000000000000000";
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold">Profiles</h1>
-        <p className="text-sm text-base-content/50">Search for Nostr users by public key</p>
+    <div className="max-w-xl mx-auto w-full px-4 sm:px-6 py-10 md:py-16">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-extrabold tracking-tight mb-3">Lookup Profile</h1>
+        <p className="text-sm text-base-content/45">Search any Nostr user by public key or Ethereum address</p>
       </div>
 
-      {/* Search */}
-      <div className="bg-base-100 rounded-2xl border border-base-300/50 p-5">
-        <div className="flex gap-2">
+      {isLinked && linkedPubkey && (
+        <button
+          onClick={() => router.push(`/profile/${linkedPubkey}`)}
+          className="w-full mb-6 glass-card-hover p-4 text-left group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shrink-0">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                />
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-primary mb-0.5">Your linked profile</p>
+              <p className="font-mono text-sm text-base-content/60 truncate">{truncatePubkey(linkedPubkey, 12)}</p>
+            </div>
+            <svg
+              className="w-4 h-4 text-base-content/20 group-hover:text-primary transition-colors"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </div>
+        </button>
+      )}
+
+      <div className="glass-card p-5 space-y-4">
+        <div className="relative">
+          <svg
+            className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-base-content/30"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+            />
+          </svg>
           <input
             type="text"
-            className="input input-bordered flex-1 text-sm font-mono"
-            placeholder="Enter 64-character hex pubkey..."
-            value={searchInput}
-            onChange={e => setSearchInput(e.target.value)}
+            value={query}
+            onChange={e => {
+              setQuery(e.target.value);
+              setError("");
+            }}
             onKeyDown={e => e.key === "Enter" && handleSearch()}
+            placeholder="npub, hex pubkey, or 0x address..."
+            className="input input-bordered w-full pl-11 font-mono text-sm h-12"
           />
-          <button className="btn btn-primary gap-1" onClick={handleSearch}>
-            <MagnifyingGlassIcon className="w-4 h-4" />
-            Search
-          </button>
         </div>
+        {error && (
+          <p className="text-xs text-error flex items-center gap-1.5">
+            <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
+              />
+            </svg>
+            {error}
+          </p>
+        )}
+        <button
+          onClick={handleSearch}
+          disabled={!query.trim()}
+          className="btn btn-primary w-full rounded-xl h-12 disabled:opacity-30"
+        >
+          Search
+        </button>
       </div>
-
-      {/* My Profile */}
-      {address && (
-        <div className="bg-base-100 rounded-2xl border border-base-300/50 p-5">
-          <h2 className="font-semibold mb-3">My Profile</h2>
-          {hasLink ? (
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-base-content/50">Linked Nostr Pubkey:</span>
-                <code className="text-xs font-mono text-primary">
-                  {myLinkedPubkey?.slice(0, 12)}...{myLinkedPubkey?.slice(-8)}
-                </code>
-              </div>
-              <button className="btn btn-sm btn-primary" onClick={handleViewMyProfile}>
-                View My Profile
-              </button>
-            </div>
-          ) : (
-            <p className="text-sm text-base-content/50">
-              No Nostr identity linked yet. Use the Identity Bridge on the home page to link your accounts.
-            </p>
-          )}
-        </div>
-      )}
     </div>
   );
 }
