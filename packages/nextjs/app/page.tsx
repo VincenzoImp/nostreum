@@ -14,7 +14,7 @@ export default function LandingPage() {
           <div className="stagger-children">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold mb-8">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              On-Chain Identity Verification
+              Nostr Social Client · Early Preview
             </div>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-[1.1]">
@@ -27,8 +27,9 @@ export default function LandingPage() {
             </h1>
 
             <p className="text-base-content/50 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-              The first cryptographic bridge linking Ethereum addresses with Nostr public keys. Verified entirely
-              on-chain with BIP-340 Schnorr signatures.
+              An embryonic open-source Nostr client where Ethereum identity lives on-chain. Browse the feed, follow
+              users, spot ETH-verified accounts — and link your own identities with a BIP-340 Schnorr signature verified
+              entirely on-chain.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -106,7 +107,7 @@ export default function LandingPage() {
           <div className="text-center mb-12">
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-3">Why Nostreum?</h2>
             <p className="text-base-content/40 max-w-lg mx-auto">
-              Trustless, on-chain identity verification connecting two decentralized ecosystems
+              A proof-of-concept showing what becomes possible when Nostr and Ethereum talk to each other
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-4 stagger-children">
@@ -139,7 +140,7 @@ export default function LandingPage() {
               },
               {
                 title: "Social Integration",
-                desc: "Browse Nostr with verified Ethereum identities. See who's linked, follow, post, and react.",
+                desc: "Browse the Nostr feed and see ETH-verified badges on linked accounts. Follow, post signed notes, and react.",
                 icon: (
                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                     <path
