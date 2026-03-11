@@ -45,7 +45,7 @@ Solidity 0.8.30 with OpenZeppelin Ownable + Pausable.
 | `addressPubkey(address)` | Lookup: Ethereum address -> Nostr pubkey |
 | `pubkeyAddress(bytes32)` | Lookup: Nostr pubkey -> Ethereum address |
 
-**Deployed on Base Sepolia:** `0xB2E3da5028AEBe3896470C7EE91a75a8f2ca0806`
+**Deployed on Base Sepolia:** [`0x0246B2Eb1716445B1d3bA4d86aA7F3Dcb2505948`](https://sepolia.basescan.org/address/0x0246B2Eb1716445B1d3bA4d86aA7F3Dcb2505948#code)
 
 ## Tech Stack
 

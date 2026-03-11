@@ -14,7 +14,7 @@ packages/
     contracts/NostrLinkr.sol          # Core contract, BIP-340 Schnorr verification
     deploy/00_deploy_your_contract.ts
     test/NostrLinkr.test.ts           # 22 tests
-    deployments/baseSepolia/          # Deployed at 0xB2E3da5028AEBe3896470C7EE91a75a8f2ca0806
+    deployments/baseSepolia/          # Deployed at 0x0246B2Eb1716445B1d3bA4d86aA7F3Dcb2505948
   nextjs/
     app/
       page.tsx                        # Landing page (hero, features)
