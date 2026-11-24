@@ -48,6 +48,12 @@
     "tmp": ">=0.2.6",
     "undici": "^8.12.2",
     "ws": ">=8.21.0",
-    "@vercel/cli-config/zod": "^4.6.7"
+    "@vercel/cli-config/zod": "^4.6.7",
+    "@vercel/cli-support/smol-toml": "^1.9.0",
+    "@vercel/container/smol-toml": "^1.9.0",
+    "@vercel/python-analysis/smol-toml": "^1.9.0",
+    "@vercel/rust/smol-toml": "^1.9.0",
+    "@vercel/python-analysis/minimatch": "^10.2.4",
+    "@vercel/python-analysis/js-yaml": "^4.3.2"
   }
 }
